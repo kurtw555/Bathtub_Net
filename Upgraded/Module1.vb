@@ -1,7 +1,7 @@
 Option Strict Off
 Option Explicit On
 Imports Excel = Microsoft.Office.Interop.Excel
-Imports Microsoft.VisualBasic
+'Imports Microsoft.VisualBasic.FileIO
 Imports System
 Imports System.Diagnostics
 Imports System.Drawing
@@ -303,7 +303,7 @@ Module Module1
 	Sub StartUp()
 		Dim DebugCount As Integer
 		Dim LoadErr As String = ""
-		Dim XLSInputApp As Excel.Application
+		'Dim XLSInputApp As Excel.Application
 		'start up program
 		frmAbout.DefInstance.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
 		If Not gTASTRMode Then
@@ -339,7 +339,7 @@ Module Module1
 		Ier = 0
 		Status("Starting Up")
 
-		XLSInputApp = New Excel.Application() 'excel object for input
+		'XLSInputApp = New Excel.Application() 'excel object for input
 		Wka = New Excel.Application()
 		Wka.DisplayAlerts = False
 		gxla_Loaded = False
@@ -562,6 +562,7 @@ Abhort:
 			Abhort = True
 
 			Dim junk As String = ""
+			'Dim sReader = FileSystem.OpenTextFileReader(infilE)
 
 			FileSystem.FileOpen(1, infilE, OpenMode.Input)
 
@@ -779,7 +780,9 @@ Abhort:
 	End Sub
 	Sub Read_btb(ByVal infilE As String)
 		Dim Abhort As Boolean = False
-		Dim j, k As Double
+		'KW
+		'Dim j, k As Double
+		Dim j, k As Integer
 		Dim vers1 As Object
 		'read standard bathtub input file
 
@@ -790,6 +793,7 @@ Abhort:
 			Dim junk As String = ""
 
 			'    MsgBox( "Reading: " & infilE
+			'FileSystem.Open
 			FileSystem.FileOpen(1, infilE, OpenMode.Input)
 
 			AllZero() 'zero all input variables

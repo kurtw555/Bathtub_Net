@@ -1,0 +1,29 @@
+                     N   Obs Flow     Runoff       Base  
+Total (hm³/yr):   1096   453292.2   215401.4   236343.7
+Means (hm³/yr):          413.5878   196.5341   215.6421
+Base Flow Index: 0.521
+Runoff Flow Interval:      7 Days
+Drainage Area:          1000 km2 (386 Sq. Miles)
+========================================================
+
+                                  FLOW AND LOAD SUMMARIES FOR tp
+
+Method: C/Q Reg2(VarAdj) (5)
+DISTRIBUTION OF SAMPLES VS. DAILY FLOWS              MEANS(hm³/yr)             FLUX              SLOPES
+Stratum   Flow Obs  Chm Obs  Events   Vol %    Daily Flows  Sample Flows      (kg/y)             C/Q     p > C/Q
+  1        991        156     156      51.5       235.5147      238.545        7602.8: 32ppb      0.2365     0.0001
+  2        105        12      12       48.5       2094.258      2571.193       258920: 124ppb     0.3933     0.2220
+OVERALL    1096       168     168     100.0       413.5878      405.1628       31680 : 76.6 ug/L
+
+DAILY FLOW STATISTICS
+Daily Flow Duration      1096 Days = 3.001 Years
+Daily Mean Flow Rate     413.59 (hm³/yr)
+Daily Total Flow Volume  1241.05 (Mega m³)
+Daily Flow Date Range    1978-01-01 to 1980-12-31
+Samples Date Range       1978-01-02 to 1981-09-29
+
+FLOW SEPARATION
+ Method: Local Minimum
+ Base Flow Index:  0.523
+ Base Flow Volume  649.33343 (Mega m³)  Percent of Total 52.32
+ Storm Flow Volume 591.71292 (Mega m³)  Percent of Total 47.68

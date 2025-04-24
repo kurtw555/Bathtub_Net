@@ -21,9 +21,9 @@ Partial Friend Class frmMenu
 			Else
 				Try
 					'For the start-up form, the first instance created is the default instance.
-					If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
-						m_vb6FormDefInstance = Me
-					End If
+					'If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
+					'	m_vb6FormDefInstance = Me
+					'End If
 				Finally 
 					mustCallFormLoad = True
 				End Try
@@ -32,10 +32,10 @@ Partial Friend Class frmMenu
 		'This call is required by the Windows Form Designer.
 		InitializeComponent()
 		ReLoadForm(False)
-        If mustCallFormLoad And Not (m_vb6FormDefInstance Is Nothing) Then
-            m_vb6FormDefInstance.Form_Load()
-        End If
-        Module1.frmMenu = Me
+		'If mustCallFormLoad And Not (m_vb6FormDefInstance Is Nothing) Then
+		'    m_vb6FormDefInstance.Form_Load()
+		'End If
+		Module1.frmMenu = Me
     End Sub
 
 

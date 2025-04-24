@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion />
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <MyType>WindowsFormsWithCustomSubMain</MyType>
     <AssemblyName>Bath_614x</AssemblyName>
     <OutputType>WinExe</OutputType>
@@ -22,14 +22,7 @@
     <GenerateTargetFrameworkAttribute>False</GenerateTargetFrameworkAttribute>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
-    <StartupObject>Bath614d.Module8</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' Or '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DefineDebug>True</DefineDebug>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' Or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineDebug>False</DefineDebug>
+    <StartupObject>Bath614d.Module1</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />

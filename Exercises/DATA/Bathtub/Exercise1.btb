@@ -1,0 +1,175 @@
+Vers 6.0
+Default Case
+4,"Global Parmameters"
+1,"AVERAGING PERIOD (YRS)",1,0
+2,"PRECIPITATION (METERS)",1.1,.2
+3,"EVAPORATION (METERS)",.7,.3
+4,"INCREASE IN STORAGE (METERS)",0,0
+12,"Model Options"
+1,"CONSERVATIVE SUBSTANCE",0
+2,"PHOSPHORUS BALANCE",1
+3,"NITROGEN BALANCE",0
+4,"CHLOROPHYLL-A",2
+5,"SECCHI DEPTH",1
+6,"DISPERSION",1
+7,"PHOSPHORUS CALIBRATION",1
+8,"NITROGEN CALIBRATION",1
+9,"ERROR ANALYSIS",1
+10,"AVAILABILITY FACTORS",0
+11,"MASS-BALANCE TABLES",1
+12,"OUTPUT DESTINATION",2
+17,"Model Coefficients"
+1,"DISPERSION RATE",1,.7
+2,"P DECAY RATE",1,.45
+3,"N DECAY RATE",1,.55
+4,"CHL-A MODEL",1,.26
+5,"SECCHI MODEL",1,.1
+6,"ORGANIC N MODEL",1,.12
+7,"TP-OP MODEL",1,.15
+8,"HODV MODEL",1,.15
+9,"MODV MODEL",1,.22
+10,"BETA  M2/MG",.025,0
+11,"MINIMUM QS",.1,0
+12,"FLUSHING EFFECT",1,0
+13,"CHLOROPHYLL-A CV",.62,0
+14,"Avail Factor - TP",.33,0
+15,"Avail Factor - Ortho P",1.93,0
+16,"Avail Factor - TN",.59,0
+17,"Avail Factor - Inorganic N",.79,0
+5,"Atmospheric Loads"
+1,"CONSERVATIVE SUBST.",0,0
+2,"TOTAL P",30,.5
+3,"TOTAL N",1000,.5
+4,"ORTHO P",15,.5
+5,"INORGANIC N",500,.5
+3,"Segments"
+1,"Near Dam",0,1,10,15,20,7.8,.12,0,0,.08,.2,0,0
+1,"CONSERVATIVE SUBST.",0,0
+1,"TOTAL P",0,0
+1,"TOTAL N",0,0
+1,"CONSERVATIVE SUB",0,0,1,0
+1,"TOTAL P    MG/M3",0,0,1,0
+1,"TOTAL N    MG/M3",0,0,1,0
+1,"CHL-A      MG/M3",0,0,1,0
+1,"SECCHI         M",0,0,1,0
+1,"ORGANIC N  MG/M3",0,0,1,0
+1,"TP-ORTHO-P MG/M3",0,0,1,0
+1,"HOD-V  MG/M3-DAY",0,0,1,0
+1,"MOD-V  MG/M3-DAY",0,0,1,0
+2,"Mid Pool",1,1,10,10,20,6.8,.12,0,0,.08,.2,0,0
+2,"CONSERVATIVE SUBST.",0,0
+2,"TOTAL P",0,0
+2,"TOTAL N",0,0
+2,"CONSERVATIVE SUB",0,0,1,0
+2,"TOTAL P    MG/M3",0,0,1,0
+2,"TOTAL N    MG/M3",0,0,1,0
+2,"CHL-A      MG/M3",0,0,1,0
+2,"SECCHI         M",0,0,1,0
+2,"ORGANIC N  MG/M3",0,0,1,0
+2,"TP-ORTHO-P MG/M3",0,0,1,0
+2,"HOD-V  MG/M3-DAY",0,0,1,0
+2,"MOD-V  MG/M3-DAY",0,0,1,0
+3,"Upper Pool",2,1,10,5,20,5,.12,0,0,.08,.2,0,0
+3,"CONSERVATIVE SUBST.",0,0
+3,"TOTAL P",0,0
+3,"TOTAL N",0,0
+3,"CONSERVATIVE SUB",0,0,1,0
+3,"TOTAL P    MG/M3",0,0,1,0
+3,"TOTAL N    MG/M3",0,0,1,0
+3,"CHL-A      MG/M3",0,0,1,0
+3,"SECCHI         M",0,0,1,0
+3,"ORGANIC N  MG/M3",0,0,1,0
+3,"TP-ORTHO-P MG/M3",0,0,1,0
+3,"HOD-V  MG/M3-DAY",0,0,1,0
+3,"MOD-V  MG/M3-DAY",0,0,1,0
+3,"Tributaries"
+1,"stream a",3,1,1000,200,.1,0
+1,"CONSERVATIVE SUBST.",0,0
+1,"TOTAL P",100,.2
+1,"TOTAL N",0,0
+1,"ORTHO P",0,0
+1,"INORGANIC N",0,0
+1,"LandUses",0,0,0,0,0,0,0,0
+2,"stream b",2,1,100,20,.1,0
+2,"CONSERVATIVE SUBST.",0,0
+2,"TOTAL P",167,.2
+2,"TOTAL N",0,0
+2,"ORTHO P",0,0
+2,"INORGANIC N",0,0
+2,"LandUses",0,0,0,0,0,0,0,0
+3,"stream c",3,1,50,10,.1,0
+3,"CONSERVATIVE SUBST.",0,0
+3,"TOTAL P",167,.2
+3,"TOTAL N",0,0
+3,"ORTHO P",0,0
+3,"INORGANIC N",0,0
+3,"LandUses",0,0,0,0,0,0,0,0
+0,"Channels"
+8,"Land Use Export Categories"
+1,"landuse1"
+1,"Runoff",0,0
+1,"CONSERVATIVE SUBST.",0,0
+1,"TOTAL P",0,0
+1,"TOTAL N",0,0
+1,"ORTHO P",0,0
+1,"INORGANIC N",0,0
+2,"landuse2"
+2,"Runoff",0,0
+2,"CONSERVATIVE SUBST.",0,0
+2,"TOTAL P",0,0
+2,"TOTAL N",0,0
+2,"ORTHO P",0,0
+2,"INORGANIC N",0,0
+3,"landuse3"
+3,"Runoff",0,0
+3,"CONSERVATIVE SUBST.",0,0
+3,"TOTAL P",0,0
+3,"TOTAL N",0,0
+3,"ORTHO P",0,0
+3,"INORGANIC N",0,0
+4,"landuse4"
+4,"Runoff",0,0
+4,"CONSERVATIVE SUBST.",0,0
+4,"TOTAL P",0,0
+4,"TOTAL N",0,0
+4,"ORTHO P",0,0
+4,"INORGANIC N",0,0
+5,""
+5,"Runoff",0,0
+5,"CONSERVATIVE SUBST.",0,0
+5,"TOTAL P",0,0
+5,"TOTAL N",0,0
+5,"ORTHO P",0,0
+5,"INORGANIC N",0,0
+6,""
+6,"Runoff",0,0
+6,"CONSERVATIVE SUBST.",0,0
+6,"TOTAL P",0,0
+6,"TOTAL N",0,0
+6,"ORTHO P",0,0
+6,"INORGANIC N",0,0
+7,""
+7,"Runoff",0,0
+7,"CONSERVATIVE SUBST.",0,0
+7,"TOTAL P",0,0
+7,"TOTAL N",0,0
+7,"ORTHO P",0,0
+7,"INORGANIC N",0,0
+8,""
+8,"Runoff",0,0
+8,"CONSERVATIVE SUBST.",0,0
+8,"TOTAL P",0,0
+8,"TOTAL N",0,0
+8,"ORTHO P",0,0
+8,"INORGANIC N",0,0
+"Notes"
+three segments in series
+
+suggested default values for model options & model coefficients
+
+nitrogen budgets not modeled 
+
+phosphorus budgets based upon total P only
+availability factors ignored
+
+
