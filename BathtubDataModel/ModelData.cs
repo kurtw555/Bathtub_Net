@@ -8,6 +8,8 @@ namespace BathtubDataModel
 {
     public class ModelData
     {
+        public string Version { get; set; }
+        public string CaseName { get; set; }
         public Dictionary<string, Parameters> ModelParameters { get; set; }
         private Dictionary<string, ParameterGroup> _parameterGroups = null;
 
@@ -15,13 +17,28 @@ namespace BathtubDataModel
         {
             ModelParameters = new Dictionary<string, Parameters>();
             _parameterGroups = new Dictionary<string, ParameterGroup>();
+
+
         }
 
         private void InitializeModelParameters()
         {
-            // Initialize ModelParameters with default values or from a configuration
-            // This is just a placeholder; actual initialization logic will depend on the application requirements
-            ModelParameters.Add("DefaultParameter", new Parameters("Default", new Dictionary<string, string> { { "Param1", "Value1" } }));
+            var paramNames = Globals.GlobalParameters.ParameterNames;
+            var groupName = Globals.GlobalParameters.Name;
+            ParameterGroup globalParams = new ParameterGroup(groupName, paramNames);
+
+            paramNames = Globals.ModelOptions.ParameterNames;
+            groupName = Globals.ModelOptions.Name;
+            ParameterGroup modelOpts = new ParameterGroup(groupName, paramNames);
+
+            paramNames = Globals.ModelCoefficients.ParameterNames;
+            groupName = Globals.ModelCoefficients.Name;
+            ParameterGroup modelCoeffs = new ParameterGroup(groupName, paramNames);
+
+            paramNames = Globals.AtmosphericLoads.ParameterNames;
+            groupName = Globals.AtmosphericLoads.Name;
+            ParameterGroup atmosphericLoads = new ParameterGroup(groupName, paramNames);
+            
         }
 
         public void ReadBTBFile(string path)
@@ -40,10 +57,19 @@ namespace BathtubDataModel
             using StreamReader reader = new StreamReader(path);
             string line;
             int lineNumber = 0;
+            //First two lines are meta data:
+            //Vers 6.14
+            //Default Case
+            Version = reader.ReadLine().Trim(); // Read the first line (version info)
+            CaseName = reader.ReadLine().Trim(); // Read the second line (case name)
+
             while ((line = reader.ReadLine()) != null)
             {
-                // Process each line of the file
-                Console.WriteLine(line); // Replace with actual logic to populate ModelParameters
+                string[] param = line.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                int dimension = int.Parse(param[0]);
+                string parameterName = param[1].Trim();
+
+
             }
         }
     }

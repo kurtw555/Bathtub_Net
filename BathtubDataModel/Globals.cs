@@ -1,9 +1,11 @@
 ﻿using BathtubDataModel.ModelOptions;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace BathtubDataModel.Globals
 {
@@ -11,16 +13,17 @@ namespace BathtubDataModel.Globals
 
     public static class GlobalParameters
     {
+        public const string Name = "Global Parmameters";
         public const string AVG_PERIOD = "AVERAGING PERIOD (YRS)";
         public const string PRECIPITATION = "PRECIPITATION (METERS)";
         public const string EVAPORATION = "EVAPORATION (METERS)";
         public const string INCREASE_IN_STORAGE = "INCREASE IN STORAGE (METERS)";
-
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
     }
 
     public static class ModelOptions
     {
-
+        public const string Name = "Model Options";
         public const string ConservativeSubstance = "CONSERVATIVE SUBSTANCE";
         public const string PhosphorusBalance = "PHOSPHORUS BALANCE";
         public const string NitrogenBalance = "NITROGEN BALANCE";
@@ -33,10 +36,12 @@ namespace BathtubDataModel.Globals
         public const string AvailabilityFactors = "AVAILABILITY FACTORS";
         public const string MassBalanceTables = "MASS-BALANCE TABLES";
         public const string OutputDestination = "OUTPUT DESTINATION";
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
     }
 
     public static class ModelCoefficients
     {
+        public const string Name = "Model Coefficients";
         public const string DispersionRate = "DISPERSION RATE";
         public const string PDecayRate = "P DECAY RATE";
         public const string NDecayRate = "N DECAY RATE";
@@ -54,16 +59,42 @@ namespace BathtubDataModel.Globals
         public const string AvailFactorOrtho = "Avail Factor - Ortho";
         public const string AvailFactorTn = "Avail Factor - TN";
         public const string AvailFactorInorganicN = "Avail Factor - Inorganic N";
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
     }
 
     public static class AtmosphericLoads
     {
+        public const string Name = "Atmospheric Loads";
         public const string ConservativeSubstance = "CONSERVATIVE SUBST.";
         public const string TotalP = "TOTAL P";
         public const string TotalN = "TOTAL N";
         public const string OrthoP = "ORTHO P";
         public const string InorganicN = "INORGANIC N";
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
     }
 
+    public static class ClassAttributes
+    {
+        // Helper method to get the attributes of a class
+        public static List<string> GetAttributes(Type type)
+        {
+            // Get the type of the GlobalParameters class
+            List<string> attributes = new List<string>();
 
+            //Console.WriteLine("Attributes of GlobalParameters:");
+
+            // Iterate over all public constants in the class
+            foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+            {
+                if (field.IsLiteral && !field.IsInitOnly) // Check if the field is a constant
+                {
+                    attributes.Add(field.GetValue(null).ToString());
+                    //Console.WriteLine($"{field.Name} = {field.GetValue(null)}");
+                }
+            }
+            return attributes;
+
+
+        }
+    }
 }
