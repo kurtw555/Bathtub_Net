@@ -1,5 +1,4 @@
-﻿using BathtubDataModel.ModelCoefficients;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +10,13 @@ namespace BathtubDataModel
     {
         public string Name { get; }
         public double Mean { get; set; }
+        public double? CV { get; set; } // Coefficient of Variation, nullable to allow for parameters without CV
 
-        public Parameter(string name, double mean)
+        public Parameter(string name, double mean, double? cv= null)
         {
             Name = name;
             Mean = mean;
+            CV = cv;
         }
 
     }
@@ -75,12 +76,25 @@ namespace BathtubDataModel
     {
         public string Name { get; }
         private IReadOnlyList<string> _variableNames;
+        private List<Parameter> _paramValues = new List<Parameter>();
 
 
         public ParameterGroup(string groupName, List<string> variableNames)
         {
             Name = groupName;
             _variableNames = new List<string>(variableNames);
+        }
+
+        // Add a parameter value to the group
+        public void AddParameter(Parameter parameter)
+        {
+            _paramValues.Add(parameter);
+        }
+
+        // Get all parameter values
+        public List<Parameter> GetParameterValues()
+        {
+            return _paramValues;
         }
     }
 }

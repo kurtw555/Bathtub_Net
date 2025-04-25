@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-  <PropertyGroup>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+  <PropertyGroup>    
     <ProductVersion />
     <MyType>Windows</MyType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -11,15 +10,7 @@
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>False</GenerateTargetFrameworkAttribute>
     <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugType>full</DebugType>
-    <DefineDebug>True</DefineDebug>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
-    <DefineDebug>false</DefineDebug>
-  </PropertyGroup>
+  </PropertyGroup>  
   <Target Name="BeforeBuildMigrated" BeforeTargets="PreBuildEvent" />
   <Target Name="AfterBuildMigrated" />
   <ItemGroup>

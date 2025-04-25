@@ -25,7 +25,6 @@ namespace BathtubDataModel
         public MultiParameter EstMixedDepth { get; set; } = new MultiParameter("Estimated Mixed Depth", 0.0, 0.12);        
         //Hypolimnetic depth in meters
         public MultiParameter HypolimneticThicknessMean { get; set; } = new MultiParameter("Hypolimnetic Thickness Mean", 0.0, 0.0);        
-
         //Observed WQ
         public MultiParameter NonAlgalTurb { get; set; } = new MultiParameter("Non-Algal Turb. (1/m)", 0.0, 0.0);
 

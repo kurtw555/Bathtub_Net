@@ -1,5 +1,4 @@
-﻿using BathtubDataModel.ModelOptions;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +35,7 @@ namespace BathtubDataModel.Globals
         public const string AvailabilityFactors = "AVAILABILITY FACTORS";
         public const string MassBalanceTables = "MASS-BALANCE TABLES";
         public const string OutputDestination = "OUTPUT DESTINATION";
-        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(ModelOptions));
     }
 
     public static class ModelCoefficients
@@ -59,7 +58,7 @@ namespace BathtubDataModel.Globals
         public const string AvailFactorOrtho = "Avail Factor - Ortho";
         public const string AvailFactorTn = "Avail Factor - TN";
         public const string AvailFactorInorganicN = "Avail Factor - Inorganic N";
-        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(ModelCoefficients));
     }
 
     public static class AtmosphericLoads
@@ -70,7 +69,7 @@ namespace BathtubDataModel.Globals
         public const string TotalN = "TOTAL N";
         public const string OrthoP = "ORTHO P";
         public const string InorganicN = "INORGANIC N";
-        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(GlobalParameters));
+        public static List<string> ParameterNames { get; } = ClassAttributes.GetAttributes(typeof(AtmosphericLoads));
     }
 
     public static class ClassAttributes
