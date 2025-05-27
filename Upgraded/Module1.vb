@@ -65,7 +65,8 @@ Module Module1
 	Public Directory As String = "" 'bathtub.exe folder
 	Public WorkingDirectory As String = "" 'user's working directory'
 	Public Const BathtubHelpFile As String = "bathtub.chm" 'help file
-	Public Const BathBook As String = "bath.xla" 'bathtub workbook
+	'Public Const BathBook As String = "bath.xla" 'bathtub workbook
+	Public Const BathBook As String = "bath.xlsx" 'bathtub workbook
 	Public Const BathOutXLS As String = "bathtub_output.xls" 'bathtub output workbook
 	Public Const BackupFile As String = "edit_backup.btx" 'backup file used to undo edits
 	Public ContextId As Integer
@@ -290,20 +291,22 @@ Module Module1
 	Public Ysave(3000) As Single
 
 
-	'Public Sub Main()
-	' Create an instance of frmMenu and run it
-	'Application.EnableVisualStyles()
-	'Application.SetCompatibleTextRenderingDefault(False)
-	'Application.Run(New frmMenu())
-	'End Sub
-
 	Public Sub Main()
+		'Create an instance of frmMenu And run it
+		Application.EnableVisualStyles()
+		Application.SetCompatibleTextRenderingDefault(False)
 		StartUp()
+		Application.Run(New frmMenu())
+
 	End Sub
+
+	'Public Sub Main()
+	'	StartUp()
+	'End Sub
 	Sub StartUp()
 		Dim DebugCount As Integer
 		Dim LoadErr As String = ""
-		'Dim XLSInputApp As Excel.Application
+		Dim XLSInputApp As Excel.Application
 		'start up program
 		frmAbout.DefInstance.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
 		If Not gTASTRMode Then
@@ -323,12 +326,14 @@ Module Module1
 		'======     C H E C K    F O R   M I S S I N G    F I L E S   =====
 		'==================================================================
 
-		If Not FileExists(Directory & "\" & "Bath.xla") Then
+		'If Not FileExists(Directory & "\" & "Bath.xla") Then
+		If Not FileExists("Bath.xla") Then
 			MessageBox.Show("BathTub Must Abort, Missing Critical File: " & Directory & "\" & "Bath.xla", My.Application.Info.Title)
 			GoTo Abhort
 		End If
 
-		If Not FileExists(Directory & "\" & "Default.btb") Then
+		'If Not FileExists(Directory & "\" & "Default.btb") Then
+		If Not FileExists("Default.btb") Then
 			MessageBox.Show("BathTub Must Abort, Missing Critical File: " & Directory & "\" & "Default.btb", My.Application.Info.Title)
 			GoTo Abhort
 		End If
@@ -336,11 +341,13 @@ Module Module1
 		DebugCVMode = False
 
 		Icalc = 0
-		Ier = 0
-		Status("Starting Up")
+        Ier = 0
+		'KW
+		'Status("Starting Up")
 
-		'XLSInputApp = New Excel.Application() 'excel object for input
-		Wka = New Excel.Application()
+		XLSInputApp = New Excel.Application() 'excel object for input
+        Wka = New Excel.Application()
+		Wko = Wka.ActiveWorkbook
 		Wka.DisplayAlerts = False
 		gxla_Loaded = False
 		'Set Wkb = CreateObject("Excel.Workbooks") we don't create these anymore here but
@@ -348,7 +355,7 @@ Module Module1
 
 		'    If DebugMode Then MsgBox(("Loading Excel at Startup to Test Availability")
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-		'    LoadExcel()
+		LoadExcel()
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 
 		'    If DebugMode Then MsgBox(("DEBUG 03 Excel Load Attempt Completed " & Str(DebugCount))
@@ -367,8 +374,8 @@ Module Module1
 		'    ReadDefaults()
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		If Ier > 0 Then GoTo Abhort
-
-		Status("Ready")
+		'KW
+		'Status("Ready")
 
 		'    If DebugMode Then MsgBox(("DEBUG 05 @ Module1 RUN " & Str(DebugCount))
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
@@ -783,7 +790,8 @@ Abhort:
 		'KW
 		'Dim j, k As Double
 		Dim j, k As Integer
-		Dim vers1 As Object
+        Dim vers1 As Object
+		Dim name As String
 		'read standard bathtub input file
 
 		Ier = 0
@@ -803,7 +811,8 @@ Abhort:
 			Title = FileSystem.LineInput(1)
 
 			' Parameters & Options
-			FileSystem.Input(1, j)
+			FileSystem.Input(1, junk)
+			FileSystem.Input(1, junk)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To NGlobals
 				FileSystem.Input(1, j)
@@ -813,7 +822,9 @@ Abhort:
 			Next i
 
 			'Model Options
-			FileSystem.Input(1, j)
+			'KW
+			'FileSystem.Input(1, j)
+			FileSystem.Input(1, NOptions)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To NOptions
 				FileSystem.Input(1, j)
@@ -822,7 +833,8 @@ Abhort:
 			Next i
 
 			'Globals
-			FileSystem.Input(1, j)
+			'KW
+			FileSystem.Input(1, NXk)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To NXk
 				FileSystem.Input(1, j)
@@ -832,7 +844,9 @@ Abhort:
 			Next i
 
 			'Atmospherics
-			FileSystem.Input(1, j)
+			'KW
+			'FileSystem.Input(1, j)
+			FileSystem.Input(1, NVariables)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To NVariables
 				FileSystem.Input(1, j)
@@ -842,6 +856,7 @@ Abhort:
 			Next i
 
 			'Segments
+			'KW
 			FileSystem.Input(1, Nseg)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To Nseg
@@ -877,6 +892,7 @@ Abhort:
 			Next i
 
 			' c Tribs
+			'KW
 			FileSystem.Input(1, NTrib)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To NTrib
@@ -908,6 +924,7 @@ Abhort:
 			Next i
 
 			' Channels
+			'KW
 			FileSystem.Input(1, Npipe)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To Npipe
@@ -922,7 +939,8 @@ Abhort:
 			Next i
 
 			'export categories
-			FileSystem.Input(1, j)
+			'KW
+			FileSystem.Input(1, NCAT)
 			FileSystem.Input(1, junk)
 			For i As Double = 1 To NCAT
 				FileSystem.Input(1, j)
@@ -1880,18 +1898,22 @@ Quit:
 					DebugCount += 1
 					'        If (Wka Is Nothing) Then MsgBox(("N399: Fatal Error, Input Worksheet does not exist")
 					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-					frmMenu.VersionofExcel.Text = Wka.Version
+					'KW
+					'frmMenu.VersionofExcel.Text = Wka.Version
 					'If Wka.Workbooks.Count > 0 Then
 					'For Each Lwb In Wka.Workbooks
 					'   MsgBox( (Lwb.Name)
 					'  Next Lwb
 					'End If
 
+					Dim bath_book As String = "D:\Temp\Bathtub_Net\Upgraded\bin\net8.0-windows\bath.xlsx"
 					If Not gxla_Loaded Then ' Start fresh
 						'            If DebugMode2 Then MsgBox(("Opening WKA.Workbooks " & Directory & BathBook)
 						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 
-						Wka.Workbooks.Open(Directory & BathBook)
+
+						'Wka.Workbooks.Open(Directory & BathBook)
+						Wka.Workbooks.Open(bath_book)
 						'            If DebugMode Then MsgBox(("DEBUG 08 Open Wka workbook " & BathBook & " " & Str(DebugCount))
 						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 						DebugCount += 1
@@ -1906,6 +1928,8 @@ Quit:
 						End If
 					End If
 					Wkb = Wka.Workbooks(BathBook)
+					Wko = Wka.ActiveWorkbook
+
 					'           If Wkb Is Nothing Then MsgBox(("N555: FATAL wkb is null")
 					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 					'           If DebugMode Then MsgBox(("DEBUG 09 set wkB to Workbooks OK" & Str(DebugCount))

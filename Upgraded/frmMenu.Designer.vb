@@ -199,7 +199,7 @@ Partial Class frmMenu
         commandButtonHelper1.SetCorrectEventsBehavior(btnClearOutput, True)
         commandButtonHelper1.SetDisabledPicture(btnClearOutput, Nothing)
         commandButtonHelper1.SetDownPicture(btnClearOutput, Nothing)
-        btnClearOutput.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point)
+        btnClearOutput.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Bold)
         btnClearOutput.ForeColor = SystemColors.ControlText
         btnClearOutput.Location = New Point(72, 384)
         commandButtonHelper1.SetMaskColor(btnClearOutput, Color.Silver)
@@ -220,7 +220,7 @@ Partial Class frmMenu
         commandButtonHelper1.SetCorrectEventsBehavior(btnSaveOutput, True)
         commandButtonHelper1.SetDisabledPicture(btnSaveOutput, Nothing)
         commandButtonHelper1.SetDownPicture(btnSaveOutput, Nothing)
-        btnSaveOutput.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point)
+        btnSaveOutput.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Bold)
         btnSaveOutput.ForeColor = SystemColors.ControlText
         btnSaveOutput.Location = New Point(200, 384)
         commandButtonHelper1.SetMaskColor(btnSaveOutput, Color.Silver)
@@ -241,7 +241,7 @@ Partial Class frmMenu
         commandButtonHelper1.SetCorrectEventsBehavior(ContinueBtn, True)
         commandButtonHelper1.SetDisabledPicture(ContinueBtn, Nothing)
         commandButtonHelper1.SetDownPicture(ContinueBtn, Nothing)
-        ContinueBtn.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        ContinueBtn.Font = New Font("Microsoft Sans Serif", 9.75F)
         ContinueBtn.ForeColor = SystemColors.ControlText
         ContinueBtn.Location = New Point(280, 75)
         commandButtonHelper1.SetMaskColor(ContinueBtn, Color.Silver)
@@ -261,7 +261,7 @@ Partial Class frmMenu
         cmbUserMode.AllowDrop = True
         cmbUserMode.BackColor = SystemColors.Window
         cmbUserMode.DropDownStyle = ComboBoxStyle.DropDownList
-        cmbUserMode.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        cmbUserMode.Font = New Font("Microsoft Sans Serif", 9.75F)
         cmbUserMode.ForeColor = SystemColors.WindowText
         cmbUserMode.Location = New Point(8, 80)
         cmbUserMode.Name = "cmbUserMode"
@@ -275,8 +275,9 @@ Partial Class frmMenu
         cmbOutputDest.AllowDrop = True
         cmbOutputDest.BackColor = SystemColors.Window
         cmbOutputDest.DropDownStyle = ComboBoxStyle.DropDownList
-        cmbOutputDest.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        cmbOutputDest.Font = New Font("Microsoft Sans Serif", 9.75F)
         cmbOutputDest.ForeColor = SystemColors.WindowText
+        cmbOutputDest.Items.AddRange(New Object() {"1", "2", "3"})
         cmbOutputDest.Location = New Point(136, 280)
         cmbOutputDest.Name = "cmbOutputDest"
         cmbOutputDest.RightToLeft = RightToLeft.No
@@ -291,7 +292,7 @@ Partial Class frmMenu
         commandButtonHelper1.SetCorrectEventsBehavior(btnRun, True)
         commandButtonHelper1.SetDisabledPicture(btnRun, Nothing)
         commandButtonHelper1.SetDownPicture(btnRun, Nothing)
-        btnRun.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        btnRun.Font = New Font("Microsoft Sans Serif", 9.75F)
         btnRun.ForeColor = SystemColors.ControlText
         btnRun.Location = New Point(152, 75)
         commandButtonHelper1.SetMaskColor(btnRun, Color.Silver)
@@ -312,7 +313,7 @@ Partial Class frmMenu
         commandButtonHelper1.SetCorrectEventsBehavior(btnErrorMessages, True)
         commandButtonHelper1.SetDisabledPicture(btnErrorMessages, Nothing)
         commandButtonHelper1.SetDownPicture(btnErrorMessages, Nothing)
-        btnErrorMessages.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        btnErrorMessages.Font = New Font("Microsoft Sans Serif", 9.75F)
         btnErrorMessages.ForeColor = SystemColors.ControlText
         btnErrorMessages.Location = New Point(208, 75)
         commandButtonHelper1.SetMaskColor(btnErrorMessages, Color.Silver)
@@ -332,7 +333,7 @@ Partial Class frmMenu
         txtReport.AllowDrop = True
         txtReport.BackColor = SystemColors.InactiveBorder
         txtReport.Cursor = Cursors.IBeam
-        txtReport.Font = New Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        txtReport.Font = New Font("Courier New", 9F)
         txtReport.ForeColor = SystemColors.WindowText
         txtReport.Location = New Point(8, 120)
         txtReport.MaxLength = 0
@@ -349,7 +350,7 @@ Partial Class frmMenu
         ' 
         lblOutputWorkbook.AllowDrop = True
         lblOutputWorkbook.BackColor = SystemColors.Control
-        lblOutputWorkbook.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        lblOutputWorkbook.Font = New Font("Microsoft Sans Serif", 9.75F)
         lblOutputWorkbook.ForeColor = SystemColors.ControlText
         lblOutputWorkbook.Location = New Point(136, 320)
         lblOutputWorkbook.MinimumSize = New Size(233, 25)
@@ -365,7 +366,7 @@ Partial Class frmMenu
         lblStatus.AllowDrop = True
         lblStatus.BackColor = SystemColors.InactiveBorder
         lblStatus.BorderStyle = BorderStyle.Fixed3D
-        lblStatus.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point)
+        lblStatus.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold)
         lblStatus.ForeColor = SystemColors.WindowText
         lblStatus.Location = New Point(76, 40)
         lblStatus.MinimumSize = New Size(193, 25)
@@ -396,63 +397,63 @@ Partial Class frmMenu
         ' 
         mnuReadCase.DropDownItems.AddRange(New ToolStripItem() {mnuRead_CaseFile, mnuRead_Worksheet})
         mnuReadCase.Name = "mnuReadCase"
-        mnuReadCase.Size = New Size(159, 22)
+        mnuReadCase.Size = New Size(180, 22)
         mnuReadCase.Text = "&Read"
         ' 
         ' mnuRead_CaseFile
         ' 
         mnuRead_CaseFile.Name = "mnuRead_CaseFile"
-        mnuRead_CaseFile.Size = New Size(166, 22)
+        mnuRead_CaseFile.Size = New Size(180, 22)
         mnuRead_CaseFile.Text = "Case File (.btb)"
         ' 
         ' mnuRead_Worksheet
         ' 
         mnuRead_Worksheet.Name = "mnuRead_Worksheet"
-        mnuRead_Worksheet.Size = New Size(166, 22)
+        mnuRead_Worksheet.Size = New Size(180, 22)
         mnuRead_Worksheet.Text = "Spreadsheet (.xls)"
         ' 
         ' mnuTranslateCase
         ' 
         mnuTranslateCase.Name = "mnuTranslateCase"
-        mnuTranslateCase.Size = New Size(159, 22)
+        mnuTranslateCase.Size = New Size(180, 22)
         mnuTranslateCase.Text = "&Translate"
         ' 
         ' mnuSaveCase
         ' 
         mnuSaveCase.Name = "mnuSaveCase"
-        mnuSaveCase.Size = New Size(159, 22)
+        mnuSaveCase.Size = New Size(180, 22)
         mnuSaveCase.Text = "&Save"
         ' 
         ' mnuSaveCaseAs
         ' 
         mnuSaveCaseAs.Name = "mnuSaveCaseAs"
-        mnuSaveCaseAs.Size = New Size(159, 22)
+        mnuSaveCaseAs.Size = New Size(180, 22)
         mnuSaveCaseAs.Text = "Save &As"
         ' 
         ' mnuNewCase
         ' 
         mnuNewCase.Name = "mnuNewCase"
-        mnuNewCase.Size = New Size(159, 22)
+        mnuNewCase.Size = New Size(180, 22)
         mnuNewCase.Text = "&New"
         ' 
         ' mnuReadDefault
         ' 
         mnuReadDefault.Name = "mnuReadDefault"
-        mnuReadDefault.Size = New Size(159, 22)
+        mnuReadDefault.Size = New Size(180, 22)
         mnuReadDefault.Text = "Read &Default"
         ' 
         ' mnuSaveWorksheet
         ' 
         mnuSaveWorksheet.Enabled = False
         mnuSaveWorksheet.Name = "mnuSaveWorksheet"
-        mnuSaveWorksheet.Size = New Size(159, 22)
+        mnuSaveWorksheet.Size = New Size(180, 22)
         mnuSaveWorksheet.Text = "&Save Worksheet"
         ' 
         ' mnuReadWorksheet
         ' 
         mnuReadWorksheet.Enabled = False
         mnuReadWorksheet.Name = "mnuReadWorksheet"
-        mnuReadWorksheet.Size = New Size(159, 22)
+        mnuReadWorksheet.Size = New Size(180, 22)
         mnuReadWorksheet.Text = "&Read Worksheet"
         ' 
         ' mnuEdit
@@ -738,7 +739,7 @@ Partial Class frmMenu
         ' 
         ExcelVersionLabel.AllowDrop = True
         ExcelVersionLabel.BackColor = SystemColors.Control
-        ExcelVersionLabel.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        ExcelVersionLabel.Font = New Font("Microsoft Sans Serif", 9.75F)
         ExcelVersionLabel.ForeColor = SystemColors.ControlText
         ExcelVersionLabel.Location = New Point(8, 352)
         ExcelVersionLabel.MinimumSize = New Size(113, 17)
@@ -752,7 +753,7 @@ Partial Class frmMenu
         ' 
         Label1.AllowDrop = True
         Label1.BackColor = SystemColors.Control
-        Label1.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        Label1.Font = New Font("Microsoft Sans Serif", 9.75F)
         Label1.ForeColor = SystemColors.ControlText
         Label1.Location = New Point(8, 320)
         Label1.MinimumSize = New Size(113, 17)
@@ -766,7 +767,7 @@ Partial Class frmMenu
         ' 
         VersionofExcel.AllowDrop = True
         VersionofExcel.BackColor = SystemColors.Control
-        VersionofExcel.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        VersionofExcel.Font = New Font("Microsoft Sans Serif", 9.75F)
         VersionofExcel.ForeColor = SystemColors.ControlText
         VersionofExcel.Location = New Point(136, 352)
         VersionofExcel.MinimumSize = New Size(113, 17)
@@ -780,7 +781,7 @@ Partial Class frmMenu
         ' 
         Label2.AllowDrop = True
         Label2.BackColor = SystemColors.Control
-        Label2.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point)
+        Label2.Font = New Font("Microsoft Sans Serif", 9.75F)
         Label2.ForeColor = SystemColors.ControlText
         Label2.Location = New Point(8, 288)
         Label2.MinimumSize = New Size(113, 17)
@@ -794,7 +795,7 @@ Partial Class frmMenu
         ' 
         StatusLabel.AllowDrop = True
         StatusLabel.BackColor = SystemColors.Control
-        StatusLabel.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point)
+        StatusLabel.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold)
         StatusLabel.ForeColor = SystemColors.ControlText
         StatusLabel.Location = New Point(16, 40)
         StatusLabel.MinimumSize = New Size(49, 25)
@@ -827,7 +828,7 @@ Partial Class frmMenu
         Controls.Add(StatusLabel)
         Controls.Add(lblStatus)
         Controls.Add(MainMenu1)
-        Font = New Font("Microsoft Sans Serif", 20.25F, FontStyle.Regular, GraphicsUnit.Point)
+        Font = New Font("Microsoft Sans Serif", 20.25F)
         ForeColor = SystemColors.WindowText
         FormBorderStyle = FormBorderStyle.FixedSingle
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
