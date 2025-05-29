@@ -9,6 +9,7 @@ Imports System.IO
 Imports System.Windows.Forms
 Imports UpgradeHelpers.Gui.Controls
 Imports UpgradeHelpers.Helpers
+Imports Microsoft.Office.Interop.Excel
 Module Module1
 
 	' BathTub Version 6.14e
@@ -60,6 +61,11 @@ Module Module1
 	'====================================================================
 
 	Public frmMenu As frmMenu
+	Public frm_Globals As frmGlobals
+	Public frm_Models As frmModels
+	Public frm_Tributaries As frmTribs
+	Public frm_Segments As frmSegments
+	Public frm_LandUse As frmLandUse
 	Public Const gVersionNumber As String = "6.14f (04/28/2015)" 'program version
 	'Public Const Directory As String = "c:\0jobs\bathtub\"       'program directory'
 	Public Directory As String = "" 'bathtub.exe folder
@@ -72,14 +78,14 @@ Module Module1
 	Public ContextId As Integer
 	Public XLSWorkBk As Excel.Workbook
 	'LATE BINDING APPROACH FOLLOWS
-	Public Hdr As Object 'Excel.Worksheet        'header sheet
+	Public Hdr As Excel.Worksheet        'header sheet
 	Public Wko As Excel.Workbook 'Excel.Workbook         'output workbook used for bath_output.xls
-	Public gSheetout As Object 'Excel.Worksheet        'current output sheet
+	Public gSheetout As Worksheet 'Excel.Worksheet        'current output sheet
 	Public XLSApp As Object
 	Public Wka As Excel.Application 'Excel.Application
 	Public Wkb As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla
 	Public CurrentWKChart As Object 'Excel.Chart
-	Public gLSht As Object 'Excel Worksheet used for Holding results
+	Public gLSht As Excel.Worksheet 'Excel Worksheet used for Holding results
 	'======================================================
 	Public CaseFile As String = "" 'name of case file
 	Public TestObj As Object
@@ -293,10 +299,10 @@ Module Module1
 
 	Public Sub Main()
 		'Create an instance of frmMenu And run it
-		Application.EnableVisualStyles()
-		Application.SetCompatibleTextRenderingDefault(False)
+		System.Windows.Forms.Application.EnableVisualStyles()
+		System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(False)
 		StartUp()
-		Application.Run(New frmMenu())
+		System.Windows.Forms.Application.Run(New frmMenu())
 
 	End Sub
 
@@ -319,16 +325,16 @@ Module Module1
 			'UPGRADE_ISSUE: (2064) VB method VB.Global was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
 			'UPGRADE_ISSUE: (2070) Constant App was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
 			'UPGRADE_ISSUE: (2064) App property App.HelpFile was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-			BT2Support.UpgradeStubs.VB.getGlobal().getApp().setHelpFile(Directory & BathtubHelpFile)
-			hHelp.CHMFile = Directory & BathtubHelpFile
+			'BT2Support.UpgradeStubs.VB.getGlobal().getApp().setHelpFile(Directory & BathtubHelpFile)
+			'hHelp.CHMFile = Directory & BathtubHelpFile
 		End If
 		'==================================================================
 		'======     C H E C K    F O R   M I S S I N G    F I L E S   =====
 		'==================================================================
 
 		'If Not FileExists(Directory & "\" & "Bath.xla") Then
-		If Not FileExists("Bath.xla") Then
-			MessageBox.Show("BathTub Must Abort, Missing Critical File: " & Directory & "\" & "Bath.xla", My.Application.Info.Title)
+		If Not FileExists("Bath.xlsx") Then
+			MessageBox.Show("BathTub Must Abort, Missing Critical File: " & Directory & "\" & "Bath.xlsx", My.Application.Info.Title)
 			GoTo Abhort
 		End If
 
@@ -345,8 +351,8 @@ Module Module1
 		'KW
 		'Status("Starting Up")
 
-		XLSInputApp = New Excel.Application() 'excel object for input
-        Wka = New Excel.Application()
+		'XLSInputApp = New Excel.Application() 'excel object for input
+		Wka = New Excel.Application()
 		Wko = Wka.ActiveWorkbook
 		Wka.DisplayAlerts = False
 		gxla_Loaded = False
@@ -371,7 +377,7 @@ Module Module1
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		DebugCount += 1
 		LoadErr = "Unable to Read Defaults"
-		'    ReadDefaults()
+		ReadDefaults()
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		If Ier > 0 Then GoTo Abhort
 		'KW
@@ -400,7 +406,7 @@ Abhort:
 	Sub ReadDefaults()
 		'read default input file & assign values
 
-		'    ReadKey()                         'read parameter key
+		ReadKey()                         'read parameter key
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		If Ier > 0 Then Exit Sub
 
@@ -450,15 +456,17 @@ Abhort:
 			Wko.Close(Not savechanges)
 			Wko = Nothing
 			XLSWorkBk.Close(Not savechanges)
-			'ReflectionHelper.Invoke(XLSInputApp, "Close", New Object() {})
+			If XLSInputApp IsNot Nothing Then
+				XLSInputApp.Quit()
+				XLSInputApp = Nothing
+			End If
 			Wka.EnableEvents = False
 			Wka.Quit()
 			Wka = Nothing
 			Wkb = Nothing
 			XLSWorkBk = Nothing
-			XLSInputApp = Nothing
-			hHelp.HHClose()
-			hHelp = Nothing
+			'hHelp.HHClose()
+			'hHelp = Nothing
 
 		Catch exc As Exception
 			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
@@ -790,7 +798,7 @@ Abhort:
 		'KW
 		'Dim j, k As Double
 		Dim j, k As Integer
-        Dim vers1 As Object
+		Dim vers1 As String
 		Dim name As String
 		'read standard bathtub input file
 
@@ -814,11 +822,11 @@ Abhort:
 			FileSystem.Input(1, junk)
 			FileSystem.Input(1, junk)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To NGlobals
+			For i As Integer = 1 To NGlobals
 				FileSystem.Input(1, j)
 				FileSystem.Input(1, junk)
-				FileSystem.Input(1, P(CInt(i)))
-				FileSystem.Input(1, Cp(CInt(i)))
+				FileSystem.Input(1, P(i))
+				FileSystem.Input(1, Cp(i))
 			Next i
 
 			'Model Options
@@ -826,21 +834,21 @@ Abhort:
 			'FileSystem.Input(1, j)
 			FileSystem.Input(1, NOptions)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To NOptions
+			For i As Integer = 1 To NOptions
 				FileSystem.Input(1, j)
 				FileSystem.Input(1, junk)
-				FileSystem.Input(1, Iop(CInt(i)))
+				FileSystem.Input(1, Iop(i))
 			Next i
 
 			'Globals
 			'KW
 			FileSystem.Input(1, NXk)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To NXk
+			For i As Integer = 1 To NXk
 				FileSystem.Input(1, j)
 				FileSystem.Input(1, junk)
-				FileSystem.Input(1, Xk(CInt(i)))
-				FileSystem.Input(1, CvXk(CInt(i)))
+				FileSystem.Input(1, Xk(i))
+				FileSystem.Input(1, CvXk(i))
 			Next i
 
 			'Atmospherics
@@ -848,46 +856,46 @@ Abhort:
 			'FileSystem.Input(1, j)
 			FileSystem.Input(1, NVariables)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To NVariables
+			For i As Integer = 1 To NVariables
 				FileSystem.Input(1, j)
 				FileSystem.Input(1, junk)
-				FileSystem.Input(1, Atm(CInt(i)))
-				FileSystem.Input(1, CvAtm(CInt(i)))
+				FileSystem.Input(1, Atm(i))
+				FileSystem.Input(1, CvAtm(i))
 			Next i
 
 			'Segments
 			'KW
 			FileSystem.Input(1, Nseg)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To Nseg
+			For i As Integer = 1 To Nseg
 				FileSystem.Input(1, j)
-				FileSystem.Input(1, SegName(CInt(i)))
-				FileSystem.Input(1, Iout(CInt(i)))
-				FileSystem.Input(1, Iag(CInt(i)))
-				FileSystem.Input(1, Area(CInt(i)))
-				FileSystem.Input(1, Zmn(CInt(i)))
-				FileSystem.Input(1, Slen(CInt(i)))
-				FileSystem.Input(1, Zmxi(CInt(i)))
-				FileSystem.Input(1, CvZmxi(CInt(i)))
-				FileSystem.Input(1, Zhyp(CInt(i)))
-				FileSystem.Input(1, CvZhyp(CInt(i)))
-				FileSystem.Input(1, Turbi(CInt(i)))
-				FileSystem.Input(1, CvTurbi(CInt(i)))
-				FileSystem.Input(1, Icrit(CInt(i)))
-				FileSystem.Input(1, Targ(CInt(i)))
+				FileSystem.Input(1, SegName(i))
+				FileSystem.Input(1, Iout(i))
+				FileSystem.Input(1, Iag(i))
+				FileSystem.Input(1, Area(i))
+				FileSystem.Input(1, Zmn(i))
+				FileSystem.Input(1, Slen(i))
+				FileSystem.Input(1, Zmxi(i))
+				FileSystem.Input(1, CvZmxi(i))
+				FileSystem.Input(1, Zhyp(i))
+				FileSystem.Input(1, CvZhyp(i))
+				FileSystem.Input(1, Turbi(i))
+				FileSystem.Input(1, CvTurbi(i))
+				FileSystem.Input(1, Icrit(i))
+				FileSystem.Input(1, Targ(i))
 				For j = 1 To 3
 					FileSystem.Input(1, k)
 					FileSystem.Input(1, junk)
-					FileSystem.Input(1, InternalLoad(CInt(i), CInt(j)))
-					FileSystem.Input(1, CvInternalLoad(CInt(i), CInt(j)))
+					FileSystem.Input(1, InternalLoad((i), j))
+					FileSystem.Input(1, CvInternalLoad(i, j))
 				Next j
 				For j = 1 To 9
 					FileSystem.Input(1, k)
 					FileSystem.Input(1, junk)
-					FileSystem.Input(1, Cobs(CInt(i), CInt(j)))
-					FileSystem.Input(1, CvCobs(CInt(i), CInt(j)))
-					FileSystem.Input(1, Cal(CInt(i), CInt(j)))
-					FileSystem.Input(1, CvCal(CInt(i), CInt(j)))
+					FileSystem.Input(1, Cobs(i, j))
+					FileSystem.Input(1, CvCobs(i, j))
+					FileSystem.Input(1, Cal(i, j))
+					FileSystem.Input(1, CvCal(i, j))
 				Next j
 			Next i
 
@@ -895,72 +903,72 @@ Abhort:
 			'KW
 			FileSystem.Input(1, NTrib)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To NTrib
+			For i As Integer = 1 To NTrib
 				FileSystem.Input(1, j)
-				FileSystem.Input(1, TribName(CInt(i)))
-				FileSystem.Input(1, Iseg(CInt(i)))
-				FileSystem.Input(1, Icode(CInt(i)))
-				FileSystem.Input(1, Darea(CInt(i)))
-				FileSystem.Input(1, Flow(CInt(i)))
-				FileSystem.Input(1, CvFlow(CInt(i)))
-				FileSystem.Input(1, Ecoreg(CInt(i)))
+				FileSystem.Input(1, TribName(i))
+				FileSystem.Input(1, Iseg(i))
+				FileSystem.Input(1, Icode(i))
+				FileSystem.Input(1, Darea(i))
+				FileSystem.Input(1, Flow(i))
+				FileSystem.Input(1, CvFlow(i))
+				FileSystem.Input(1, Ecoreg(i))
 				For j = 1 To NVariables
 					FileSystem.Input(1, k)
 					FileSystem.Input(1, junk)
-					FileSystem.Input(1, Conci(CInt(i), CInt(j)))
-					FileSystem.Input(1, CvCi(CInt(i), CInt(j)))
+					FileSystem.Input(1, Conci(i, j))
+					FileSystem.Input(1, CvCi(i, j))
 				Next j
 
 				FileSystem.Input(1, k)
 				FileSystem.Input(1, junk)
-				FileSystem.Input(1, Warea(CInt(i), 1))
-				FileSystem.Input(1, Warea(CInt(i), 2))
-				FileSystem.Input(1, Warea(CInt(i), 3))
-				FileSystem.Input(1, Warea(CInt(i), 4))
-				FileSystem.Input(1, Warea(CInt(i), 5))
-				FileSystem.Input(1, Warea(CInt(i), 6))
-				FileSystem.Input(1, Warea(CInt(i), 7))
-				FileSystem.Input(1, Warea(CInt(i), 8))
+				FileSystem.Input(1, Warea(i, 1))
+				FileSystem.Input(1, Warea(i, 2))
+				FileSystem.Input(1, Warea(i, 3))
+				FileSystem.Input(1, Warea(i, 4))
+				FileSystem.Input(1, Warea(i, 5))
+				FileSystem.Input(1, Warea(i, 6))
+				FileSystem.Input(1, Warea(i, 7))
+				FileSystem.Input(1, Warea(i, 8))
 			Next i
 
 			' Channels
 			'KW
 			FileSystem.Input(1, Npipe)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To Npipe
+			For i As Integer = 1 To Npipe
 				FileSystem.Input(1, j)
-				FileSystem.Input(1, PipeName(CInt(i)))
-				FileSystem.Input(1, Ifr(CInt(i)))
-				FileSystem.Input(1, Ito(CInt(i)))
-				FileSystem.Input(1, Qpipe(CInt(i)))
-				FileSystem.Input(1, CvQpipe(CInt(i)))
-				FileSystem.Input(1, Epipe(CInt(i)))
-				FileSystem.Input(1, CvEpipe(CInt(i)))
+				FileSystem.Input(1, PipeName(i))
+				FileSystem.Input(1, Ifr(i))
+				FileSystem.Input(1, Ito(i))
+				FileSystem.Input(1, Qpipe(i))
+				FileSystem.Input(1, CvQpipe(i))
+				FileSystem.Input(1, Epipe(i))
+				FileSystem.Input(1, CvEpipe(i))
 			Next i
 
 			'export categories
 			'KW
 			FileSystem.Input(1, NCAT)
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To NCAT
+			For i As Integer = 1 To NCAT
 				FileSystem.Input(1, j)
-				FileSystem.Input(1, LandUseName(CInt(i)))
+				FileSystem.Input(1, LandUseName(i))
 				FileSystem.Input(1, j)
 				FileSystem.Input(1, junk)
-				FileSystem.Input(1, Ur(CInt(i)))
-				FileSystem.Input(1, CvUr(CInt(i)))
+				FileSystem.Input(1, Ur(i))
+				FileSystem.Input(1, CvUr(i))
 				For k = 1 To NVariables
 					FileSystem.Input(1, j)
 					FileSystem.Input(1, junk)
-					FileSystem.Input(1, Uc(CInt(i), CInt(k)))
-					FileSystem.Input(1, CvUc(CInt(i), CInt(k)))
+					FileSystem.Input(1, Uc(i, k))
+					FileSystem.Input(1, CvUc(i, k))
 				Next k
 			Next i
 
 			' notes
 			FileSystem.Input(1, junk)
-			For i As Double = 1 To 10
-				Note(CInt(i)) = FileSystem.LineInput(1)
+			For i As Integer = 1 To 10
+				Note(i) = FileSystem.LineInput(1)
 			Next i
 
 			'Allocation
@@ -1133,22 +1141,22 @@ Abhort:
 		gShowEditXLSNote = False
 		'frmMenu.WindowState = vbMinimized
 		Wka.WindowState = Excel.XlWindowState.xlNormal
-		ReflectionHelper.Invoke(ReflectionHelper.Invoke(gSheetout, "Range", New Object() {"C3"}), "Select", New Object() {})
+		gSheetout.Range("C3").Select()
 		gReturnFromXLS = True
 		Do While gReturnFromXLS
-			Application.DoEvents()
+			System.Windows.Forms.Application.DoEvents()
 		Loop
 		frmMenu.ContinueBtn.Visible = False
 		' After user edits are done
 
 		If gKeepEdits Then
 			On Error GoTo Quit 'in case user closes window
-			ReflectionHelper.Invoke(ReflectionHelper.GetMember(gSheetout, "UsedRange"), "Copy", New Object() {ReflectionHelper.Invoke(gLSht, "Range", New Object() {"a1"})})
+			gSheetout.UsedRange.Copy(gLSht.Range("A1"))
 			XLSWorkBk = Wko
 			Read_xls("Inputs")
 		End If
 		Wka.DisplayAlerts = False
-		ReflectionHelper.Invoke(gSheetout, "Delete", New Object() {})
+		gSheetout.Delete()
 		realversion = CDbl(Wka.Version)
 		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
 		Wka.DisplayAlerts = True
@@ -1165,154 +1173,136 @@ Quit:
 
 		Try
 
-			With gLSht 'gLSht is defined as Wkb.Worksheets("Inputs") in Edit_xls
+			With CType(gLSht, Excel.Worksheet)
 
-				ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"c3:HA1000"}), "ClearContents", New Object() {})
+				.Range("C3:HA1000").ClearContents()
 
 				'header
-				'[Version] = gVersionNumber
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"title"}), "Value", Title)
+				.Range("title").Value = Title
 
 				'dimensions
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Nseg"}), "Value", Nseg)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Ntrib"}), "Value", NTrib)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Npipe"}), "Value", Npipe)
+				.Range("Nseg").Value = Nseg
+				.Range("Ntrib").Value = NTrib
+				.Range("Npipe").Value = Npipe
 
 				' Parameters & Options
-				With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"global_factors"})
-					For i As Object = 1 To 4
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"global_factors"}), "Offset", P(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), i, 2)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"global_factors"}), "Offset", Cp(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), i, 3)
-					Next i
-				End With
+				Dim globalFactors = .Range("global_factors")
+				For i As Integer = 1 To 4
+					globalFactors.Offset(i, 2).Value = P(i)
+					globalFactors.Offset(i, 3).Value = Cp(i)
+				Next i
 
 				'Model Options
-				With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"model_options"})
-					For i As Object = 1 To NOptions
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"model_options"}), "Offset", Iop(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), i, 2)
-					Next i
-				End With
+				Dim modelOptions = .Range("model_options")
+				For i As Integer = 1 To NOptions
+					modelOptions.Offset(i, 2).Value = Iop(i)
+				Next i
 
 				'Globals
-				With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"calibration_factors"})
-					For i As Object = 1 To NXk
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"calibration_factors"}), "Offset", New Object() {i, 2}), "Value", Xk(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)))
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"calibration_factors"}), "Offset", New Object() {i, 3}), "Value", CvXk(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)))
-					Next i
-				End With
+				Dim calibrationFactors = .Range("calibration_factors")
+				For i As Integer = 1 To NXk
+					calibrationFactors.Offset(i, 2).Value = Xk(i)
+					calibrationFactors.Offset(i, 3).Value = CvXk(i)
+				Next i
 
 				'Atmospherics
-				With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"atmos_loads"})
-					For i As Object = 1 To NVariables
-						'       .Offset(i, 1).Value = VariableName(i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"atmos_loads"}), "Offset", New Object() {i, 2}), "Value", Atm(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)))
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"atmos_loads"}), "Offset", New Object() {i, 3}), "Value", CvAtm(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)))
-					Next i
-				End With
+				Dim atmosLoads = .Range("atmos_loads")
+				For i As Integer = 1 To NVariables
+					' atmosLoads.Offset(i, 1).Value = VariableName(i) ' Uncomment if needed
+					atmosLoads.Offset(i, 2).Value = Atm(i)
+					atmosLoads.Offset(i, 3).Value = CvAtm(i)
+				Next i
+
 
 				'Segments
-				With ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1})
-					For i As Object = 1 To Nseg
-						'UPGRADE_WARNING: (1068) i of type Variant is being forced to Scalar. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-1068
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", ReflectionHelper.GetPrimitiveValue(i), 1, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", SegName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 2, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Iout(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 3, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Iag(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 4, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Area(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 6, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Zmn(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 7, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Slen(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 8, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Zmxi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 9, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", CvZmxi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 10, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Zhyp(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 11, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", CvZhyp(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 12, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Turbi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 14, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", CvTurbi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 15, i)
+				Dim segmentData = gLSht.Range("segment_data").Offset(0, 1)
+				For i As Integer = 1 To Nseg
+					segmentData.Offset(i, 1).Value = i
+					segmentData.Offset(i, 2).Value = SegName(i)
+					segmentData.Offset(i, 3).Value = Iout(i)
+					segmentData.Offset(i, 4).Value = Iag(i)
+					segmentData.Offset(i, 6).Value = Area(i)
+					segmentData.Offset(i, 7).Value = Zmn(i)
+					segmentData.Offset(i, 8).Value = Slen(i)
+					segmentData.Offset(i, 9).Value = Zmxi(i)
+					segmentData.Offset(i, 10).Value = CvZmxi(i)
+					segmentData.Offset(i, 11).Value = Zhyp(i)
+					segmentData.Offset(i, 12).Value = CvZhyp(i)
+					segmentData.Offset(i, 14).Value = Turbi(i)
+					segmentData.Offset(i, 15).Value = CvTurbi(i)
 
-						For j As Object = 1 To 9
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Cobs(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 14 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2, i)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", CvCobs(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 14 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2 + 1, i)
-						Next j
+					For j As Integer = 1 To 9
+						segmentData.Offset(14 + j * 2, i).Value = Cobs(i, j)
+						segmentData.Offset(14 + j * 2 + 1, i).Value = CvCobs(i, j)
+					Next j
 
-						For j As Object = 1 To 9
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", Cal(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 33 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2, i)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", CvCal(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 33 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2 + 1, i)
-						Next j
+					For j As Integer = 1 To 9
+						segmentData.Offset(33 + j * 2, i).Value = Cal(i, j)
+						segmentData.Offset(33 + j * 2 + 1, i).Value = CvCal(i, j)
+					Next j
 
-						For j As Object = 1 To 3
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", InternalLoad(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 53 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2, i)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"segment_data"}), "Offset", New Object() {0, 1}), "Offset", CvInternalLoad(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 53 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2 + 1, i)
-						Next j
+					For j As Integer = 1 To 3
+						segmentData.Offset(53 + j * 2, i).Value = InternalLoad(i, j)
+						segmentData.Offset(53 + j * 2 + 1, i).Value = CvInternalLoad(i, j)
+					Next j
 
-						'Write #1, k, Icrit(i), Targ(i)
-					Next i
-				End With
+					'Write #1, k, Icrit(i), Targ(i)
+				Next i
+
 
 				' c Tribs
-				With ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1})
-					For i As Object = 1 To NTrib
-						'UPGRADE_WARNING: (1068) i of type Variant is being forced to Scalar. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-1068
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", ReflectionHelper.GetPrimitiveValue(i), 1, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", TribName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 2, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", Iseg(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 3, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", Icode(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 4, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", Darea(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 5, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", Flow(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 6, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", CvFlow(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 7, i)
+				Dim tribData = gLSht.Range("Tributary_data").Offset(0, 1)
+				For i As Integer = 1 To NTrib
+					tribData.Offset(i, 1).Value = i
+					tribData.Offset(i, 2).Value = TribName(i)
+					tribData.Offset(i, 3).Value = Iseg(i)
+					tribData.Offset(i, 4).Value = Icode(i)
+					tribData.Offset(i, 5).Value = Darea(i)
+					tribData.Offset(i, 6).Value = Flow(i)
+					tribData.Offset(i, 7).Value = CvFlow(i)
 
-						For j As Object = 1 To NVariables
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", Conci(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 6 + 2 * ReflectionHelper.GetPrimitiveValue(Of Double)(j), i)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", CvCi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 6 + 2 * ReflectionHelper.GetPrimitiveValue(Of Double)(j) + 1, i)
-						Next j
+					For j As Integer = 1 To NVariables
+						tribData.Offset(6 + 2 * j, i).Value = Conci(i, j)
+						tribData.Offset(6 + 2 * j + 1, i).Value = CvCi(i, j)
+					Next j
 
-						For j As Object = 1 To NCAT
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"Tributary_data"}), "Offset", New Object() {0, 1}), "Offset", Warea(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)), 18 + ReflectionHelper.GetPrimitiveValue(Of Double)(j), i)
-						Next j
-
-					Next i
-				End With
+					For j As Integer = 1 To NCAT
+						tribData.Offset(18 + j, i).Value = Warea(i, j)
+					Next j
+				Next i
 
 				' Channels
-				With ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1})
-					For i As Object = 1 To Npipe
-						'UPGRADE_WARNING: (1068) i of type Variant is being forced to Scalar. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-1068
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", ReflectionHelper.GetPrimitiveValue(i), 1, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", PipeName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 2, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", Ifr(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 3, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", Ito(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 4, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", Qpipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 5, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", CvQpipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 6, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", Epipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 7, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"transport_channels"}), "Offset", New Object() {0, 1}), "Offset", CvEpipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 8, i)
-					Next i
-				End With
+				Dim channelData = gLSht.Range("transport_channels").Offset(0, 1)
+				For i As Integer = 1 To Npipe
+					channelData.Offset(i, 1).Value = i
+					channelData.Offset(i, 2).Value = PipeName(i)
+					channelData.Offset(i, 3).Value = Ifr(i)
+					channelData.Offset(i, 4).Value = Ito(i)
+					channelData.Offset(i, 5).Value = Qpipe(i)
+					channelData.Offset(i, 6).Value = CvQpipe(i)
+					channelData.Offset(i, 7).Value = Epipe(i)
+					channelData.Offset(i, 8).Value = CvEpipe(i)
+				Next i
 
-				'export categories
-				With ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1})
-					For i As Object = 1 To NCAT
-						'UPGRADE_WARNING: (1068) i of type Variant is being forced to Scalar. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-1068
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1}), "Offset", ReflectionHelper.GetPrimitiveValue(i), 1, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1}), "Offset", LandUseName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 2, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1}), "Offset", Ur(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 3, i)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1}), "Offset", CvUr(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), 4, i)
-
-						'Write #1, LandUseName(i), Ur(i), CvUr(i)
-						For k As Object = 1 To NVariables
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1}), "Offset", Uc(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(k)), 3 + ReflectionHelper.GetPrimitiveValue(Of Double)(k) * 2, i)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"categories"}), "Offset", New Object() {0, 1}), "Offset", CvUc(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(k)), 3 + ReflectionHelper.GetPrimitiveValue(Of Double)(k) * 2 + 1, i)
-							' Write #1, Uc(i, k), CvUc(i, k)
-						Next k
-					Next i
-				End With
+				' export categories
+				Dim catData = gLSht.Range("categories").Offset(0, 1)
+				For i As Integer = 1 To NCAT
+					catData.Offset(i, 1).Value = i
+					catData.Offset(i, 2).Value = LandUseName(i)
+					catData.Offset(i, 3).Value = Ur(i)
+					catData.Offset(i, 4).Value = CvUr(i)
+					For k As Integer = 1 To NVariables
+						catData.Offset(3 + k * 2, i).Value = Uc(i, k)
+						catData.Offset(3 + k * 2 + 1, i).Value = CvUc(i, k)
+					Next k
+				Next i
 
 				' notes
-				With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"notes"})
-					For i As Object = 1 To 10
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"notes"}), "Offset", Note(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)), ReflectionHelper.GetPrimitiveValue(Of Double)(i) - 1, 0)
-					Next i
-				End With
-
+				Dim notesData = gLSht.Range("notes")
+				For i As Integer = 1 To 10
+					notesData.Offset(i - 1, 0).Value = Note(i)
+				Next i
 			End With
-
 			'Allocation
 			'    Write #1, "Allocation"
 			'    For i = 1 To 2
@@ -1352,9 +1342,6 @@ Quit:
 
 			With XLSWorkBk.Sheets(pSheetName)
 				'header
-				'NAMED ranges MUST BE DEFINED in BATH.XLA aka WBa??
-				'        MsgBox(("Read_xls: 500: Reading Ranges from " & pSheetName)
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 				Versx = .Range("version").Value
 				Title = .Range("title").Value
 
@@ -1365,92 +1352,91 @@ Quit:
 
 				' Parameters & Options
 				With .Range("global_factors")
-					For i As Object = 1 To 4
-						P(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 2).Value
-						Cp(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 3).Value
+					For i As Integer = 1 To 4
+						P(i) = .Offset(i, 2).Value
+						Cp(i) = .Offset(i, 3).Value
 					Next i
 				End With
 
 				'Model Options
 				With .Range("model_options")
-					For i As Object = 1 To NOptions
-						Iop(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 2).Value
+					For i As Integer = 1 To NOptions
+						Iop(i) = .Offset(i, 2).Value
 					Next i
 				End With
 
 				'Globals
 				With .Range("calibration_factors")
-					For i As Object = 1 To NXk
+					For i As Integer = 1 To NXk
 						'XkName(i) = .Offset(i, 0)
-						Xk(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 2).Value
-						CvXk(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 3).Value
+						Xk(i) = .Offset(i, 2).Value
+						CvXk(i) = .Offset(i, 3).Value
 					Next i
 				End With
 
 				'Atmospherics
 				With .Range("atmos_loads")
-					For i As Object = 1 To NVariables
+					For i As Integer = 1 To NVariables
 						'VariableName(i) = .Offset(i, 0)
-						Atm(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 2).Value
-						CvAtm(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 3).Value
+						Atm(i) = .Offset(i, 2).Value
+						CvAtm(i) = .Offset(i, 3).Value
 					Next i
 				End With
 
 				'Segments
 				With .Range("segment_data").Offset(0, 1)
-					For i As Object = 1 To Nseg
+					For i As Integer = 1 To Nseg
 						'i = .Offset(1, i)
-						SegName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(2, i).Value
-						Iout(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(3, i).Value
-						Iag(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(4, i).Value
-						Area(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(6, i).Value
-						Zmn(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(7, i).Value
-						Slen(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(8, i).Value
-						Zmxi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(9, i).Value
-						CvZmxi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(10, i).Value
-						Zhyp(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(11, i).Value
-						CvZhyp(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(12, i).Value
-						Turbi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(14, i).Value
-						CvTurbi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(15, i).Value
+						SegName(i) = .Offset(2, i).Value
+						Iout(i) = .Offset(3, i).Value
+						Iag(i) = .Offset(4, i).Value
+						Area(i) = .Offset(6, i).Value
+						Zmn(i) = .Offset(7, i).Value
+						Slen(i) = .Offset(8, i).Value
+						Zmxi(i) = .Offset(9, i).Value
+						CvZmxi(i) = .Offset(10, i).Value
+						Zhyp(i) = .Offset(11, i).Value
+						CvZhyp(i) = .Offset(12, i).Value
+						Turbi(i) = .Offset(14, i).Value
+						CvTurbi(i) = .Offset(15, i).Value
 
-						For j As Object = 1 To 9
-							Cobs(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(14 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2, i).Value
-							CvCobs(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(14 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2 + 1, i).Value
+						For j As Integer = 1 To 9
+							Cobs(i, j) = .Offset(14 + j * 2, i).Value
+							CvCobs(i, j) = .Offset(14 + j * 2 + 1, i).Value
 						Next j
 
-						For j As Object = 1 To 9
-							Cal(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(33 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2, i).Value
-							CvCal(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(33 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2 + 1, i).Value
+						For j As Integer = 1 To 9
+							Cal(i, j) = .Offset(33 + j * 2, i).Value
+							CvCal(i, j) = .Offset(33 + j * 2 + 1, i).Value
 						Next j
 
-						For j As Object = 1 To 3
-							InternalLoad(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(53 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2, i).Value
-							CvInternalLoad(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(53 + ReflectionHelper.GetPrimitiveValue(Of Double)(j) * 2 + 1, i).Value
+						For j As Integer = 1 To 3
+							InternalLoad(i, j) = .Offset(53 + j * 2, i).Value
+							CvInternalLoad(i, j) = .Offset(53 + j * 2 + 1, i).Value
 						Next j
 
 						'Write #1, k, Icrit(i), Targ(i)
 					Next i
-
 				End With
 				SegName(Nseg + 1) = "AREA-WTD MEAN"
 
 				' c Tribs
 				With .Range("Tributary_data").Offset(0, 1)
-					For i As Object = 1 To NTrib
-						TribName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(2, i).Value
-						Iseg(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(3, i).Value
-						Icode(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(4, i).Value
-						Darea(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(5, i).Value
-						Flow(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(6, i).Value
-						CvFlow(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(7, i).Value
+					For i As Integer = 1 To NTrib
+						TribName(i) = .Offset(2, i).Value
+						Iseg(i) = .Offset(3, i).Value
+						Icode(i) = .Offset(4, i).Value
+						Darea(i) = .Offset(5, i).Value
+						Flow(i) = .Offset(6, i).Value
+						CvFlow(i) = .Offset(7, i).Value
 
-						For j As Object = 1 To NVariables
-							Conci(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(6 + 2 * ReflectionHelper.GetPrimitiveValue(Of Double)(j), i).Value
-							CvCi(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(6 + 2 * ReflectionHelper.GetPrimitiveValue(Of Double)(j) + 1, i).Value
+						For j As Integer = 1 To NVariables
+							Conci(i, j) = .Offset(6 + 2 * j, i).Value
+							CvCi(i, j) = .Offset(6 + 2 * j + 1, i).Value
 						Next j
 
-						For j As Object = 1 To NCAT
-							Warea(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(18 + ReflectionHelper.GetPrimitiveValue(Of Double)(j), i).Value
+						For j As Integer = 1 To NCAT
+							Warea(i, j) = .Offset(18 + j, i).Value
 						Next j
 
 						'   Write #1, Ecoreg(i)
@@ -1459,37 +1445,36 @@ Quit:
 
 				' Channels
 				With .Range("transport_channels").Offset(0, 1)
-					For i As Object = 1 To Npipe
-						'   i = .Offset(1, i)
-						PipeName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(2, i).Value
-						Ifr(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(3, i).Value
-						Ito(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(4, i).Value
-						Qpipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(5, i).Value
-						CvQpipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(6, i).Value
-						Epipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(7, i).Value
-						CvEpipe(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(8, i).Value
+					For i As Integer = 1 To Npipe
+						PipeName(i) = .Offset(2, i).Value
+						Ifr(i) = .Offset(3, i).Value
+						Ito(i) = .Offset(4, i).Value
+						Qpipe(i) = .Offset(5, i).Value
+						CvQpipe(i) = .Offset(6, i).Value
+						Epipe(i) = .Offset(7, i).Value
+						CvEpipe(i) = .Offset(8, i).Value
 					Next i
 				End With
 
 				'export categories
 				With .Range("categories").Offset(0, 1)
-					For i As Object = 1 To NCAT
-						i = .Offset(1, i).Value
-						LandUseName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(2, i).Value
-						Ur(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(3, i).Value
-						CvUr(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(4, i).Value
+					For i As Integer = 1 To NCAT
+						Dim idx As Integer = .Offset(1, i).Value
+						LandUseName(idx) = .Offset(2, i).Value
+						Ur(idx) = .Offset(3, i).Value
+						CvUr(idx) = .Offset(4, i).Value
 
-						For k As Object = 1 To NVariables
-							Uc(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(k)) = .Offset(3 + ReflectionHelper.GetPrimitiveValue(Of Double)(k) * 2, i).Value
-							CvUc(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(k)) = .Offset(3 + ReflectionHelper.GetPrimitiveValue(Of Double)(k) * 2 + 1, i).Value
+						For k As Integer = 1 To NVariables
+							Uc(idx, k) = .Offset(3 + k * 2, i).Value
+							CvUc(idx, k) = .Offset(3 + k * 2 + 1, i).Value
 						Next k
 					Next i
 				End With
 
 				' notes
 				With .Range("notes")
-					For i As Object = 1 To 10
-						Note(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(ReflectionHelper.GetPrimitiveValue(Of Double)(i) - 1, 0).Value
+					For i As Integer = 1 To 10
+						Note(i) = .Offset(i - 1, 0).Value
 					Next i
 				End With
 
@@ -1516,7 +1501,8 @@ Quit:
 
 	End Sub
 	Sub ReadKey()
-		Dim k, j As Object
+		Dim k As Integer
+		Dim j As Integer
 
 		'c read key file
 		Ier = 0
@@ -1529,49 +1515,47 @@ Quit:
 			NDiagnostics = .Range("nDiagnostics").Value
 			Nord = NDiagnostics
 			With .Range("ndiagnostics").Offset(1, 0)
-				For i As Object = 1 To NDiagnostics
+				For i As Integer = 1 To NDiagnostics
 					j = .Offset(i, 0).Value 'variable number
-					'UPGRADE_WARNING: (1068) j of type Variant is being forced to Integer. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-1068
-					Iord(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = ReflectionHelper.GetPrimitiveValue(Of Integer)(j)
-					Ilogd(ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(i, 1).Value
-					Cshort_Renamed(ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(i, 2).Value
-					DiagName(ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(i, 3).Value
-					For k = 1 To 5
-						Stat(ReflectionHelper.GetPrimitiveValue(Of Integer)(j), ReflectionHelper.GetPrimitiveValue(Of Integer)(k)) = .Offset(i, ReflectionHelper.GetPrimitiveValue(Of Double)(k) + 3).Value
-					Next k
+					Iord(i) = j
+					Ilogd(j) = .Offset(i, 1).Value
+					Cshort_Renamed(j) = .Offset(i, 2).Value
+					DiagName(j) = .Offset(i, 3).Value
+					For k2 As Integer = 1 To 5
+						Stat(j, k2) = .Offset(i, k2 + 3).Value
+					Next k2
 				Next i
 			End With
 
 			NOptions = .Range("Noptions").Value
 			With .Range("noptions").Offset(1, 0)
 				k = 0
-				For i As Object = 1 To NOptions
-					k = ReflectionHelper.GetPrimitiveValue(Of Double)(k) + 1
-					Mop(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(k, 0).Value 'number of options for
-					OptionName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), 0) = .Offset(k, 1).Value 'option name
-					IopDefault(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = 0
-					For j = 1 To Mop(ReflectionHelper.GetPrimitiveValue(Of Integer)(i))
-						k = ReflectionHelper.GetPrimitiveValue(Of Double)(k) + 1
-						OptionName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i), ReflectionHelper.GetPrimitiveValue(Of Integer)(j)) = .Offset(k, 1).Value 'label for selection
-						If .Offset(k, 2).Value > 0 Then IopDefault(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = ReflectionHelper.GetPrimitiveValue(Of Double)(j) - 1
-					Next j
-					k = ReflectionHelper.GetPrimitiveValue(Of Double)(k) + 1
+				For i As Integer = 1 To NOptions
+					k = k + 1
+					Mop(i) = .Offset(k, 0).Value 'number of options for
+					OptionName(i, 0) = .Offset(k, 1).Value 'option name
+					IopDefault(i) = 0
+					For j2 As Integer = 1 To Mop(i)
+						k = k + 1
+						OptionName(i, j2) = .Offset(k, 1).Value 'label for selection
+						If .Offset(k, 2).Value > 0 Then IopDefault(i) = j2 - 1
+					Next j2
+					k = k + 1
 				Next i
 			End With
 
 			'coefficient labels
 			NXk = .Range("ncoef").Value
 			With .Range("ncoef").Offset(1, 0)
-				For i As Object = 1 To NXk
-					XkName(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 1).Value
-					XkDefault(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 2).Value
-					CvXkDefault(ReflectionHelper.GetPrimitiveValue(Of Integer)(i)) = .Offset(i, 3).Value
+				For i As Integer = 1 To NXk
+					XkName(i) = .Offset(i, 1).Value
+					XkDefault(i) = .Offset(i, 2).Value
+					CvXkDefault(i) = .Offset(i, 3).Value
 				Next i
 			End With
 
 		End With
 		Exit Sub
-
 
 		'    MsgBox("Invalid Key File"
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
@@ -1638,7 +1622,7 @@ Quit:
 			frmMenu.lblStatus.BackColor = SystemColors.HighlightText
 		End If
 		frmMenu.lblStatus.Text = Msg
-		Application.DoEvents()
+		System.Windows.Forms.Application.DoEvents()
 	End Sub
 
 	Sub ViewFileTextBox(ByVal fna As String)
@@ -1658,7 +1642,7 @@ Quit:
 			FileSystem.FileClose(1)
 
 			With frmBox.DefInstance
-				.Text = ReflectionHelper.GetMember(Of String)(gLSht, "Name")
+				.Text = gLSht.Name
 				.txtBox.Text = txt
 				.txtBox.SelectionStart = 0
 				.ShowDialog()
@@ -1727,7 +1711,7 @@ Quit:
 			Wko.Save()
 			Wko.SaveAs(fworK, Excel.XlFileFormat.xlTextPrinter, Type.Missing, Type.Missing, Type.Missing, False)
 			Wko.Saved = True
-			Wko.Close(Not ReflectionHelper.GetPrimitiveValue(Of Boolean)(savechanges))
+			Wko.Close(Not savechanges)
 			Wka.Workbooks.Open(Directory & BathOutXLS)
 			Wko = Wka.ActiveWorkbook
 
@@ -1765,45 +1749,32 @@ Quit:
 		Catch
 		End Try
 		'On error, bail out and let the caller handle any errors 'Exit
-		ReflectionHelper.Invoke(ReflectionHelper.GetMember(gSheetout, "Cells"), "Clear", New Object() {}) 'Start with a Clean Output Sheet
-
+		gSheetout.Cells.Clear() 'Start with a Clean Output Sheet
 
 		'WKB is the basic template called Bath.xla
-		'MsgBox( ("WKB is " & Wkb.Name)
 		Wkb.Worksheets(SheetName).Activate()
 		If Information.Err().Number > 0 Then
 			'        MsgBox(("PgmErr 22: " & SheetName & " Is not in the Template?")
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		End If
 		gLSht = Wkb.Worksheets(SheetName)
-		'gLSht.Activate
-		'MsgBox( "Glsht is now wkb." & gLSht.Name
-		'Wka.Workbooks("bath.xla.xls").Activate
-		'  Sheets("Inputs").Copy Before:=Workbooks("Book1").Sheets(1)
 
-		'NOTE the global glSHT is set generally to Wkb.Workbooks("<sheetname>")
-
-		'COPY THE Filled in Template file to output: WKO.<gSheetOut.name>
-		'THIS COPY APPROACH LOOSES THE NAMED RANGES ???
-		'MsgBox( ("N1: GLSHT NAME IS " & gLSht.Name)
-		With gLSht 'glSHT is a "filled in" Bath.Xla template
-			' .Range(.Range("A1"), .Range("A1").SpecialCells(xlCellTypeLastCell)).Name = "Print_Area"
-			'SetPrintArea
-			j = ReflectionHelper.GetMember(Of Integer)(ReflectionHelper.GetMember(ReflectionHelper.GetMember(gLSht, "UsedRange"), "Columns"), "Count")
-			'Save the Column Widths from the Template A column for use below
+		With CType(gLSht, Excel.Worksheet)
+			' Get the number of columns in the used range
+			j = .UsedRange.Columns.Count
+			' Save the Column Widths from the Template A column for use below
 			For i As Integer = 1 To j
-				x(i) = ReflectionHelper.GetMember(Of Single)(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A1"}), "Offset", New Object() {0, i - 1}), "ColumnWidth")
+				x(i) = .Range("A1").Offset(0, i - 1).ColumnWidth
 			Next i
-			'.Range("print_area").Copy gSheetout.Range("a1") 'not sure what this does
-			ReflectionHelper.Invoke(ReflectionHelper.GetMember(gLSht, "UsedRange"), "Copy", New Object() {ReflectionHelper.Invoke(gSheetout, "Range", New Object() {"a1"})}) 'Copy to gsheetout @ A1
-		End With 'glSHT
+			' Copy the used range to gSheetout at A1
+			.UsedRange.Copy(gSheetout.Range("A1"))
+		End With
 
-		ReflectionHelper.Invoke(gSheetout, "Activate", New Object() {})
-		'Reset the Column Widths
+		gSheetout.Activate()
+		' Reset the Column Widths
 		For i As Integer = 1 To j
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gSheetout, "Range", New Object() {"a1"}), "Offset", New Object() {0, i - 1}), "ColumnWidth", x(i))
+			gSheetout.Range("A1").Offset(0, i - 1).ColumnWidth = x(i)
 		Next i
-		ReflectionHelper.Invoke(ReflectionHelper.Invoke(gSheetout, "Range", New Object() {"A1"}), "Select", New Object() {})
+		gSheetout.Range("A1").Select()
 
 		Wka.CutCopyMode = False
 		'    ScreenOn()
@@ -1924,7 +1895,7 @@ Quit:
 						If Wka.Workbooks.Count > 0 Then
 							'                If DebugMode2 Then MsgBox("LoadExcel is closing wko"
 							'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-							Wka.Workbooks(BathOutXLS).Close(Not ReflectionHelper.GetPrimitiveValue(Of Boolean)(savechange))
+							Wka.Workbooks(BathOutXLS).Close(Not CBool(savechange))
 						End If
 					End If
 					Wkb = Wka.Workbooks(BathBook)
@@ -2032,7 +2003,7 @@ Quit:
 
 	Sub SetPrintArea()
 		' set print area to all used cells in the current worksheet
-		ReflectionHelper.LetMember(ReflectionHelper.GetMember(gLSht, "UsedRange"), "Name", "print_area")
+		gLSht.UsedRange.Name = "print_area"
 	End Sub
 	Sub ClearOutputWorkbook()
 		Dim i As Integer

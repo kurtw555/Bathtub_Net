@@ -213,7 +213,7 @@ Partial Friend Class frmMenu
 				.btnSaveOutput.Visible = True
 				.btnClearOutput.Visible = True
 				.lblOutputWorkbook.Visible = True
-				If Wka._Default <> ReflectionHelper.GetPrimitiveValue(Of String)(nil) Then Wka.Visible = True
+				If Wka IsNot Nothing Then Wka.Visible = True
 			Else
 				.Label1.Visible = False
 				.btnSaveOutput.Visible = False
@@ -470,7 +470,7 @@ Partial Friend Class frmMenu
 				Throw New Exception()
 			End If
 
-			Lstring = GetFileName(pFilename) & ".xls"
+			Lstring = GetFileName(pFilename) & ".xlxs"
 
 			'MsgBox infilE
 			Status("Opening Worksheet")
@@ -687,7 +687,8 @@ OUt:
 
 	Public Sub mnuGlobals_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuGlobals.Click
 		'frmGlobals.DefInstance.ShowDialog()
-		frmGlobals.ShowDialog()
+		frm_Globals = New frmGlobals()
+		frm_Globals.ShowDialog()
 		'    Icalc = 0
 		FormUpdate()
 	End Sub
@@ -783,7 +784,8 @@ OUt:
 	Public Sub mnuModels_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuModels.Click
 		Icalc = 0
 		'frmModels.DefInstance.ShowDialog()
-		frmModels.ShowDialog()
+		frm_Models = New frmModels()
+		frm_Models.ShowDialog()
 		FormUpdate()
 	End Sub
 

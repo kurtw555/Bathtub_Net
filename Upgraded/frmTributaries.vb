@@ -218,7 +218,7 @@ Partial Friend Class frmTribs
 	End Sub
 
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Sub UpdateTribValues(ByVal io As BT2Support.UpgradeStubs.stdole_LoadPictureConstantsEnum)
+	Sub UpdateTribValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
 		'io=1 copy source values to txttextorary array
 		'io=2 copy from txttextorary array to original
 		'io=3 copy from text boxes to txttextorary array

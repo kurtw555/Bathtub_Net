@@ -150,7 +150,7 @@ Module Module3
 
 			End Select
 
-			sN = ReflectionHelper.GetMember(Of String)(gLSht, "Name")
+			sN = gLSht.Name
 			Status("Listing: " & sN)
 			'MsgBox( ("About to Copy " & sN)
 			SheetCopy((sN))
@@ -175,10 +175,10 @@ Module Module3
 			'     If DebugMode Then MsgBox( "StartSheet Clearing: " & Wkb.Name & "." & gLSht.Name & "  " & Title
 			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 			'.Cells.Clear
-			ReflectionHelper.LetMember(gLSht, "Range", Title, "A1")
-			ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"a1", "b2"}), "Font"), "Bold", True)
-			ReflectionHelper.LetMember(gLSht, "Range", "File:", "A2")
-			ReflectionHelper.LetMember(gLSht, "Range", CaseFile, "b2")
+			gLSht.Range("A1").Value = Title
+			gLSht.Range("A1", "B2").Font.Bold = True
+			gLSht.Range("A2").Value = "File:"
+			gLSht.Range("B2").Value = CaseFile
 		End With
 	End Sub
 	Sub List_Hydraulics()
@@ -187,44 +187,43 @@ Module Module3
 
 		StartSheet("Hydraulics")
 		line_no = 0
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_Hydrau"}), "Copy", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
+		With gLSht.Range("A4")
+			' Copy the header for hydraulics
+			Hdr.Range("Header_Hydrau").Copy()
+			gLSht.Paste(.Offset(line_no, 0))
+
 			line_no += 3
 			For i As Double = 1 To Nseg
 				line_no += 1
 				Hydrau(i)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 0)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(CInt(i)), line_no, 1)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Iout(CInt(i)), line_no, 2)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 2}), "HorizontalAlignment", Excel.Constants.xlCenter)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Qnet(CInt(i)), line_no, 3)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
+				.Offset(line_no, 0).Value = i
+				.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+				.Offset(line_no, 1).Value = SegName(CInt(i))
+				.Offset(line_no, 2).Value = Iout(CInt(i))
+				.Offset(line_no, 2).HorizontalAlignment = Excel.Constants.xlCenter
+				.Offset(line_no, 3).Value = Qnet(CInt(i))
+				.Offset(line_no, 3).NumberFormat = "0.0"
 				For k As Integer = 3 To 8
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(k), line_no, 1 + k)
+					.Offset(line_no, 1 + k).Value = x(k)
 					If k = 3 Then
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1 + k}), "NumberFormat", "0.0000")
+						.Offset(line_no, 1 + k).NumberFormat = "0.0000"
 					Else
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1 + k}), "NumberFormat", "0.0")
+						.Offset(line_no, 1 + k).NumberFormat = "0.0"
 					End If
 				Next k
 			Next i
 
-
 			line_no += 2
 			atoT = 0
 			vtoT = 0
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_Morpho"}), "Copy", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
+			CType(Hdr, Excel.Worksheet).Range("Header_Morpho").Copy()
+			CType(gLSht, Excel.Worksheet).Paste(.Offset(line_no, 0))
 			line_no += 2
 			For i As Double = 1 To Nseg
 				line_no += 1
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 0)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(CInt(i)), line_no, 1)
+				.Offset(line_no, 0).Value = i
+				.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+				.Offset(line_no, 1).Value = SegName(CInt(i))
 				x(1) = Area(CInt(i))
 				x(2) = Zmn(CInt(i))
 				x(3) = Zmx(CInt(i))
@@ -235,19 +234,18 @@ Module Module3
 				x(6) = Ratv(Area(CInt(i)), Slen(CInt(i)))
 				x(7) = Ratv(Slen(CInt(i)), x(6))
 				For j As Integer = 1 To 7
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(j), line_no, j + 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, j + 1}), "NumberFormat", "0.0")
+					.Offset(line_no, j + 1).Value = x(j)
+					.Offset(line_no, j + 1).NumberFormat = "0.0"
 				Next j
 			Next i
 			line_no += 1
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Totals", line_no, 0)
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 2}), "NumberFormat", "0.0")
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.0")
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", atoT, line_no, 2)
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", vtoT, line_no, 6)
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Ratv(vtoT, atoT), line_no, 3)
-
+			.Offset(line_no, 0).Value = "Totals"
+			.Offset(line_no, 2).NumberFormat = "0.0"
+			.Offset(line_no, 3).NumberFormat = "0.0"
+			.Offset(line_no, 6).NumberFormat = "0.0"
+			.Offset(line_no, 2).Value = atoT
+			.Offset(line_no, 6).Value = vtoT
+			.Offset(line_no, 3).Value = Ratv(vtoT, atoT)
 		End With
 	End Sub
 
@@ -267,11 +265,12 @@ Module Module3
 
 		StartSheet("Overall Balances")
 		line_no = 0
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_gwbal"}), "Copy", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", P(1), line_no + 2, 7)
+		With gLSht.Range("A4")
+			' Copy the header for gross water balance
+			Hdr.Range("Header_gwbal").Copy()
+			gLSht.Paste(.Offset(line_no, 0))
+
+			.Offset(line_no + 2, 7).Value = P(1)
 			line_no += 4
 
 			For i = 1 To 18
@@ -296,25 +295,24 @@ Module Module3
 					vaR = (cvQ * qU) ^ 2
 					If qU > 0 Then
 						line_no += 1
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 0)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Icode(CInt(i)), line_no, 1)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Iseg(CInt(i)), line_no, 2)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 2}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TribName(CInt(i)), line_no, 3)
-						If Darea(CInt(i)) > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Darea(CInt(i)), line_no, 4)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0")
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", qU, line_no, 5)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0")
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", vaR, line_no, 6)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.00E+00")
-						If qU > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cvQ, line_no, 7)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0.00")
-						If runofF > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", runofF, line_no, 8)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 8}), "NumberFormat", "0.00")
+						.Offset(line_no, 0).Value = i
+						.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+						.Offset(line_no, 1).Value = Icode(CInt(i))
+						.Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+						.Offset(line_no, 2).Value = Iseg(CInt(i))
+						.Offset(line_no, 2).HorizontalAlignment = Excel.Constants.xlCenter
+						.Offset(line_no, 3).Value = TribName(CInt(i))
+						If Darea(CInt(i)) > 0 Then .Offset(line_no, 4).Value = Darea(CInt(i))
+						.Offset(line_no, 4).NumberFormat = "0.0"
+						.Offset(line_no, 5).Value = qU
+						.Offset(line_no, 5).NumberFormat = "0.0"
+						.Offset(line_no, 6).Value = vaR
+						.Offset(line_no, 6).NumberFormat = "0.00E+00"
+						If qU > 0 Then .Offset(line_no, 7).Value = cvQ
+						.Offset(line_no, 7).NumberFormat = "0.00"
+						If runofF > 0 Then .Offset(line_no, 8).Value = runofF
+						.Offset(line_no, 8).NumberFormat = "0.00"
 					End If
-
 				End If
 			Next i
 
@@ -330,6 +328,7 @@ Module Module3
 			Da(10) = Da(9)
 			Da(5) = 0
 
+
 			'c Summary
 			For j As Integer = 1 To Nkord
 				i = Kord(j)
@@ -337,17 +336,19 @@ Module Module3
 					line_no += 1
 					runofF = Ratv(Term(1, CInt(i)), Da(CInt(i)))
 					cV = MIn(Ratv(Math.Sqrt(CvTerm(1, CInt(i))), Math.Abs(Term(1, CInt(i)))), 9.99)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TermName(CInt(i)), line_no, 0)
-					If Da(CInt(i)) > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Da(CInt(i)), line_no, 4)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0")
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Term(1, CInt(i)), line_no, 5)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0")
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", CvTerm(1, CInt(i)), line_no, 6)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.00E+00")
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cV, line_no, 7)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0.00")
-					If runofF > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", runofF, line_no, 8)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 8}), "NumberFormat", "0.00")
+					With gLSht.Range("A4")
+						.Offset(line_no, 0).Value = TermName(CInt(i))
+						If Da(CInt(i)) > 0 Then .Offset(line_no, 4).Value = Da(CInt(i))
+						.Offset(line_no, 4).NumberFormat = "0.0"
+						.Offset(line_no, 5).Value = Term(1, CInt(i))
+						.Offset(line_no, 5).NumberFormat = "0.0"
+						.Offset(line_no, 6).Value = CvTerm(1, CInt(i))
+						.Offset(line_no, 6).NumberFormat = "0.00E+00"
+						.Offset(line_no, 7).Value = cV
+						.Offset(line_no, 7).NumberFormat = "0.00"
+						If runofF > 0 Then .Offset(line_no, 8).Value = runofF
+						.Offset(line_no, 8).NumberFormat = "0.00"
+					End With
 				End If
 
 			Next j
@@ -358,12 +359,11 @@ Module Module3
 				If Iop(iC) > 0 Then
 
 					line_no += 3
-					ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_Gross"}), "Copy", New Object() {})
-					'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
+					Hdr.Range("Header_Gross").Copy()
+					gLSht.Paste(gLSht.Range("A4").Offset(line_no, 0))
 
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", MassBalName(Iop(11)), line_no, 4)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", VariableName(Imap(iC)), line_no + 1, 4)
+					gLSht.Range("A4").Offset(line_no, 4).Value = MassBalName(Iop(11))
+					gLSht.Range("A4").Offset(line_no + 1, 4).Value = VariableName(Imap(iC))
 					line_no += 3
 					tW = Term(iC + 1, 9) 'total load
 					Tf = Term(1, 9) 'total flow
@@ -397,31 +397,37 @@ Module Module3
 							pV1 = Ratv(vaR, CvTerm(iC + 1, 9))
 							If xL > 0 Then
 								line_no += 1
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 0)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Icode(CInt(i)), line_no, 1)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Iseg(CInt(i)), line_no, 2)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 2}), "HorizontalAlignment", Excel.Constants.xlCenter)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TribName(CInt(i)), line_no, 3)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", xL, line_no, 4)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0")
-								If pL > 0 And Icode(CInt(i)) <> 4 Then
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", pL, line_no, 5)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0%")
-								End If
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", vaR, line_no, 6)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.00E+00")
-								If pV1 > 0 And Icode(CInt(i)) <> 4 Then
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", pV1, line_no, 7)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0.0%")
-								End If
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cV, line_no, 8)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 8}), "NumberFormat", "0.00")
-								If cU > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cU, line_no, 9)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 9}), "NumberFormat", "0.0")
-								If Export > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Export, line_no, 10)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 10}), "NumberFormat", "0.0")
+								With gLSht.Range("A4")
+									.Offset(line_no, 0).Value = i
+									.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+									.Offset(line_no, 1).Value = Icode(CInt(i))
+									.Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+									.Offset(line_no, 2).Value = Iseg(CInt(i))
+									.Offset(line_no, 2).HorizontalAlignment = Excel.Constants.xlCenter
+									.Offset(line_no, 3).Value = TribName(CInt(i))
+									.Offset(line_no, 4).Value = xL
+									.Offset(line_no, 4).NumberFormat = "0.0"
+									If pL > 0 And Icode(CInt(i)) <> 4 Then
+										.Offset(line_no, 5).Value = pL
+										.Offset(line_no, 5).NumberFormat = "0.0%"
+									End If
+									.Offset(line_no, 6).Value = vaR
+									.Offset(line_no, 6).NumberFormat = "0.00E+00"
+									If pV1 > 0 And Icode(CInt(i)) <> 4 Then
+										.Offset(line_no, 7).Value = pV1
+										.Offset(line_no, 7).NumberFormat = "0.0%"
+									End If
+									.Offset(line_no, 8).Value = cV
+									.Offset(line_no, 8).NumberFormat = "0.00"
+									If cU > 0 Then
+										.Offset(line_no, 9).Value = cU
+										.Offset(line_no, 9).NumberFormat = "0.0"
+									End If
+									If Export > 0 Then
+										.Offset(line_no, 10).Value = Export
+										.Offset(line_no, 10).NumberFormat = "0.0"
+									End If
+								End With
 							End If
 						End If
 					Next i
@@ -445,23 +451,25 @@ Module Module3
 								pV1 = 0
 							End If
 							line_no += 1
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TermName(CInt(i)), line_no, 0)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Term(iC + 1, CInt(i)), line_no, 4)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0")
-							If pL > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", pL, line_no, 5)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0%")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", CvTerm(iC + 1, CInt(i)), line_no, 6)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.00E+00")
-							If pV1 > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", pV1, line_no, 7)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0.0%")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cV, line_no, 8)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 8}), "NumberFormat", "0.00")
-							If cU > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cU, line_no, 9)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 9}), "NumberFormat", "0.0")
-							If Export > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Export, line_no, 10)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 10}), "NumberFormat", "0.0")
+							With gLSht.Range("A4")
+								.Offset(line_no, 0).Value = TermName(CInt(i))
+								.Offset(line_no, 4).Value = Term(iC + 1, CInt(i))
+								.Offset(line_no, 4).NumberFormat = "0.0"
+								If pL > 0 Then .Offset(line_no, 5).Value = pL
+								.Offset(line_no, 5).NumberFormat = "0.0%"
+								.Offset(line_no, 6).Value = CvTerm(iC + 1, CInt(i))
+								.Offset(line_no, 6).NumberFormat = "0.00E+00"
+								If pV1 > 0 Then .Offset(line_no, 7).Value = pV1
+								.Offset(line_no, 7).NumberFormat = "0.0%"
+								.Offset(line_no, 8).Value = cV
+								.Offset(line_no, 8).NumberFormat = "0.00"
+								If cU > 0 Then .Offset(line_no, 9).Value = cU
+								.Offset(line_no, 9).NumberFormat = "0.0"
+								If Export > 0 Then .Offset(line_no, 10).Value = Export
+                                .Offset(line_no, 10).NumberFormat = "0.0"
+                            End With
 
-						End If
+                        End If
 					Next j
 
 					'C MASS BALANCE STATISTICS
@@ -492,35 +500,36 @@ Module Module3
 
 
 					line_no += 2
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Overflow Rate (m/yr)", line_no, 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0")
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(1), line_no, 4)
+					With gLSht.Range("A4")
+						.Offset(line_no, 1).Value = "Overflow Rate (m/yr)"
+						.Offset(line_no, 4).NumberFormat = "0.0"
+						.Offset(line_no, 4).Value = x(1)
 
-					line_no += 1
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Hydraulic Resid. Time (yrs)", line_no, 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(2), line_no, 4)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0000")
+						line_no += 1
+						.Offset(line_no, 1).Value = "Hydraulic Resid. Time (yrs)"
+						.Offset(line_no, 4).Value = x(2)
+						.Offset(line_no, 4).NumberFormat = "0.0000"
 
-					line_no += 1
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Reservoir Conc (mg/m3)", line_no, 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(3), line_no, 4)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0")
+						line_no += 1
+						.Offset(line_no, 1).Value = "Reservoir Conc (mg/m3)"
+						.Offset(line_no, 4).Value = x(3)
+						.Offset(line_no, 4).NumberFormat = "0"
 
-					line_no -= 2
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Nutrient Resid. Time (yrs)", line_no, 6)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(4), line_no, 9)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 9}), "NumberFormat", "0.0000")
+						line_no -= 2
+						.Offset(line_no, 6).Value = "Nutrient Resid. Time (yrs)"
+						.Offset(line_no, 9).Value = x(4)
+						.Offset(line_no, 9).NumberFormat = "0.0000"
 
-					line_no += 1
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Turnover Ratio", line_no, 6)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(5), line_no, 9)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 9}), "NumberFormat", "0.0")
+						line_no += 1
+						.Offset(line_no, 6).Value = "Turnover Ratio"
+						.Offset(line_no, 9).Value = x(5)
+						.Offset(line_no, 9).NumberFormat = "0.0"
 
-					line_no += 1
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Retention Coef.", line_no, 6)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(6), line_no, 9)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 9}), "NumberFormat", "0.000")
-
+						line_no += 1
+						.Offset(line_no, 6).Value = "Retention Coef."
+						.Offset(line_no, 9).Value = x(6)
+						.Offset(line_no, 9).NumberFormat = "0.000"
+					End With
 
 				End If
 			Next iC
@@ -570,7 +579,7 @@ Module Module3
 
 		StartSheet("Summary Balances")
 
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"})
+		With gLSht.Range("A3")
 			line_no = 0
 			For jc As Integer = 1 To 4
 				iC = jc - 1
@@ -582,23 +591,18 @@ Module Module3
 					Next i
 
 					If iC = 0 Then
-
 						Lord(8) = 3 'water balance - uses evaporation in last slot
 						line_no += 1
-						ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_Wbal"}), "Copy", New Object() {})
-						'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-						ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", P(1), line_no, 5) 'Averaging Period
-
+						Hdr.Range("Header_Wbal").Copy()
+						gLSht.Paste(gLSht.Range("A3").Offset(line_no, 0))
+						gLSht.Range("A3").Offset(line_no, 5).Value = P(1) 'Averaging Period
 					Else
-
 						Lord(8) = 5 'mass balance - uses net retention in last slot
 						line_no += 2
-						ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_Mbal"}), "Copy", New Object() {})
-						'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-						ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", VariableName(Imap(iC)), line_no, 8)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", MassBalName(Iop(11)), line_no, 3)
+						Hdr.Range("Header_Mbal").Copy()
+						gLSht.Paste(gLSht.Range("A3").Offset(line_no, 0))
+						gLSht.Range("A3").Offset(line_no, 8).Value = VariableName(Imap(iC))
+						gLSht.Range("A3").Offset(line_no, 3).Value = MassBalName(Iop(11))
 					End If
 					line_no += 2
 
@@ -628,24 +632,28 @@ Module Module3
 							If (i <> 5) Then y(i) += x(i)
 						Next i
 						line_no += 1
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", jseG, line_no, 0)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", SegName(CInt(jseG)), line_no, 1)
-						For i As Integer = 1 To Mord
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", x(i), line_no, i + 1)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, i + 1}), "NumberFormat", "0")
-						Next i
+						With gLSht.Range("A3")
+							.Offset(line_no, 0).Value = jseG
+							.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+							.Offset(line_no, 1).Value = SegName(CInt(jseG))
+							For i As Integer = 1 To Mord
+								.Offset(line_no, i + 1).Value = x(i)
+								.Offset(line_no, i + 1).NumberFormat = "0"
+							Next i
+						End With
 
 					Next jseG
 
 					y(3) = 0
 					y(7) = 0
 					line_no += 1
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", "Net", line_no, 0)
-					For i As Integer = 1 To Mord
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", y(i), line_no, i + 1)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, i + 1}), "NumberFormat", "0")
-					Next i
+					With gLSht.Range("A3")
+						.Offset(line_no, 0).Value = "Net"
+						For i As Integer = 1 To Mord
+							.Offset(line_no, i + 1).Value = y(i)
+							.Offset(line_no, i + 1).NumberFormat = "0"
+						Next i
+					End With
 
 				End If
 			Next jc
@@ -663,12 +671,13 @@ Module Module3
 		If NTrib <= 0 Then Exit Sub
 		StartSheet("Segment Balances")
 
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
+		With gLSht.Range("A4")
 
 			line_no = 0
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Segment Mass Balance Based Upon " & MassBalName(Iop(11)) & " Concentrations", line_no, 0)
-			ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "Font"), "Bold", True)
-
+			With gLSht.Range("A4").Offset(line_no, 0)
+				.Value = "Segment Mass Balance Based Upon " & MassBalName(Iop(11)) & " Concentrations"
+				.Font.Bold = True
+			End With
 			For jseG As Double = 1 To Nseg
 				If Izap(CInt(jseG)) = 0 Then
 
@@ -677,13 +686,16 @@ Module Module3
 							Balas(jseG, iC, Iop(11))
 
 							line_no += 2
-							ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_segbal"}), "Copy", New Object() {})
-							'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-							ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", VariableName(Imap(iC)), line_no, 2)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", jseG, line_no, 5)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "HorizontalAlignment", Excel.Constants.xlCenter)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(CInt(jseG)), line_no, 6)
+							Hdr.Range("Header_segbal").Copy()
+							gLSht.Paste(gLSht.Range("A4").Offset(line_no, 0))
+
+							With gLSht.Range("A4")
+								.Offset(line_no, 2).Value = VariableName(Imap(iC))
+								.Offset(line_no, 5).Value = jseG
+								.Offset(line_no, 5).HorizontalAlignment = Excel.Constants.xlCenter
+								.Offset(line_no, 6).Value = SegName(CInt(jseG))
+							End With
+
 							line_no += 2
 
 							' 393    WRITE(NOUT,301) VariableName(IC),JSEG,SegName(JSEG)
@@ -712,21 +724,25 @@ Module Module3
 									xL = qU * cU
 									If xL > 0 Then
 										line_no += 1
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 0)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Icode(i), line_no, 1)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TribName(i), line_no, 2)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", qU, line_no, 3)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Ratv(qU, Tf), line_no, 4)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0%")
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", xL, line_no, 5)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0")
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Ratv(xL, tW), line_no, 6)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.0%")
-										If cU > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cU, line_no, 7)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0")
+										With gLSht.Range("A4")
+											.Offset(line_no, 0).Value = i
+											.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+											.Offset(line_no, 1).Value = Icode(i)
+											.Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+											.Offset(line_no, 2).Value = TribName(i)
+											.Offset(line_no, 3).Value = qU
+											.Offset(line_no, 3).NumberFormat = "0.0"
+											.Offset(line_no, 4).Value = Ratv(qU, Tf)
+											.Offset(line_no, 4).NumberFormat = "0.0%"
+											.Offset(line_no, 5).Value = xL
+											.Offset(line_no, 5).NumberFormat = "0.0"
+											.Offset(line_no, 6).Value = Ratv(xL, tW)
+											.Offset(line_no, 6).NumberFormat = "0.0%"
+											If cU > 0 Then
+												.Offset(line_no, 7).Value = cU
+												.Offset(line_no, 7).NumberFormat = "0"
+											End If
+										End With
 									End If
 								End If
 							Next i
@@ -739,19 +755,21 @@ Module Module3
 									cU = 0
 									If (i <> 5 And i <> 15) Then cU = Ratv(Bt(i), Qt(i))
 									line_no += 1
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TermName(i), line_no, 0)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Qt(i), line_no, 3)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Ratv(Qt(i), Tf), line_no, 4)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0%")
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Bt(i), line_no, 5)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0")
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Ratv(Bt(i), tW), line_no, 6)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.0%")
-									If cU > 0 Then
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cU, line_no, 7)
-										ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0")
-									End If
+									With gLSht.Range("A4")
+										.Offset(line_no, 0).Value = TermName(i)
+										.Offset(line_no, 3).Value = Qt(i)
+										.Offset(line_no, 3).NumberFormat = "0.0"
+										.Offset(line_no, 4).Value = Ratv(Qt(i), Tf)
+										.Offset(line_no, 4).NumberFormat = "0.0%"
+										.Offset(line_no, 5).Value = Bt(i)
+										.Offset(line_no, 5).NumberFormat = "0.0"
+										.Offset(line_no, 6).Value = Ratv(Bt(i), tW)
+										.Offset(line_no, 6).NumberFormat = "0.0%"
+										If cU > 0 Then
+											.Offset(line_no, 7).Value = cU
+											.Offset(line_no, 7).NumberFormat = "0"
+										End If
+									End With
 								End If
 							Next j
 
@@ -763,23 +781,24 @@ Module Module3
 							'  * ', DEPTH =',F6.1,' M')
 
 							line_no += 2
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Hyd. Residence Time =", line_no, 0)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(3), line_no, 3)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0000")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", " yrs", line_no, 4)
+							With gLSht.Range("A4")
+								.Offset(line_no, 0).Value = "Hyd. Residence Time ="
+								.Offset(line_no, 3).Value = x(3)
+								.Offset(line_no, 3).NumberFormat = "0.0000"
+								.Offset(line_no, 4).Value = " yrs"
 
-							line_no += 1
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Overflow Rate =", line_no, 0)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(4), line_no, 3)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", " m/yr", line_no, 4)
+								line_no += 1
+								.Offset(line_no, 0).Value = "Overflow Rate ="
+								.Offset(line_no, 3).Value = x(4)
+								.Offset(line_no, 3).NumberFormat = "0.0"
+								.Offset(line_no, 4).Value = " m/yr"
 
-							line_no += 1
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Mean Depth =", line_no, 0)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Zmn(CInt(jseG)), line_no, 3)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", " m", line_no, 4)
-
+								line_no += 1
+								.Offset(line_no, 0).Value = "Mean Depth ="
+								.Offset(line_no, 3).Value = Zmn(CInt(jseG))
+								.Offset(line_no, 3).NumberFormat = "0.0"
+								.Offset(line_no, 4).Value = " m"
+							End With
 
 						End If
 					Next iC
@@ -797,11 +816,10 @@ Module Module3
 		line_no = 0
 		StartSheet("T tests")
 
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
+		With gLSht.Range("A4")
 
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_ttest1"}), "Copy", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
+			Hdr.Range("Header_ttest1").Copy()
+			gLSht.Paste(gLSht.Range("A4").Offset(line_no, 0))
 			line_no += 3
 
 			For ii As Double = 1 To Nseg + 1
@@ -814,12 +832,11 @@ Module Module3
 				If Izap(CInt(i)) = 0 And Not (Nseg = 1 And ii = 1) Then
 
 					line_no += 2
-					ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_ttest2"}), "Copy", New Object() {})
-					'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
-					If i <= Nseg Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(CInt(i)), line_no, 2)
+					Hdr.Range("Header_ttest2").Copy()
+					gLSht.Paste(gLSht.Range("A4").Offset(line_no, 0))
+					If i <= Nseg Then gLSht.Range("A4").Offset(line_no, 1).Value = i
+					gLSht.Range("A4").Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+					gLSht.Range("A4").Offset(line_no, 2).Value = SegName(CInt(i))
 					line_no += 2
 
 					nord1 = 13
@@ -842,23 +859,25 @@ Module Module3
 								If Iop(9) <= 0 Then x(4) = 0
 							End If
 							line_no += 1
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", DiagName(j), line_no, 0)
-							If Cobs(CInt(i), j) > 0 Then
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Cobs(CInt(i), j), line_no, 1)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "NumberFormat", "0.0")
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", CvCobs(CInt(i), j), line_no, 2)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 2}), "NumberFormat", "0.00")
-							End If
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Cest(CInt(i), j), line_no, 3)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", cV, line_no, 4)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.00")
-							For k As Integer = 1 To 4
-								If x(1) > 0 And x(k) <> 0 Then
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(k), line_no, 4 + k)
-									ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4 + k}), "NumberFormat", "0.00")
+							With gLSht.Range("A4")
+								.Offset(line_no, 0).Value = DiagName(j)
+								If Cobs(CInt(i), j) > 0 Then
+									.Offset(line_no, 1).Value = Cobs(CInt(i), j)
+									.Offset(line_no, 1).NumberFormat = "0.0"
+									.Offset(line_no, 2).Value = CvCobs(CInt(i), j)
+									.Offset(line_no, 2).NumberFormat = "0.00"
 								End If
-							Next k
+								.Offset(line_no, 3).Value = Cest(CInt(i), j)
+								.Offset(line_no, 3).NumberFormat = "0.0"
+								.Offset(line_no, 4).Value = cV
+								.Offset(line_no, 4).NumberFormat = "0.00"
+								For k As Integer = 1 To 4
+									If x(1) > 0 And x(k) <> 0 Then
+										.Offset(line_no, 4 + k).Value = x(k)
+										.Offset(line_no, 4 + k).NumberFormat = "0.00"
+									End If
+								Next k
+							End With
 						End If
 					Next l
 
@@ -883,13 +902,13 @@ Module Module3
 			Status("Predicted & Observed")
 		End If
 
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
+		With gLSht.Range("A4")
 			If io = 1 Then
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Predicted & Observed Values Ranked Against CE Model Development Dataset", 0, 0)
+				gLSht.Range("A4").Offset(0, 0).Value = "Predicted & Observed Values Ranked Against CE Model Development Dataset"
 			Else
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Predicted Values Ranked Against CE Model Development Dataset", 0, 0)
+				gLSht.Range("A4").Offset(0, 0).Value = "Predicted Values Ranked Against CE Model Development Dataset"
 			End If
-			ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {0, 0}), "Font"), "Bold", True)
+			gLSht.Range("A4").Offset(0, 0).Font.Bold = True
 
 			If Nseg = 1 Then
 				kseG = 1
@@ -908,16 +927,15 @@ Module Module3
 
 					line_no += 2
 					If io = 0 Then
-						ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"header_diag_0"}), "Copy", New Object() {})
+						Hdr.Range("header_diag_0").Copy()
 					Else
-						ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"Header_diag"}), "Copy", New Object() {})
+						Hdr.Range("Header_diag").Copy()
 					End If
-					'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
+					gLSht.Paste(gLSht.Range("A4").Offset(line_no, 0))
 
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(CInt(i)), line_no, 2)
+					gLSht.Range("A4").Offset(line_no, 1).Value = i
+					gLSht.Range("A4").Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+					gLSht.Range("A4").Offset(line_no, 2).Value = SegName(CInt(i))
 					line_no += 2
 
 					For l As Integer = 1 To Nord
@@ -946,24 +964,32 @@ Module Module3
 							End If
 
 							line_no += 1
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", DiagName(j), line_no, 0)
+							gLSht.Range("A4").Offset(line_no, 0).Value = DiagName(j)
 
 							If Cest(CInt(i), j) > 0 Then
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Cest(CInt(i), j), line_no, 1)
-								If CvCest(CInt(i), j) > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Math.Sqrt(CvCest(CInt(i), j)) / Cest(CInt(i), j), line_no, 2)
-								If p2 > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", p2, line_no, 3)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.0%")
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "NumberFormat", "0.0")
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 2}), "NumberFormat", "0.00")
+								gLSht.Range("A4").Offset(line_no, 1).Value = Cest(CInt(i), j)
+								If CvCest(CInt(i), j) > 0 Then
+									gLSht.Range("A4").Offset(line_no, 2).Value = Math.Sqrt(CvCest(CInt(i), j)) / Cest(CInt(i), j)
+								End If
+								If p2 > 0 Then
+									gLSht.Range("A4").Offset(line_no, 3).Value = p2
+								End If
+								gLSht.Range("A4").Offset(line_no, 3).NumberFormat = "0.0%"
+								gLSht.Range("A4").Offset(line_no, 1).NumberFormat = "0.0"
+								gLSht.Range("A4").Offset(line_no, 2).NumberFormat = "0.00"
 							End If
 
 							If Cobs(CInt(i), j) > 0 And io > 0 Then
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Cobs(CInt(i), j), line_no, 4)
-								If CvCobs(CInt(i), j) > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", CvCobs(CInt(i), j), line_no, 5)
-								If p1 > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", p1, line_no, 6)
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.0%")
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.0")
-								ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.00")
+								gLSht.Range("A4").Offset(line_no, 4).Value = Cobs(CInt(i), j)
+								If CvCobs(CInt(i), j) > 0 Then
+									gLSht.Range("A4").Offset(line_no, 5).Value = CvCobs(CInt(i), j)
+								End If
+								If p1 > 0 Then
+									gLSht.Range("A4").Offset(line_no, 6).Value = p1
+								End If
+								gLSht.Range("A4").Offset(line_no, 6).NumberFormat = "0.0%"
+								gLSht.Range("A4").Offset(line_no, 4).NumberFormat = "0.0"
+								gLSht.Range("A4").Offset(line_no, 5).NumberFormat = "0.00"
 							End If
 
 
@@ -998,7 +1024,7 @@ Module Module3
 
 		line_no = 0
 		StartSheet("Profiles")
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
+		With gLSht.Range("A4")
 
 			If Nseg = 1 Then
 				kseG = 1
@@ -1006,20 +1032,21 @@ Module Module3
 				kseG = Nseg + 1
 			End If
 
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Segment", line_no, 0)
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", " Name", line_no, 1)
-			ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "Font"), "Bold", True)
-			ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "Font"), "Bold", True)
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
+			gLSht.Range("A4").Offset(line_no, 0).Value = "Segment"
+			gLSht.Range("A4").Offset(line_no, 1).Value = " Name"
+			gLSht.Range("A4").Offset(line_no, 1).Font.Bold = True
+			gLSht.Range("A4").Offset(line_no, 0).Font.Bold = True
+			gLSht.Range("A4").Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
+
 			For j As Double = 1 To kseG
 				line_no += 1
 				If j = Nseg + 1 Then
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Mean", line_no, 0)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlRight)
+					gLSht.Range("A4").Offset(line_no, 0).Value = "Mean"
+					gLSht.Range("A4").Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlRight
 				Else
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", j, line_no, 0)
+					gLSht.Range("A4").Offset(line_no, 0).Value = j
 				End If
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", " " & SegName(CInt(j)), line_no, 1)
+				gLSht.Range("A4").Offset(line_no, 1).Value = " " & SegName(CInt(j))
 			Next j
 
 			line_no += 1
@@ -1039,8 +1066,8 @@ Module Module3
 				End Select
 
 				line_no += 2
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", sN, line_no, 0)
-				ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "Font"), "Bold", True)
+				gLSht.Range("A4").Offset(line_no, 0).Value = sN
+				gLSht.Range("A4").Offset(line_no, 0).Font.Bold = True
 
 				line_no += 1
 
@@ -1050,17 +1077,17 @@ Module Module3
 				'End With
 
 				For i = 1 To kseG
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Variable  Segment-->", line_no, 0)
+					gLSht.Range("A4").Offset(line_no, 0).Value = "Variable  Segment-->"
 					If i = Nseg + 1 Then
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Mean", line_no, i + 1)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, i + 1}), "HorizontalAlignment", Excel.Constants.xlRight)
+						gLSht.Range("A4").Offset(line_no, i + 1).Value = "Mean"
+						gLSht.Range("A4").Offset(line_no, i + 1).HorizontalAlignment = Excel.Constants.xlRight
 					Else
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, i + 1)
+						gLSht.Range("A4").Offset(line_no, i + 1).Value = i
 					End If
-					ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "Font"), "Bold", True)
-					ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, i + 1}), "Font"), "Bold", True)
-					ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "Font"), "Underline", True)
-					ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, i + 1}), "Font"), "Underline", True)
+					gLSht.Range("A4").Offset(line_no, 0).Font.Bold = True
+					gLSht.Range("A4").Offset(line_no, i + 1).Font.Bold = True
+					gLSht.Range("A4").Offset(line_no, 0).Font.Underline = True
+					gLSht.Range("A4").Offset(line_no, i + 1).Font.Underline = True
 				Next i
 
 				'       nord1 = 10
@@ -1088,11 +1115,15 @@ Module Module3
 
 					If kU > 0 Then
 						line_no += 1
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", DiagName(CInt(i)), line_no, 0)
-						For k As Double = 1 To kseG
-							If x(CInt(k)) > 0 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", x(CInt(k)), line_no, k + 1)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, k + 1}), "NumberFormat", "0.0")
-						Next k
+						With gLSht.Range("A4").Offset(line_no, 0)
+							.Value = DiagName(i)
+						End With
+
+						For k As Integer = 1 To kseG
+							Dim targetCell As Excel.Range = gLSht.Range("A4").Offset(line_no, k + 1)
+							If x(k) > 0 Then targetCell.Value = x(k)
+							targetCell.NumberFormat = "0.0"
+						Next
 					End If
 
 				Next j
@@ -1115,7 +1146,7 @@ Module Module3
 
 		StartSheet("verify")
 		line_no = 0
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
+		With gLSht.Range("A4")
 			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"header_verify"}), "Copy", New Object() {})
 			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
 			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {0, 0})}, New String() {"Destination"})
@@ -1165,38 +1196,38 @@ Module Module3
 		SegName(0) = "Out of Reservoir"
 		StartSheet("Segment Network")
 		line_no = 0
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"})
+		With gLSht.Range("A4")
 
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Segment & Tributary Network", line_no, 0)
-			ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "Font"), "Bold", True)
+			gLSht.Range("A4").Offset(line_no, 0).Value = "Segment & Tributary Network"
+			gLSht.Range("A4").Offset(line_no, 0).Font.Bold = True
 
 			For i As Double = 1 To Nseg
 
 				line_no += 2
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "--------Segment:", line_no, 0)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlRight)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", i, line_no, 1)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(CInt(i)), line_no, 2)
+				gLSht.Range("A4").Offset(line_no, 0).Value = "--------Segment:"
+				gLSht.Range("A4").Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlRight
+				gLSht.Range("A4").Offset(line_no, 1).Value = i
+				gLSht.Range("A4").Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+				gLSht.Range("A4").Offset(line_no, 2).Value = SegName(CInt(i))
 
 				line_no += 1
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Outflow Segment:", line_no, 0)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlRight)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Iout(CInt(i)), line_no, 1)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", SegName(Iout(CInt(i))), line_no, 2)
+				gLSht.Range("A4").Offset(line_no, 0).Value = "Outflow Segment:"
+				gLSht.Range("A4").Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlRight
+				gLSht.Range("A4").Offset(line_no, 1).Value = Iout(CInt(i))
+				gLSht.Range("A4").Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+				gLSht.Range("A4").Offset(line_no, 2).Value = SegName(Iout(CInt(i)))
 
 				For j As Double = 1 To NTrib
 					If Iseg(CInt(j)) = i Then
 						line_no += 1
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Tributary:", line_no, 0)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlRight)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", j, line_no, 1)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", TribName(CInt(j)), line_no, 2)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Type:", line_no, 3)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "HorizontalAlignment", Excel.Constants.xlRight)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", Type_Code(Icode(CInt(j))), line_no, 4)
+						gLSht.Range("A4").Offset(line_no, 0).Value = "Tributary:"
+						gLSht.Range("A4").Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlRight
+						gLSht.Range("A4").Offset(line_no, 1).Value = j
+						gLSht.Range("A4").Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+						gLSht.Range("A4").Offset(line_no, 2).Value = TribName(CInt(j))
+						gLSht.Range("A4").Offset(line_no, 3).Value = "Type:"
+						gLSht.Range("A4").Offset(line_no, 3).HorizontalAlignment = Excel.Constants.xlRight
+						gLSht.Range("A4").Offset(line_no, 4).Value = Type_Code(Icode(CInt(j)))
 					End If
 				Next j
 
@@ -1204,14 +1235,14 @@ Module Module3
 
 					If Ifr(CInt(j)) = i Then
 						line_no += 1
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", "Channel:", line_no, 0)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlRight)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", j, line_no, 1)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", PipeName(CInt(j)), line_no, 2)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", " To Segment:", line_no, 3)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", New Object() {line_no, 3}), "HorizontalAlignment", Excel.Constants.xlRight)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A4"}), "Offset", StringsHelper.Format(Ito(CInt(j)), "00") & " " & SegName(Ito(CInt(j))), line_no, 4)
+						gLSht.Range("A4").Offset(line_no, 0).Value = "Channel:"
+						gLSht.Range("A4").Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlRight
+						gLSht.Range("A4").Offset(line_no, 1).Value = j
+						gLSht.Range("A4").Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
+						gLSht.Range("A4").Offset(line_no, 2).Value = PipeName(CInt(j))
+						gLSht.Range("A4").Offset(line_no, 3).Value = " To Segment:"
+						gLSht.Range("A4").Offset(line_no, 3).HorizontalAlignment = Excel.Constants.xlRight
+						gLSht.Range("A4").Offset(line_no, 4).Value = StringsHelper.Format(Ito(CInt(j)), "00") & " " & SegName(Ito(CInt(j)))
 					End If
 				Next j
 

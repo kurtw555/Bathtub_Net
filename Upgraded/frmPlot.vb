@@ -134,61 +134,60 @@ Partial Friend Class frmPlot
 
 		'plot_plot is where the chart is drawn, but PLOT is where the data reside
 		'Including the Confidence Limits (j and k aka Offset columns 9 & 10 for OBS)
-		CurrentWKChart = ReflectionHelper.GetMember(Wkb.Sheets("plot_plot").ChartObjects(Type.Missing)(1), "Chart")
-		With ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue})
-			'log scale
+		' Get the Chart object from the ChartObjects collection
+		CurrentWKChart = CType(Wkb.Sheets("plot_plot").ChartObjects(1).Chart, Excel.Chart)
+
+		With CurrentWKChart.Axes(Excel.XlAxisType.xlValue)
+			' log scale
 			If Me.chkLogScale.CheckState = CheckState.Checked Then
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "Crosses", Excel.Constants.xlAutomatic)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "MinimumScaleIsAuto", True)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "ScaleType", Excel.XlTrendlineType.xlLogarithmic)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "MinorTickMark", Excel.Constants.xlOutside)
+				.Crosses = Excel.Constants.xlAutomatic
+				.MinimumScaleIsAuto = True
+				.ScaleType = Excel.XlScaleType.xlScaleLogarithmic
+				.MinorTickMark = Excel.Constants.xlOutside
 			Else
-				'linear scale
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "Crosses", Excel.Constants.xlAutomatic)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "MinimumScaleIsAuto", True)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "ScaleType", Excel.XlTrendlineType.xlLinear)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "MinorTickMark", Excel.Constants.xlNone)
+				' linear scale
+				.Crosses = Excel.Constants.xlAutomatic
+				.MinimumScaleIsAuto = True
+				.ScaleType = Excel.XlScaleType.xlScaleLinear
+				.MinorTickMark = Excel.Constants.xlNone
 			End If
 		End With
 
 		StartSheet("Plot")
 
-		With ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1})
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"header_plot"}), "Copy", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", New Object() {0, 0})}, New String() {"Destination"})
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", DiagName(io), 0, 1)
+		Dim pLabelCell As Excel.Range = gLSht.Range("p_label").Offset(0, -1)
+		With pLabelCell
+			Hdr.Range("header_plot").Copy()
+			gLSht.Paste(.Offset(0, 0))
+			.Offset(0, 1).Value = DiagName(io)
 
-			xloW = 10000000 'minimum value to scale log plot
+			xloW = 10000000 ' minimum value to scale log plot
 			For i As Double = 1 To Nseg + 1
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", SegName(CInt(i)), i + 3, 0)
+				.Offset(i + 3, 0).Value = SegName(CInt(i))
 				If Cest(CInt(i), io) > 0 Then
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Cest(CInt(i), io), i + 3, 1)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", New Object() {i + 3, 1}), "NumberFormat", "0.0")
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Math.Sqrt(CvCest(CInt(i), io)) / Cest(CInt(i), io), i + 3, 2)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", New Object() {i + 3, 2}), "NumberFormat", "0.00")
+					.Offset(i + 3, 1).Value = Cest(CInt(i), io)
+					.Offset(i + 3, 1).NumberFormat = "0.0"
+					.Offset(i + 3, 2).Value = Math.Sqrt(CvCest(CInt(i), io)) / Cest(CInt(i), io)
+					.Offset(i + 3, 2).NumberFormat = "0.00"
 					xloW = MIn(xloW, Cest(CInt(i), io))
 					If BarwidtH > 0 Then
 						fF = Math.Exp(Math.Sqrt(CvCest(CInt(i), io)) / Cest(CInt(i), io) * BarwidtH)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Cest(CInt(i), io) * (1 - 1 / fF), i + 3, 7)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Cest(CInt(i), io) * (fF - 1), i + 3, 8)
+						.Offset(i + 3, 7).Value = Cest(CInt(i), io) * (1 - 1 / fF)
+						.Offset(i + 3, 8).Value = Cest(CInt(i), io) * (fF - 1)
 						xloW = MIn(xloW, Cest(CInt(i), io) / fF)
 					End If
 				End If
 
-				'IMPORTANT NOTE: Walker assumes errors are LOG-NORMALLY DISTRIBUTED AROUND MEAN
 				If Cobs(CInt(i), io) > 0 Then
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Cobs(CInt(i), io), i + 3, 3)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", New Object() {i + 3, 3}), "NumberFormat", "0.0")
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", CvCobs(CInt(i), io), i + 3, 4)
-					ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", New Object() {i + 3, 4}), "NumberFormat", "0.00")
+					.Offset(i + 3, 3).Value = Cobs(CInt(i), io)
+					.Offset(i + 3, 3).NumberFormat = "0.0"
+					.Offset(i + 3, 4).Value = CvCobs(CInt(i), io)
+					.Offset(i + 3, 4).NumberFormat = "0.00"
 					xloW = MIn(xloW, Cobs(CInt(i), io))
 					If PlotObserved And BarwidtH > 0 Then
 						fF = Math.Exp(CvCobs(CInt(i), io) * BarwidtH)
-						' Lower Conf. Int Subtracted for segment i, variable io
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Cobs(CInt(i), io) * (1 - 1 / fF), i + 3, 9)
-						' Upper Conf. Int ADDED for segment i, variable io
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"p_label"}), "Offset", New Object() {0, -1}), "Offset", Cobs(CInt(i), io) * (fF - 1), i + 3, 10)
+						.Offset(i + 3, 9).Value = Cobs(CInt(i), io) * (1 - 1 / fF)
+						.Offset(i + 3, 10).Value = Cobs(CInt(i), io) * (fF - 1)
 						xloW = MIn(xloW, Cobs(CInt(i), io) / fF)
 						If DebugCVMode Then
 							XBAR = Cobs(CInt(i), io)
@@ -199,54 +198,45 @@ Partial Friend Class frmPlot
 						End If
 					End If
 				End If
-
 			Next i
 		End With
 
 		If xloW > 0 And Me.chkLogScale.CheckState = CheckState.Checked Then
 			xloW = 10 ^ Math.Floor(Math.Log(xloW) / 2.303)
-			With ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue})
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "MinimumScale", xloW)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(CurrentWKChart, "Axes", New Object() {Excel.XlAxisType.xlValue}), "CrossesAt", xloW)
+			With CurrentWKChart.Axes(Excel.XlAxisType.xlValue)
+				.MinimumScale = xloW
+				.CrossesAt = xloW
 			End With
 		End If
 
 		With gLSht
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A7"}), ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A7"}), "Offset", New Object() {Nseg, 0})}), "Name", "p_segs")
-			ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {ReflectionHelper.Invoke(gLSht, "Range", New Object() {"b7"}), ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"b7"}), "Offset", New Object() {Nseg, 0})}), "Name", "p_pred")
+			.Range(.Range("A7"), .Range("A7").Offset(Nseg, 0)).Name = "p_segs"
+			.Range(.Range("b7"), .Range("b7").Offset(Nseg, 0)).Name = "p_pred"
 			If PlotObserved Then
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {ReflectionHelper.Invoke(gLSht, "Range", New Object() {"d7"}), ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"d7"}), "Offset", New Object() {Nseg, 0})}), "Name", "p_obs")
+				.Range(.Range("d7"), .Range("d7").Offset(Nseg, 0)).Name = "p_obs"
 			Else
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A40"}), "Name", "p_obs")
+				.Range("A40").Name = "p_obs"
 			End If
 
 			Wka.Calculate()
-			'OLD CODE USING PICTURES
-			'For Each pct In .Pictures
-			'    pct.Delete
-			'     Next
 
-			'NEW CODE USING SHAPES COLLECTION
-			Lpic = ReflectionHelper.GetMember(Of Integer)(ReflectionHelper.GetMember(gLSht, "Shapes"), "Count")
+			' Delete all shapes
+			Lpic = .Shapes.Count
 			For i As Double = 1 To Lpic
-				'If DebugCVMode Then MsgBox "pic count:" & gLSht.Shapes.Count
-				ReflectionHelper.Invoke(ReflectionHelper.Invoke(ReflectionHelper.GetMember(gLSht, "Shapes"), "Item", New Object() {i}), "Delete", New Object() {})
+				.Shapes.Item(1).Delete() ' Always delete the first shape, as the collection shrinks
 			Next i
 
 			If DebugMode Then MessageBox.Show("DEBUG 16: frmPlot: About to perform CurrentWKChart.copy picture " & Conversion.Str(DebugCount), My.Application.Info.Title)
 			DebugCount += 1
-			ReflectionHelper.Invoke(CurrentWKChart, "CopyPicture", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A7"}), "Offset", New Object() {Nseg + 2, 0})}, New String() {"Destination"})
+			CurrentWKChart.CopyPicture()
+			.Paste(.Range("A7").Offset(Nseg + 2, 0))
 
 			Fname = Directory & "temp.gif"
-			'UPGRADE_WARNING: (7006) The Named argument FilterName was not resolved and corresponds to the following expression GIF More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			'UPGRADE_WARNING: (7006) The Named argument FileName was not resolved and corresponds to the following expression Fname More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(CurrentWKChart, "Export", New Object() {Fname, "GIF"}, New String() {"FileName", "FilterName"})
+			CurrentWKChart.Export(Fname, "GIF")
 			Image1.Image = Image.FromFile(Fname)
 			File.Delete(Fname)
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"g7:z100"}), "ClearContents", New Object() {})
-			If Iop(12) = 2 Then ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"j7"}), "Offset", " ", Nseg + 2 + 30, 0)
+			.Range("g7:z100").ClearContents()
+			If Iop(12) = 2 Then .Range("j7").Offset(Nseg + 2 + 30, 0).Value = " "
 		End With
 
 	End Sub

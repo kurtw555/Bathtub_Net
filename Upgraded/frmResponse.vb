@@ -84,20 +84,15 @@ Partial Friend Class frmResponse
 				Run_Response()
 				If Ier = 0 Then
 					'Restored 7/3/2009 DMS
-					If DebugMode Then MessageBox.Show("frmresponse N25: chart Object Count=" & Conversion.Str(Wkb.Sheets("plot response").ChartObjects(Type.Missing).Count), My.Application.Info.Title)
-					CurrentWKChart = ReflectionHelper.GetMember(Wkb.Sheets("plot response").ChartObjects(Type.Missing)(1), "Chart")
+					If DebugMode Then MessageBox.Show("frmresponse N25: chart Object Count=" & Conversion.Str(Wkb.Sheets("plot response").ChartObjects().Count), My.Application.Info.Title)
+					CurrentWKChart = CType(Wkb.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
 					Fname = Directory & "temp.gif"
-					'UPGRADE_WARNING: (7006) The Named argument FilterName was not resolved and corresponds to the following expression GIF More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					'UPGRADE_WARNING: (7006) The Named argument FileName was not resolved and corresponds to the following expression Fname More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					ReflectionHelper.Invoke(CurrentWKChart, "Export", New Object() {Fname, "GIF"}, New String() {"FileName", "FilterName"})
-					CurrentWKChart = ReflectionHelper.GetMember(Wkb.Sheets("plot response").ChartObjects(Type.Missing)(1), "Chart")
+					CurrentWKChart.Export(Fname, "GIF")
+					CurrentWKChart = CType(Wkb.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
 					Image1.Image = Image.FromFile(Fname)
 					If DebugMode Then MessageBox.Show("frmresponse N26: About to Delete " & Directory & "temp.gif", My.Application.Info.Title)
 					File.Delete(Fname)
 					'=====================================
-
-
-
 					reD = True
 				End If
 				ShowWarnings = ShowStash
@@ -111,27 +106,31 @@ Partial Friend Class frmResponse
 							ResponseCount += 10
 						Else
 							ResponseCount = 2
-							Wkb.Sheets("MetaModels").Copy(Type.Missing, .Worksheets("load response"))
-							ReflectionHelper.LetMember(.ActiveSheet, "Name", "MetaModels")
+							Wkb.Sheets("MetaModels").Copy(After:= .Worksheets("load response"))
+							.ActiveSheet.Name = "MetaModels"
 							gSheetout = .ActiveSheet
 							Wka.ActiveWindow.DisplayGridlines = False
 						End If
 					End With
-					ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Rows", New Object() {"11:20"}), "Copy", New Object() {ReflectionHelper.Invoke(gSheetout, "Range", New Object() {"A" & ResponseCount})})
-					'Copy ancillary info on parameter and model type
+					' Copy rows 11:20 from gLSht to gSheetout at A & ResponseCount
+					Dim srcRows As Excel.Range = CType(gLSht.Rows("11:20"), Excel.Range)
+					Dim destCell As Excel.Range = CType(gSheetout.Range("A" & ResponseCount), Excel.Range)
+					srcRows.Copy(destCell)
+					' Copy ancillary info on parameter and model type
 					For j As Integer = ResponseCount To ResponseCount + 9
-						ReflectionHelper.LetMember(gSheetout, "Cells", cmbVariable.SelectedIndex, j, "I")
-						ReflectionHelper.LetMember(gSheetout, "Cells", cmbOption.SelectedIndex, j, "J")
+						gSheetout.Cells(j, "I").Value = cmbVariable.SelectedIndex
+						gSheetout.Cells(j, "J").Value = cmbOption.SelectedIndex
 						icount = cmbSegment.SelectedIndex + 1
 						If icount = cmbSegment.Items.Count Then icount = 0
-						ReflectionHelper.LetMember(gSheetout, "Cells", icount, j, "K")
-						ReflectionHelper.LetMember(gSheetout, "Cells", cmbVariable.Text, j, "L")
-						ReflectionHelper.LetMember(gSheetout, "Cells", cmbOption.Text, j, "M")
-						ReflectionHelper.LetMember(gSheetout, "Cells", cmbSegment.Text, j, "N")
+						gSheetout.Cells(j, "K").Value = icount
+						gSheetout.Cells(j, "L").Value = cmbVariable.Text
+						gSheetout.Cells(j, "M").Value = cmbOption.Text
+						gSheetout.Cells(j, "N").Value = cmbSegment.Text
 					Next j
 				End If
 			Next Model_type
 		Next RespVarCode
+
 		Wko.Sheets("load response").Delete()
 		Wko.Sheets("MetaModels").Activate()
 
@@ -203,11 +202,11 @@ Partial Friend Class frmResponse
 					'Need to Destroy the old sheet before you do this
 					'CurrentWKChart is an Excel Chart Object
 					'Point the object at Chart1
-					CurrentWKChart = ReflectionHelper.GetMember(Wkb.Sheets("plot response").ChartObjects(Type.Missing)(1), "Chart")
+					' Get the Chart object directly from the ChartObjects collection
+					CurrentWKChart = CType(Wkb.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
 					Fname = Directory & "temp.gif"
-					'UPGRADE_WARNING: (7006) The Named argument FilterName was not resolved and corresponds to the following expression GIF More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					'UPGRADE_WARNING: (7006) The Named argument FileName was not resolved and corresponds to the following expression Fname More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-					ReflectionHelper.Invoke(CurrentWKChart, "Export", New Object() {Fname, "GIF"}, New String() {"FileName", "FilterName"})
+					' Export the chart as a GIF file
+					CurrentWKChart.Export(Fname, "GIF")
 					'Clear any existing picture - give a little delay for export before reload
 					Image1.Image = Nothing
 					Image1.Image = Image.FromFile(Fname)

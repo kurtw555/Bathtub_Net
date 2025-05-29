@@ -112,7 +112,7 @@ Partial Friend Class frmBox
 		Me.Width = txtBox.Width + dw / 15
 		Me.Height = txtBox.Height + dh / 15
 		'UPGRADE_ISSUE: (2064) Form property frmBox.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-		Me.setHelpContextID(ContextId)
+		'Me.setHelpContextID(ContextId)
 		'frmBox.Visible = True
 		'frmBox.WindowState = 0
 	End Sub

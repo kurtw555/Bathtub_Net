@@ -206,7 +206,7 @@ Partial Friend Class frmSegments
 	End Sub
 
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Sub UpdateSegmentValues(ByVal io As BT2Support.UpgradeStubs.stdole_LoadPictureConstantsEnum)
+	Sub UpdateSegmentValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
 		Dim k As Integer
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original

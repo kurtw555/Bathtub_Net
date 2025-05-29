@@ -79,7 +79,7 @@ Partial Friend Class frmCoefficients
 		UpdateCoefValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
 	End Sub
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Private Sub UpdateCoefValues(ByVal io As BT2Support.UpgradeStubs.stdole_LoadPictureConstantsEnum)
+	Private Sub UpdateCoefValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original
 		'io=3 copy defaults

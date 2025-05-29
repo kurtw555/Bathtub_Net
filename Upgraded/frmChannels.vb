@@ -59,7 +59,7 @@ Partial Friend Class frmChannels
 				Else
 					If Npipe > 0 Then
 						'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-						UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+						UpdateChannelValues(CopyIO.COPY_DEFAULTS)
 					End If 'save current channel
 					If CheckValues() Then
 						Npipe += 1
@@ -68,7 +68,7 @@ Partial Friend Class frmChannels
 						PipeName(jpipE) = "New Channel"
 						UpdateCombos()
 						'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-						UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+						UpdateChannelValues(CopyIO.FROM_TEMP_ARRAY)
 					End If
 				End If
 
@@ -110,7 +110,7 @@ Partial Friend Class frmChannels
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmChannels.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ShowHelp(Me.getHelpContextID())
+				'ShowHelp(Me.getHelpContextID())
 
 			Case "Cancel"
 				Backup(1)
@@ -203,7 +203,7 @@ Partial Friend Class frmChannels
 	End Sub
 
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Private Sub UpdateChannelValues(ByVal io As BT2Support.UpgradeStubs.stdole_LoadPictureConstantsEnum)
+	Private Sub UpdateChannelValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original
 		'io=3 copy defaults
