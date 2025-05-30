@@ -133,24 +133,33 @@ Module Module5
 		Else
 			line_no += 2
 		End If
-		With ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"})
+		With gLSht.Range("A3")
 			line_no += 1
-			ReflectionHelper.Invoke(ReflectionHelper.Invoke(Hdr, "Range", New Object() {"header_calib"}), "Copy", New Object() {})
-			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression gLSht.Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(gLSht, "Paste", New Object() {ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 0})}, New String() {"Destination"})
+			Hdr.Range("header_calib").Copy()
+			gLSht.Paste(gLSht.Range("A3").Offset(line_no, 0))
 
 			If Iop(CInt(io)) > 0 Then
 				Oss(io, 0, fF, r2, nobs)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", DiagName(CInt(io)), line_no, 2)
-				ReflectionHelper.LetMember(ReflectionHelper.GetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 2}), "Font"), "Bold", True)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", r2, line_no, 4)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.00")
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", Xk(CInt(io)), line_no + 1, 3)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no + 1, 3}), "NumberFormat", "0.00")
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", CvXk(CInt(io)), line_no + 1, 5)
-				ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no + 1, 5}), "NumberFormat", "0.00")
+				' Set DiagName in bold
+				With gLSht.Range("A3").Offset(line_no, 2)
+					.Value = DiagName(CInt(io))
+					.Font.Bold = True
+				End With
+				' Set r2 value and format
+				With gLSht.Range("A3").Offset(line_no, 4)
+					.Value = r2
+					.NumberFormat = "0.00"
+				End With
+				' Set Xk and CvXk values and format
+				With gLSht.Range("A3").Offset(line_no + 1, 3)
+					.Value = Xk(CInt(io))
+					.NumberFormat = "0.00"
+				End With
+				With gLSht.Range("A3").Offset(line_no + 1, 5)
+					.Value = CvXk(CInt(io))
+					.NumberFormat = "0.00"
+				End With
 				line_no += 3
-
 
 				If Nseg = 1 Then
 					m = 1
@@ -165,35 +174,58 @@ Module Module5
 						x(3) = Math.Sqrt(CvCobs(CInt(i), CInt(io)) ^ 2 + x(1) ^ 2)
 						x(4) = Ratv(x(2), x(3))
 						line_no += 1
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", i, line_no, 0)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 0}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", Iag(CInt(i)), line_no, 1)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 1}), "HorizontalAlignment", Excel.Constants.xlCenter)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", SegName(CInt(i)), line_no, 2)
+						' Set segment index and center alignment
+						With gLSht.Range("A3").Offset(line_no, 0)
+							.Value = i
+							.HorizontalAlignment = Excel.Constants.xlCenter
+						End With
+						' Set Iag and center alignment
+						With gLSht.Range("A3").Offset(line_no, 1)
+							.Value = Iag(CInt(i))
+							.HorizontalAlignment = Excel.Constants.xlCenter
+						End With
+						' Set segment name
+						gLSht.Range("A3").Offset(line_no, 2).Value = SegName(CInt(i))
 						If i <= Nseg Then
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", Cal(CInt(i), CInt(io)), line_no, 3)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 3}), "NumberFormat", "0.00")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", CvCal(CInt(i), CInt(io)), line_no, 4)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 4}), "NumberFormat", "0.00")
+							With gLSht.Range("A3").Offset(line_no, 3)
+								.Value = Cal(CInt(i), CInt(io))
+								.NumberFormat = "0.00"
+							End With
+							With gLSht.Range("A3").Offset(line_no, 4)
+								.Value = CvCal(CInt(i), CInt(io))
+								.NumberFormat = "0.00"
+							End With
 						End If
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", Cest(CInt(i), CInt(io)), line_no, 5)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 5}), "NumberFormat", "0.0")
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", x(1), line_no, 6)
-						ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 6}), "NumberFormat", "0.00")
+						With gLSht.Range("A3").Offset(line_no, 5)
+							.Value = Cest(CInt(i), CInt(io))
+							.NumberFormat = "0.0"
+						End With
+						With gLSht.Range("A3").Offset(line_no, 6)
+							.Value = x(1)
+							.NumberFormat = "0.00"
+						End With
 						If Cobs(CInt(i), CInt(io)) > 0 Then
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", Cobs(CInt(i), CInt(io)), line_no, 7)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 7}), "NumberFormat", "0.0")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", CvCobs(CInt(i), CInt(io)), line_no, 8)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 8}), "NumberFormat", "0.00")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", x(2), line_no, 9)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 9}), "NumberFormat", "0.00")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", x(3), line_no, 10)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 10}), "NumberFormat", "0.00")
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", x(4), line_no, 11)
-							ReflectionHelper.LetMember(ReflectionHelper.Invoke(ReflectionHelper.Invoke(gLSht, "Range", New Object() {"A3"}), "Offset", New Object() {line_no, 11}), "NumberFormat", "0.00")
+							With gLSht.Range("A3").Offset(line_no, 7)
+								.Value = Cobs(CInt(i), CInt(io))
+								.NumberFormat = "0.0"
+							End With
+							With gLSht.Range("A3").Offset(line_no, 8)
+								.Value = CvCobs(CInt(i), CInt(io))
+								.NumberFormat = "0.00"
+							End With
+							With gLSht.Range("A3").Offset(line_no, 9)
+								.Value = x(2)
+								.NumberFormat = "0.00"
+							End With
+							With gLSht.Range("A3").Offset(line_no, 10)
+								.Value = x(3)
+								.NumberFormat = "0.00"
+							End With
+							With gLSht.Range("A3").Offset(line_no, 11)
+								.Value = x(4)
+								.NumberFormat = "0.00"
+							End With
 						End If
-
-
 					End If
 				Next i
 			End If
@@ -660,28 +692,25 @@ s35:
 			.Range("A1:z5000").Clear()
 			Excel_Global_definst.Range("header_listcal").Copy()
 			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(Excel_Global_definst.ActiveSheet, "Paste", New Object() {.Offset(0, 0)}, New String() {"Destination"})
+			'ReflectionHelper.Invoke(Excel_Global_definst.ActiveSheet, "Paste", New Object() {.Offset(0, 0)}, New String() {"Destination"})
+			Excel_Global_definst.ActiveSheet.Paste(.Offset(0, 0))
 
 			'       write(nout,13)
 			' 13     format(' Calibration Factors:'/
 			'     & ' Seg Grp Label           ',
 			'     &       '  Exchange   Total P   Total N    Chl-a')
 			line_no += 3
-			NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-			'.Offset(line_no, 0) = "Global"
+			.Offset(line_no, 0).Value = "Global"
 			For i As Double = 1 To 3
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, i + 3) = Xk(CInt(i))
+				.Offset(line_no, i + 3).Value = Xk(CInt(i))
 				.Offset(line_no, i + 3).NumberFormat = "0.00"
 			Next i
 			'         write(nout,14) p(6),(xk(i),i=1,3)
 			' 14     format(' Global ',17x,4f10.4)
 			line_no += 1
-			NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-			'.Offset(line_no, 0) = "CV:"
+			.Offset(line_no, 0).Value = "CV:"
 			For i As Double = 1 To 3
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, i + 3) = CvXk(CInt(i))
+				.Offset(line_no, i + 3).Value = CvXk(CInt(i))
 				.Offset(line_no, i + 3).NumberFormat = "0.00"
 			Next i
 			'        write(nout,19) cvxk(13),(cvxk(i),i=1,3)
@@ -692,36 +721,35 @@ s35:
 				'          write(nout,19) cvcal(i,6),(cvcal(i,j),j=1,3)
 				' 15     format(2i4,1x,a16,4f10.4)
 				line_no += 1
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 0) = i
+
+				.Offset(line_no, 0).Value = i
 				.Offset(line_no, 0).HorizontalAlignment = Excel.Constants.xlCenter
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 1) = Iag(CInt(i))
+
+				.Offset(line_no, 1).Value = Iag(CInt(i))
 				.Offset(line_no, 1).HorizontalAlignment = Excel.Constants.xlCenter
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 2) = SegName(CInt(i))
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 3) = Cal(CInt(i), 1)
+
+				.Offset(line_no, 2).Value = SegName(CInt(i))
+
+				.Offset(line_no, 3).Value = Cal(CInt(i), 1)
 				.Offset(line_no, 3).NumberFormat = "0.00"
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 4) = Cal(CInt(i), 2)
+
+				.Offset(line_no, 4).Value = Cal(CInt(i), 2)
 				.Offset(line_no, 4).NumberFormat = "0.00"
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 5) = Cal(CInt(i), 3)
+
+				.Offset(line_no, 5).Value = Cal(CInt(i), 3)
 				.Offset(line_no, 5).NumberFormat = "0.00"
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 6) = Cal(CInt(i), 4)
+
+				.Offset(line_no, 6).Value = Cal(CInt(i), 4)
 				.Offset(line_no, 6).NumberFormat = "0.00"
 			Next i
 
 			line_no += 2
-			NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-			'.Offset(line_no, 0) = "R-Squared:"
+
+			.Offset(line_no, 0).Value = "R-Squared:"
 
 			For i As Double = 1 To 4
 				Oss(i, 0, fF, xx, nobs)
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, i + 2) = xx
+				.Offset(line_no, i + 2).Value = xx
 				.Offset(line_no, i + 2).NumberFormat = "0.00"
 			Next i
 
@@ -855,32 +883,32 @@ S56:
 
 			Excel_Global_definst.Range("header_exchange").Copy()
 			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression Sheets().Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			ReflectionHelper.Invoke(Excel_Global_definst.ActiveSheet, "Paste", New Object() {.Offset(line_no, 0)}, New String() {"Destination"})
+			Excel_Global_definst.ActiveSheet.Paste(Excel_Global_definst.ActiveSheet.Range("A1").Offset(line_no, 0))
 			'c Results
 			'       write(nout,1)
 			For i As Double = 1 To Nseg
 				'cc     write(nout,2) i,iout(i),SegName(i),xp(i+nseg),xp(i),cal(i,6),
 				'cc     &        cobs(i,1),yp(i),cest(i,1),iwork(i)
 				line_no += 1
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 0) = i
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 1) = Iout(CInt(i))
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 2) = SegName(CInt(i))
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 3) = Exch(CInt(i))
 
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 4) = Cal(CInt(i), 1)
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 5) = Cobs(CInt(i), 1)
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 6) = Cest(CInt(i), 1)
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 7) = Cobs(CInt(i), 1) - Cest(CInt(i), 1)
-				NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-				'.Offset(line_no, 8) = isym(CInt(i))
+				.Offset(line_no, 0).Value = i
+
+				.Offset(line_no, 1).Value = Iout(CInt(i))
+
+				.Offset(line_no, 2).Value = SegName(CInt(i))
+
+				.Offset(line_no, 3).Value = Exch(CInt(i))
+
+
+				.Offset(line_no, 4).Value = Cal(CInt(i), 1)
+
+				.Offset(line_no, 5).Value = Cobs(CInt(i), 1)
+
+				.Offset(line_no, 6).Value = Cest(CInt(i), 1)
+
+				.Offset(line_no, 7).Value = Cobs(CInt(i), 1) - Cest(CInt(i), 1)
+
+				.Offset(line_no, 8).Value = isym(CInt(i))
 				For k As Integer = 3 To 7
 					.Offset(line_no, k).NumberFormat = "0.0"
 				Next k
@@ -890,8 +918,7 @@ S56:
 				' 2         format(2i3,1x,a16,f16.2,f10.4,3f7.2,1x,a1)
 			Next i
 			line_no += 1
-			NotUpgradedHelper.NotifyNotUpgradedElement("The following assignment/return was commented because it has incompatible types")
-			'.Offset(line_no, 0) = "* = constrained > 0 or excluded from calibration"
+			.Offset(line_no, 0).Value = "* = constrained > 0 or excluded from calibration"
 			' write(nout,22)
 			' 22       format(
 			'     &    ' * = constrained >=0 or excluded from calibration')
@@ -959,7 +986,7 @@ S56:
 	'        End Sub
 
 	Function Runi1() As Object
-		Return ReflectionHelper.Invoke(Excel_Global_definst.Application.WorksheetFunction, "rand", New Object() {})
+		Return Excel_Global_definst.Application.WorksheetFunction.Rand()
 	End Function
 
 	Sub MinCon()
@@ -1030,7 +1057,7 @@ S56:
 			'         if(ikey = 1) goto 333
 			'c randomize start
 			For i As Integer = 1 To nU
-				If iT > 1 Then Xp(i) = Yp(i) + (ReflectionHelper.GetPrimitiveValue(Of Double)(Runi1()) - 0.5) * buZ
+				If iT > 1 Then Xp(i) = Yp(i) + (Runi1() - 0.5) * buZ
 			Next i
 			'    if(itrace > 0) write(23,123) 'res:',it,(xp(i),i=1,nu)
 			' 123    format(1x,a4,i4,15f10.3)

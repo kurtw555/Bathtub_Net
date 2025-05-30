@@ -71,7 +71,7 @@ Partial Friend Class frmAbout
 			'If DebugMode Then MessageBox.Show("frmAbout: ROOT DIRECTORY is established as " & Directory, My.Application.Info.Title)
 
 		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
+			'NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
 		End Try
 	End Sub
 

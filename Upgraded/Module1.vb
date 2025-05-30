@@ -1504,59 +1504,72 @@ Quit:
 		Dim k As Integer
 		Dim j As Integer
 
-		'c read key file
-		Ier = 0
-		With Wkb.Sheets("key")
+		Try
 
-			Sigma = .Range("sigma").Value 'number of standard errors plotted around predicted & observed values
-			Tol = .Range("tolerance").Value 'tolerance for convergence of mass balance solution
 
-			'diagnostic variables
-			NDiagnostics = .Range("nDiagnostics").Value
-			Nord = NDiagnostics
-			With .Range("ndiagnostics").Offset(1, 0)
-				For i As Integer = 1 To NDiagnostics
-					j = .Offset(i, 0).Value 'variable number
-					Iord(i) = j
-					Ilogd(j) = .Offset(i, 1).Value
-					Cshort_Renamed(j) = .Offset(i, 2).Value
-					DiagName(j) = .Offset(i, 3).Value
-					For k2 As Integer = 1 To 5
-						Stat(j, k2) = .Offset(i, k2 + 3).Value
-					Next k2
-				Next i
-			End With
+            'c read key file
+            Ier = 0
+			Dim wksheet = Wkb.Sheets("key")
+			Dim namedRange As Excel.Name = Wkb.Names.Item("sigma")
+			Dim range As Excel.Range = namedRange.RefersToRange
+			With Wkb.Sheets("key")
+				Dim val2 = wksheet.Names.Item("sigma")
+				Dim vals3 = .Names.Item("sigma")
+				Sigma = .Names.Item("sigma").Value2
+				'Sigma = .("sigma").Value 'number of standard errors plotted around predicted & observed values
+				'Sigma = .Range("sigma").Value 'number of standard errors plotted around predicted & observed values
+				Tol = .Range("tolerance").Value 'tolerance for convergence of mass balance solution
 
-			NOptions = .Range("Noptions").Value
-			With .Range("noptions").Offset(1, 0)
-				k = 0
-				For i As Integer = 1 To NOptions
-					k = k + 1
-					Mop(i) = .Offset(k, 0).Value 'number of options for
-					OptionName(i, 0) = .Offset(k, 1).Value 'option name
-					IopDefault(i) = 0
-					For j2 As Integer = 1 To Mop(i)
+
+				'diagnostic variables
+
+				NDiagnostics = .Range("nDiagnostics").Value
+				Nord = NDiagnostics
+				With .Range("ndiagnostics").Offset(1, 0)
+					For i As Integer = 1 To NDiagnostics
+						j = .Offset(i, 0).Value 'variable number
+						Iord(i) = j
+						Ilogd(j) = .Offset(i, 1).Value
+						Cshort_Renamed(j) = .Offset(i, 2).Value
+						DiagName(j) = .Offset(i, 3).Value
+						For k2 As Integer = 1 To 5
+							Stat(j, k2) = .Offset(i, k2 + 3).Value
+						Next k2
+					Next i
+				End With
+
+				NOptions = .Range("Noptions").Value
+				With .Range("noptions").Offset(1, 0)
+					k = 0
+					For i As Integer = 1 To NOptions
 						k = k + 1
-						OptionName(i, j2) = .Offset(k, 1).Value 'label for selection
-						If .Offset(k, 2).Value > 0 Then IopDefault(i) = j2 - 1
-					Next j2
-					k = k + 1
-				Next i
+						Mop(i) = .Offset(k, 0).Value 'number of options for
+						OptionName(i, 0) = .Offset(k, 1).Value 'option name
+						IopDefault(i) = 0
+						For j2 As Integer = 1 To Mop(i)
+							k = k + 1
+							OptionName(i, j2) = .Offset(k, 1).Value 'label for selection
+							If .Offset(k, 2).Value > 0 Then IopDefault(i) = j2 - 1
+						Next j2
+						k = k + 1
+					Next i
+				End With
+
+				'coefficient labels
+				NXk = .Range("ncoef").Value
+				With .Range("ncoef").Offset(1, 0)
+					For i As Integer = 1 To NXk
+						XkName(i) = .Offset(i, 1).Value
+						XkDefault(i) = .Offset(i, 2).Value
+						CvXkDefault(i) = .Offset(i, 3).Value
+					Next i
+				End With
+
 			End With
-
-			'coefficient labels
-			NXk = .Range("ncoef").Value
-			With .Range("ncoef").Offset(1, 0)
-				For i As Integer = 1 To NXk
-					XkName(i) = .Offset(i, 1).Value
-					XkDefault(i) = .Offset(i, 2).Value
-					CvXkDefault(i) = .Offset(i, 3).Value
-				Next i
-			End With
-
-		End With
-		Exit Sub
-
+			Exit Sub
+		Catch ex As Exception
+			Dim msg As String = ex.Message
+		End Try
 		'    MsgBox("Invalid Key File"
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		Ier = 1
@@ -1877,7 +1890,8 @@ Quit:
 					'  Next Lwb
 					'End If
 
-					Dim bath_book As String = "D:\Temp\Bathtub_Net\Upgraded\bin\net8.0-windows\bath.xlsx"
+					Dim bath_book As String = "D:\Bathtub\Data\bath.xlsx"
+					'Dim bath_book As String = "D:\Bathtub\XLA_Reader\XLA_Reader\bin\Debug\net8.0-windows\bath.xlsx"					
 					If Not gxla_Loaded Then ' Start fresh
 						'            If DebugMode2 Then MsgBox(("Opening WKA.Workbooks " & Directory & BathBook)
 						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
