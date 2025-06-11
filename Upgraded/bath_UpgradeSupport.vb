@@ -6,15 +6,15 @@ End Interface
 
 
 Module UpgradeSupport
-	'UPGRADE_NOTE: (7014) The property 'Excel_Global_definst' could be being created from different 'UpgradeSupport' in a multiproject solution More Information: https://docs.mobilize.net/vbuc/ewis/notes#id-7014
-	Private _Excel_Global_definst As IGlobal = Nothing
-	Public ReadOnly Property Excel_Global_definst() As IGlobal
-		Get
+	'UPGRADE_NOTE: (7014) The property 'Wka' could be being created from different 'UpgradeSupport' in a multiproject solution More Information: https://docs.mobilize.net/vbuc/ewis/notes#id-7014
+	'Private _Wka As IGlobal = Nothing
+	'Public ReadOnly Property Wka() As IGlobal
+	'	Get
 
-			If _Excel_Global_definst Is Nothing Then
-				_Excel_Global_definst = New Microsoft.Office.Interop.Excel.Application()
-			End If
-			Return _Excel_Global_definst
-		End Get
-	End Property
+	'		If _Wka Is Nothing Then
+	'			_Wka = New Microsoft.Office.Interop.Excel.Application()
+	'		End If
+	'		Return _Wka
+	'	End Get
+	'End Property
 End Module

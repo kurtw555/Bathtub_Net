@@ -21,7 +21,7 @@
     <GenerateTargetFrameworkAttribute>False</GenerateTargetFrameworkAttribute>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
-    <StartupObject>Bath614d.Module1</StartupObject>
+    <StartupObject>Bath614d.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
@@ -34,9 +34,6 @@
     <PackageReference Include="Mobilize.VBUC.Helpers.NotUpgradeHelper" Version="10.4.0" />
     <PackageReference Include="Mobilize.VBUC.Helpers.Utils.CursorHelper" Version="10.4.0" />
     <PackageReference Include="Mobilize.VBUC.Helpers.Gui.Utils" Version="10.4.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="BT2Support\BT2Support.vbproj" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="System" />
@@ -170,6 +167,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="bath_UpgradeSupport.vb" />
     <Compile Remove="BT2Support\UpgradeStubs\UpgradeStubs.vb" />
     <Compile Remove="BT2Support\PInvoke\SafeMethods\advapi32.vb" />
     <Compile Remove="BT2Support\PInvoke\SafeMethods\hhctrl.vb" />
@@ -182,6 +180,8 @@
     <Compile Remove="BT2Support\PInvoke\UnsafeMethods\Structures.vb" />
     <Compile Remove="BT2Support\PInvoke\UnsafeMethods\user32.vb" />
     <Compile Remove="BT2Support\PInvoke\UnsafeMethods\version.vb" />
+    <Compile Remove="HelpClassModule\clsHTMLHelp.vb" />
+    <Compile Remove="Utils.vb" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="*_UpgradeReport.htm" />
@@ -217,5 +217,8 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HelpClassModule\" />
   </ItemGroup>
 </Project>

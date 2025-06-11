@@ -10,20 +10,20 @@ Partial Friend Class frmAbout
 	Public Sub New()
 		MyBase.New()
 		Dim mustCallFormLoad As Boolean = False
-		If m_vb6FormDefInstance Is Nothing Then
-			If m_InitializingDefInstance Then
-				m_vb6FormDefInstance = Me
-			Else
-				Try
-					'For the start-up form, the first instance created is the default instance.
-					If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
-						m_vb6FormDefInstance = Me
-					End If
-				Finally
-					mustCallFormLoad = True
-				End Try
-			End If
-		End If
+		'If m_vb6FormDefInstance Is Nothing Then
+		'	If m_InitializingDefInstance Then
+		'		m_vb6FormDefInstance = Me
+		'	Else
+		'		Try
+		'			'For the start-up form, the first instance created is the default instance.
+		'			If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
+		'				m_vb6FormDefInstance = Me
+		'			End If
+		'		Finally
+		'			mustCallFormLoad = True
+		'		End Try
+		'	End If
+		'End If
 		'This call is required by the Windows Form Designer.
 		InitializeComponent()
 		ReLoadForm(False)
@@ -58,11 +58,11 @@ Partial Friend Class frmAbout
 		'define help
 		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 		Try
-            'In some installations the App.path returns a null string - read/write privileges?
-            Dim Directory = Assembly.GetExecutingAssembly().GetExecutingAssembly().Location
+			'In some installations the App.path returns a null string - read/write privileges?
+			'Dim Directory = Assembly.GetExecutingAssembly().GetExecutingAssembly().Location
 
 			'If (My.Application.Info.DirectoryPath = "") Then MessageBox.Show("FrmAbout: WARNING: App.Path is Null - could be read/write privilege issue", My.Application.Info.Title)
-			'Directory = My.Application.Info.DirectoryPath & Excel_Global_definst.Application.PathSeparator
+			'Directory = My.Application.Info.DirectoryPath & Wka.Application.PathSeparator
 			'UPGRADE_ISSUE: (2064) VB method VB.Global was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
 			'UPGRADE_ISSUE: (2070) Constant App was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
 			'UPGRADE_ISSUE: (2064) App property App.HelpFile was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064

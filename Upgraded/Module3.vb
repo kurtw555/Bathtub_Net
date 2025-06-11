@@ -1009,7 +1009,7 @@ Module Module3
 		perc = 0
 		If z2 * z1 <= 0 Or x1 <= 0 Then Exit Sub
 		t = Math.Log(x1 / z1) / z2
-		perc = Excel_Global_definst.Application.WorksheetFunction.NormSDist(t)
+		perc = Wka.Application.WorksheetFunction.NormSDist(t)
 	End Sub
 
 	Sub List_Profiles()

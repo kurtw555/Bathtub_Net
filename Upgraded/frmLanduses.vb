@@ -60,14 +60,14 @@ Partial Friend Class frmLandUse
 				jusE = 1
 				UpdateCombo1()
 				'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateLandUseValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+				UpdateLandUseValues(CopyIO.FROM_TEMP_ARRAY)
 
 			Case "OK"
 				'If Changed Then
 				'       If MsgBox("Save Edits?", vbYesNo) = vbYes Then UpdateLandUseValues (2)
 				'       End If
 				'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateLandUseValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+				UpdateLandUseValues(CopyIO.COPY_DEFAULTS)
 				Icalc = 0
 				Me.Close()
 
@@ -77,7 +77,7 @@ Partial Friend Class frmLandUse
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmLandUse.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ShowHelp(Me.getHelpContextID())
+				'ShowHelp(Me.getHelpContextID())
 
 			Case "Clear"
 
@@ -85,7 +85,7 @@ Partial Friend Class frmLandUse
 					'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
 					UpdateLandUseValues(3)
 					'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-					UpdateLandUseValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+					UpdateLandUseValues(CopyIO.COPY_DEFAULTS)
 				End If
 		End Select
 
@@ -98,7 +98,7 @@ Partial Friend Class frmLandUse
 		UpdateCombo1()
 		SetToolTips()
 		'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-		UpdateLandUseValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+		UpdateLandUseValues(CopyIO.FROM_TEMP_ARRAY)
 	End Sub
 
 	Private Sub Combo1_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles Combo1.SelectedIndexChanged
@@ -109,11 +109,11 @@ Partial Friend Class frmLandUse
 			'        If MsgBox("Save Edits for LandUse " & jusE & LandUseName(jusE) & " ?", vbYesNo) Then UpdateLandUseValues (2)
 			'         End If
 			'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-			UpdateLandUseValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+			UpdateLandUseValues(CopyIO.COPY_DEFAULTS)
 			jusE = j
 			Combo1.SelectedIndex = jusE - 1
 			'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-			UpdateLandUseValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+			UpdateLandUseValues(CopyIO.FROM_TEMP_ARRAY)
 		End If
 	End Sub
 
@@ -128,7 +128,7 @@ Partial Friend Class frmLandUse
 	End Sub
 
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Sub UpdateLandUseValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
+	Sub UpdateLandUseValues(ByVal io As CopyIO)
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original
 		'io=3 clear temporary array to default values
@@ -177,7 +177,7 @@ Partial Friend Class frmLandUse
 					Text1(j).Text = CStr(0)
 				Next j
 
-			Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
+				'Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
 
 		End Select
 

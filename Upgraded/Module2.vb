@@ -2342,7 +2342,7 @@ s900:
 				End If
 			End If
 		Next i
-		Excel_Global_definst.Calculate()
+		Wka.Calculate()
 		Calcon()
 		Icalc = 1
 

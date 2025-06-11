@@ -93,8 +93,8 @@ Partial Class frmMenu
 	Public WithEvents txtReport As System.Windows.Forms.TextBox
 	Public CommonDialog1Open As System.Windows.Forms.OpenFileDialog
 	Public CommonDialog1Save As System.Windows.Forms.SaveFileDialog
-	Public CommonDialog1 As BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog
-	Public WithEvents ExcelVersionLabel As System.Windows.Forms.Label
+    'Public CommonDialog1 As BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog
+    Public WithEvents ExcelVersionLabel As System.Windows.Forms.Label
 	Public WithEvents Label1 As System.Windows.Forms.Label
 	Public WithEvents VersionofExcel As System.Windows.Forms.Label
 	Public WithEvents Label2 As System.Windows.Forms.Label
@@ -181,7 +181,7 @@ Partial Class frmMenu
         mnuQuit = New ToolStripMenuItem()
         CommonDialog1Open = New OpenFileDialog()
         CommonDialog1Save = New SaveFileDialog()
-        CommonDialog1 = New BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog()
+        'CommonDialog1 = New BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog()
         ExcelVersionLabel = New Label()
         Label1 = New Label()
         VersionofExcel = New Label()
@@ -397,63 +397,63 @@ Partial Class frmMenu
         ' 
         mnuReadCase.DropDownItems.AddRange(New ToolStripItem() {mnuRead_CaseFile, mnuRead_Worksheet})
         mnuReadCase.Name = "mnuReadCase"
-        mnuReadCase.Size = New Size(180, 22)
+        mnuReadCase.Size = New Size(159, 22)
         mnuReadCase.Text = "&Read"
         ' 
         ' mnuRead_CaseFile
         ' 
         mnuRead_CaseFile.Name = "mnuRead_CaseFile"
-        mnuRead_CaseFile.Size = New Size(180, 22)
+        mnuRead_CaseFile.Size = New Size(165, 22)
         mnuRead_CaseFile.Text = "Case File (.btb)"
         ' 
         ' mnuRead_Worksheet
         ' 
         mnuRead_Worksheet.Name = "mnuRead_Worksheet"
-        mnuRead_Worksheet.Size = New Size(180, 22)
+        mnuRead_Worksheet.Size = New Size(165, 22)
         mnuRead_Worksheet.Text = "Spreadsheet (.xls)"
         ' 
         ' mnuTranslateCase
         ' 
         mnuTranslateCase.Name = "mnuTranslateCase"
-        mnuTranslateCase.Size = New Size(180, 22)
+        mnuTranslateCase.Size = New Size(159, 22)
         mnuTranslateCase.Text = "&Translate"
         ' 
         ' mnuSaveCase
         ' 
         mnuSaveCase.Name = "mnuSaveCase"
-        mnuSaveCase.Size = New Size(180, 22)
+        mnuSaveCase.Size = New Size(159, 22)
         mnuSaveCase.Text = "&Save"
         ' 
         ' mnuSaveCaseAs
         ' 
         mnuSaveCaseAs.Name = "mnuSaveCaseAs"
-        mnuSaveCaseAs.Size = New Size(180, 22)
+        mnuSaveCaseAs.Size = New Size(159, 22)
         mnuSaveCaseAs.Text = "Save &As"
         ' 
         ' mnuNewCase
         ' 
         mnuNewCase.Name = "mnuNewCase"
-        mnuNewCase.Size = New Size(180, 22)
+        mnuNewCase.Size = New Size(159, 22)
         mnuNewCase.Text = "&New"
         ' 
         ' mnuReadDefault
         ' 
         mnuReadDefault.Name = "mnuReadDefault"
-        mnuReadDefault.Size = New Size(180, 22)
+        mnuReadDefault.Size = New Size(159, 22)
         mnuReadDefault.Text = "Read &Default"
         ' 
         ' mnuSaveWorksheet
         ' 
         mnuSaveWorksheet.Enabled = False
         mnuSaveWorksheet.Name = "mnuSaveWorksheet"
-        mnuSaveWorksheet.Size = New Size(180, 22)
+        mnuSaveWorksheet.Size = New Size(159, 22)
         mnuSaveWorksheet.Text = "&Save Worksheet"
         ' 
         ' mnuReadWorksheet
         ' 
         mnuReadWorksheet.Enabled = False
         mnuReadWorksheet.Name = "mnuReadWorksheet"
-        mnuReadWorksheet.Size = New Size(180, 22)
+        mnuReadWorksheet.Size = New Size(159, 22)
         mnuReadWorksheet.Text = "&Read Worksheet"
         ' 
         ' mnuEdit
@@ -727,13 +727,6 @@ Partial Class frmMenu
         mnuQuit.Name = "mnuQuit"
         mnuQuit.Size = New Size(42, 20)
         mnuQuit.Text = "&Quit"
-        ' 
-        ' CommonDialog1
-        ' 
-        CommonDialog1.Location = New Point(0, 0)
-        CommonDialog1.Name = "CommonDialog1"
-        CommonDialog1.Size = New Size(0, 0)
-        CommonDialog1.TabIndex = 0
         ' 
         ' ExcelVersionLabel
         ' 

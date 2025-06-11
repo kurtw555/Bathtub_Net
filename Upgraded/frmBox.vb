@@ -8,20 +8,20 @@ Partial Friend Class frmBox
 	Inherits System.Windows.Forms.Form
 	Public Sub New()
 		MyBase.New()
-		If m_vb6FormDefInstance Is Nothing Then
-			If m_InitializingDefInstance Then
-				m_vb6FormDefInstance = Me
-			Else
-				Try
-					'For the start-up form, the first instance created is the default instance.
-					If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
-						m_vb6FormDefInstance = Me
-					End If
+		'If m_vb6FormDefInstance Is Nothing Then
+		'	If m_InitializingDefInstance Then
+		'		m_vb6FormDefInstance = Me
+		'	Else
+		'		Try
+		'			'For the start-up form, the first instance created is the default instance.
+		'			If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
+		'				m_vb6FormDefInstance = Me
+		'			End If
 
-				Catch
-				End Try
-			End If
-		End If
+		'		Catch
+		'		End Try
+		'	End If
+		'End If
 		'This call is required by the Windows Form Designer.
 		isInitializingComponent = True
 		InitializeComponent()
@@ -44,19 +44,25 @@ Partial Friend Class frmBox
 		Select Case Button.Text
 			Case "Save"
 
-				'UPGRADE_ISSUE: (6012) CommonDialog variable was not upgraded More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-6012
-				With CommonDialog1
-					'UPGRADE_ISSUE: (2064) MSComDlg.CommonDialog property CommonDialog1.FileName was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-					.setFileName("*.txt")
-					'UPGRADE_ISSUE: (2064) MSComDlg.CommonDialog property CommonDialog1.Filter was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-					'UPGRADE_WARNING: (2081) Filter has a new behavior. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-2081
-					.setFilter("Text File(*.txt)|*.txt|")
-					'UPGRADE_ISSUE: (2064) MSComDlg.CommonDialog property CommonDialog1.FilterIndex was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-					.setFilterIndex(1)
-					CommonDialog1Save.ShowDialog()
-					'UPGRADE_ISSUE: (2064) MSComDlg.CommonDialog property CommonDialog1.FileName was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-					outfilE = .getFileName()
-				End With
+				'Dim outfilE As String = ""
+
+				Using saveDialog As New SaveFileDialog()
+					saveDialog.Filter = "Text File (*.txt)|*.txt"
+					saveDialog.FileName = "output.txt"
+					saveDialog.DefaultExt = "txt"
+					saveDialog.OverwritePrompt = True
+
+					If saveDialog.ShowDialog() = DialogResult.OK Then
+						outfilE = saveDialog.FileName
+
+						If Not String.IsNullOrEmpty(outfilE) Then
+							FileSystem.FileOpen(1, outfilE, OpenMode.Output)
+							FileSystem.WriteLine(1, txtBox.Text)
+							FileSystem.FileClose(1)
+							MessageBox.Show("File: " & outfilE & " saved", My.Application.Info.Title)
+						End If
+					End If
+				End Using
 
 				If outfilE = "" Or outfilE.IndexOf("*"c) >= 0 Then Exit Sub
 

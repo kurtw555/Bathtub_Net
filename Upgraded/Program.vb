@@ -1,4 +1,4 @@
-﻿Module Module8
+﻿Module Program
     Public Sub Main()
         ' Create an instance of frmMenu and run it
         Application.EnableVisualStyles()

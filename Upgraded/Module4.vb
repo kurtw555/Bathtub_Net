@@ -10,7 +10,7 @@ Module Module4
 		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 		Dim result As Boolean = False
 		Try
-			Dim X99 As Object = Excel_Global_definst.ActiveWorkbook.Sheets(ShtName)
+			Dim X99 As Object = Wka.ActiveWorkbook.Sheets(ShtName)
 			If Information.Err().Number = 0 Then result = True Else result = False
 			Information.Err().Clear()
 
@@ -33,7 +33,7 @@ Module Module4
 		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 		Dim result As Boolean = False
 		Try
-			Dim X99 As Excel.Workbook = Excel_Global_definst.Workbooks(wbname)
+			Dim X99 As Excel.Workbook = Wka.Workbooks(wbname)
 			If Information.Err().Number = 0 Then result = True Else result = False
 			Information.Err().Clear()
 
@@ -87,6 +87,12 @@ Module Module4
 		Dim k As Integer = Strings.Len(s)
 		Return New String(" "c, i - k) & s
 	End Function
+
+	Public Enum CopyIO
+		TO_TEMP_ARRAY = 1
+		FROM_TEMP_ARRAY = 2
+		COPY_DEFAULTS = 3
+	End Enum
 
 
 	'Sub SelectTest()

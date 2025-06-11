@@ -76,7 +76,7 @@ Partial Friend Class frmPlot
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmPlot.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ShowHelp(Me.getHelpContextID())
+				'ShowHelp(Me.getHelpContextID())
 
 			Case "Copy Chart"
 				Clipboard.Clear()

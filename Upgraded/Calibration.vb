@@ -154,12 +154,12 @@ Partial Friend Class frmCalibration
 			Case "List"
 				Model()
 				'UPGRADE_ISSUE: (2064) Form property frmCalibration.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ContextId = Me.getHelpContextID()
+				'ContextId = Me.getHelpContextID()
 				FitUpdate()
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmCalibration.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ShowHelp(Me.getHelpContextID())
+				'ShowHelp(Me.getHelpContextID())
 
 			Case "Quit"
 				Icalc = 0

@@ -27,7 +27,7 @@ Partial Class frmBox
 	Private components As System.ComponentModel.IContainer
 	Public ToolTipMain As System.Windows.Forms.ToolTip
 	Public CommonDialog1Save As System.Windows.Forms.SaveFileDialog
-	Public CommonDialog1 As BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog
+	'Public CommonDialog1 As BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog
 	Public WithEvents txtBox As System.Windows.Forms.TextBox
 	Public WithEvents Toolbar1_Buttons_Button1 As System.Windows.Forms.ToolStripButton
 	Public WithEvents Toolbar1_Buttons_Button2 As System.Windows.Forms.ToolStripButton
@@ -43,7 +43,7 @@ Partial Class frmBox
 		Dim resources As New System.ComponentModel.ComponentResourceManager(GetType(frmBox))
 		ToolTipMain = New System.Windows.Forms.ToolTip(components)
 		CommonDialog1Save = New System.Windows.Forms.SaveFileDialog()
-		CommonDialog1 = New BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog()
+		'CommonDialog1 = New BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog()
 		txtBox = New System.Windows.Forms.TextBox()
 		Toolbar1 = New System.Windows.Forms.ToolStrip()
 		Toolbar1_Buttons_Button1 = New System.Windows.Forms.ToolStripButton()

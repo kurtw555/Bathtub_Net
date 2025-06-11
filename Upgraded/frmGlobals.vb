@@ -50,7 +50,7 @@ Partial Friend Class frmGlobals
             Case "Undo"
                 Backup(1)
                 'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                UpdateGlobalValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+                UpdateGlobalValues(CopyIO.FROM_TEMP_ARRAY)
 
             Case "Cancel"
                 Backup(1)
@@ -58,7 +58,7 @@ Partial Friend Class frmGlobals
 
             Case "OK"
                 'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                If Not UpdateGlobalValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor()) Then Exit Sub
+                If Not UpdateGlobalValues(CopyIO.COPY_DEFAULTS) Then Exit Sub
                 If CheckValues() Then
                     Icalc = 0
                     Me.Close()
@@ -66,7 +66,7 @@ Partial Friend Class frmGlobals
 
             Case "Help"
                 'UPGRADE_ISSUE: (2064) Form property frmGlobals.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-                ShowHelp(Me.getHelpContextID())
+                'ShowHelp(Me.getHelpContextID())
 
             Case "Clear"
 
@@ -97,7 +97,7 @@ Partial Friend Class frmGlobals
     End Sub
 
     'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-    Private Function UpdateGlobalValues(ByVal io As BT2Support.UpgradeStubs.CopyIO) As Boolean
+    Private Function UpdateGlobalValues(ByVal io As CopyIO) As Boolean
         Dim result As Boolean = False
         Dim Changed As Boolean
         Dim i As Integer
@@ -189,7 +189,7 @@ Partial Friend Class frmGlobals
                 txtGlobal(0).Text = CStr(1)
                 Changed = True
 
-            Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
+                'Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
 
         End Select
         Return True

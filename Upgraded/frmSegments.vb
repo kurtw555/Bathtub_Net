@@ -53,7 +53,7 @@ Partial Friend Class frmSegments
 		Select Case Button.Text
 			Case "List"
 				'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+				UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
 				'UPGRADE_ISSUE: (2064) Menu property mnuListNetwork.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
 				'KW
 				'ContextId = frmMenu.DefInstance.mnuListNetwork.HelpContextID
@@ -66,13 +66,13 @@ Partial Friend Class frmSegments
 				Else
 					If MessageBox.Show("Add New Segment ?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then
 						'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-						UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+						UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
 						If CheckValues() Then
 							SegmentEdit(Nseg, 1)
 							jseG = Nseg
 							UpdateCombos()
 							'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-							UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+							UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 						End If
 					End If
 				End If
@@ -83,13 +83,13 @@ Partial Friend Class frmSegments
 				Else
 					If MessageBox.Show("Insert New Segment ?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then
 						'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-						UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+						UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
 						If CheckValues() Then
 							SegmentEdit(jseG, 1)
 							jseG += 1
 							UpdateCombos()
 							'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-							UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+							UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 						End If
 					End If
 				End If
@@ -103,7 +103,7 @@ Partial Friend Class frmSegments
 						jseG = 1
 						UpdateCombos()
 						'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-						UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+						UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 					End If
 				End If
 
@@ -117,7 +117,7 @@ Partial Friend Class frmSegments
 					SegName(jseG) = s
 					UpdateCombos()
 					'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-					UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+					UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 				End If
 
 			Case "Undo"
@@ -125,11 +125,11 @@ Partial Friend Class frmSegments
 				Backup(1)
 				UpdateCombos()
 				'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+				UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmSegments.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ShowHelp(Me.getHelpContextID())
+				'ShowHelp(Me.getHelpContextID())
 
 			Case "Cancel"
 				Backup(1)
@@ -137,7 +137,7 @@ Partial Friend Class frmSegments
 
 			Case "OK"
 				'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+				UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
 				If CheckValues() Then
 					Icalc = 0
 					Me.Close()
@@ -164,7 +164,7 @@ Partial Friend Class frmSegments
 		UpdateCombos()
 		SetToolTips()
 		'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-		UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+		UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 	End Sub
 
 	Private Sub Combo1_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles Combo1.SelectedIndexChanged
@@ -172,11 +172,11 @@ Partial Friend Class frmSegments
 		Dim j As Double = Combo1.SelectedIndex + 1
 		If j <> jseG Then
 			'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-			UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+			UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
 			If CheckValues() Then jseG = j
 			Combo1.SelectedIndex = jseG - 1
 			'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-			UpdateSegmentValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+			UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
 		End If
 		'    UpdateCombos
 
@@ -206,7 +206,7 @@ Partial Friend Class frmSegments
 	End Sub
 
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Sub UpdateSegmentValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
+	Sub UpdateSegmentValues(ByVal io As CopyIO)
 		Dim k As Integer
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original
@@ -315,7 +315,7 @@ Partial Friend Class frmSegments
 				'    txtSegment(39) = 1
 				'    txtSegment(41) = 1
 
-			Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
+				'Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
 
 		End Select
 

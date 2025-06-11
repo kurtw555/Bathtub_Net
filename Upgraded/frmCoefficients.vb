@@ -48,7 +48,7 @@ Partial Friend Class frmCoefficients
 		Select Case Button.Text
 			Case "Undo"
 				'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateCoefValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+				UpdateCoefValues(CopyIO.FROM_TEMP_ARRAY)
 
 			Case "Cancel"
 
@@ -57,12 +57,12 @@ Partial Friend Class frmCoefficients
 			Case "OK"
 				Icalc = 0
 				'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateCoefValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+				UpdateCoefValues(CopyIO.COPY_DEFAULTS)
 				Me.Close()
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmCoefficients.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-				ShowHelp(Me.getHelpContextID())
+				'ShowHelp(Me.getHelpContextID())
 
 			Case "Defaults"
 				If MessageBox.Show("Assign Default Values for Each Coefficient?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then
@@ -76,10 +76,10 @@ Partial Friend Class frmCoefficients
 	Private Sub Form_Load()
 		SetToolTips()
 		'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-		UpdateCoefValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+		UpdateCoefValues(CopyIO.FROM_TEMP_ARRAY)
 	End Sub
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Private Sub UpdateCoefValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
+	Private Sub UpdateCoefValues(ByVal io As CopyIO)
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original
 		'io=3 copy defaults
@@ -110,7 +110,7 @@ Partial Friend Class frmCoefficients
 					If j < 13 Then Text1(CInt(j + 16)).Text = CStr(CvXkDefault(CInt(j)))
 				Next j
 
-			Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
+				'Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
 
 		End Select
 

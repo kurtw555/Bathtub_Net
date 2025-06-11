@@ -89,7 +89,7 @@ Partial Friend Class frmChannels
 					jpipE = 1
 					UpdateCombos()
 					'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-					UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+					UpdateChannelValues(CopyIO.FROM_TEMP_ARRAY)
 				End If
 
 			Case "Clear"
@@ -97,7 +97,7 @@ Partial Friend Class frmChannels
 					'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
 					UpdateChannelValues(3)
 					'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-					UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+					UpdateChannelValues(CopyIO.COPY_DEFAULTS)
 					UpdateCombos()
 				End If
 
@@ -106,7 +106,7 @@ Partial Friend Class frmChannels
 				jpipE = 1
 				UpdateCombos()
 				'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+				UpdateChannelValues(CopyIO.FROM_TEMP_ARRAY)
 
 			Case "Help"
 				'UPGRADE_ISSUE: (2064) Form property frmChannels.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
@@ -118,7 +118,7 @@ Partial Friend Class frmChannels
 
 			Case "OK"
 				'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-				UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+				UpdateChannelValues(CopyIO.COPY_DEFAULTS)
 				If CheckValues() Then
 					Icalc = 0
 					Me.Close()
@@ -135,7 +135,7 @@ Partial Friend Class frmChannels
 		SetToolTips()
 		Backup(0) 'save backup file
 		'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-		UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+		UpdateChannelValues(CopyIO.FROM_TEMP_ARRAY)
 	End Sub
 	Private Sub Combo1_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles Combo1.SelectedIndexChanged
 		'load new channel
@@ -143,7 +143,7 @@ Partial Friend Class frmChannels
 		'UpdateChannelValues (2)
 		If j <> jpipE And jpipE <= Npipe Then
 			'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-			UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getVgaColor())
+			UpdateChannelValues(CopyIO.COPY_DEFAULTS)
 			If Not CheckValues() Then
 				Combo1.SelectedIndex = jpipE - 1
 				Exit Sub
@@ -153,7 +153,7 @@ Partial Friend Class frmChannels
 		jpipE = j
 		Combo1.SelectedIndex = jpipE - 1
 		'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-		UpdateChannelValues(BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getMonochrome())
+		UpdateChannelValues(CopyIO.FROM_TEMP_ARRAY)
 	End Sub
 
 	Private Sub UpdateCombos()
@@ -203,14 +203,14 @@ Partial Friend Class frmChannels
 	End Sub
 
 	'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
-	Private Sub UpdateChannelValues(ByVal io As BT2Support.UpgradeStubs.CopyIO)
+	Private Sub UpdateChannelValues(IO As CopyIO)
 		'io=1 copy source values to temporary array
 		'io=2 copy from temporary array to original
 		'io=3 copy defaults
 
 		'UPGRADE_ISSUE: (2070) Constant Default was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
 
-		Select Case io
+		Select Case IO
 			Case 1 'fill temporary array
 
 				Text1(0).Text = PipeName(jpipE) 'channel label
@@ -251,7 +251,7 @@ Partial Friend Class frmChannels
 					Text1(j).Text = CStr(0)
 				Next j
 
-			Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
+				'Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
 
 		End Select
 

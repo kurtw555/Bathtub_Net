@@ -1,7 +1,6 @@
 Option Strict Off
 Option Explicit On
 Imports Excel = Microsoft.Office.Interop.Excel
-'Imports Microsoft.VisualBasic.FileIO
 Imports System
 Imports System.Diagnostics
 Imports System.Drawing
@@ -10,318 +9,324 @@ Imports System.Windows.Forms
 Imports UpgradeHelpers.Gui.Controls
 Imports UpgradeHelpers.Helpers
 Imports Microsoft.Office.Interop.Excel
+Imports System.Reflection
 Module Module1
 
-	' BathTub Version 6.14e
-	' This uses Microsoft Excel 12.0 Object Library (see References under the Project Tab)
-	' However 12.0 is NOT fully compatible with newer versions of Excel like 16 (see below)
-	' Nov 2016. cmbVariable on frmResponse form is NOT responding to user selections with
-	' Excel ver 16
-	' April 2015 Image1 in frmResponse is not getting refreshed with NEW gif file
-	' when user runs a new response.
-	' April 2013 Excel object ignores Add(after), so SheetCopy needed logic reworked,
-	' as did List_all
+    ' BathTub Version 6.14e
+    ' This uses Microsoft Excel 12.0 Object Library (see References under the Project Tab)
+    ' However 12.0 is NOT fully compatible with newer versions of Excel like 16 (see below)
+    ' Nov 2016. cmbVariable on frmResponse form is NOT responding to user selections with
+    ' Excel ver 16
+    ' April 2015 Image1 in frmResponse is not getting refreshed with NEW gif file
+    ' when user runs a new response.
+    ' April 2013 Excel object ignores Add(after), so SheetCopy needed logic reworked,
+    ' as did List_all
 
-	' 09/24/2011 changes to the averaging period in globals now WARNS
-	' 09/23/2011 substantial mods in LOADEXCEL to accomodate EXCEL's repeated plotting
-	' 09/09/2011 minor mods to accomodate debug
-	' BATHTUB TASTR Version 6.14 April 2, 2012
-	' LATE BINDING OF EXCEL
-	' The "TASTR" mode of Bathtub is determined in startup
-	' Specifically in the frmMenu, Form_Load() event.  Based on the Command String
-	' A NULL command string means NON-TASTR mode
+    ' 09/24/2011 changes to the averaging period in globals now WARNS
+    ' 09/23/2011 substantial mods in LOADEXCEL to accomodate EXCEL's repeated plotting
+    ' 09/09/2011 minor mods to accomodate debug
+    ' BATHTUB TASTR Version 6.14 April 2, 2012
+    ' LATE BINDING OF EXCEL
+    ' The "TASTR" mode of Bathtub is determined in startup
+    ' Specifically in the frmMenu, Form_Load() event.  Based on the Command String
+    ' A NULL command string means NON-TASTR mode
 
-	' TO RUN IN DEBUG MODE "Bath14.exe debug"
+    ' TO RUN IN DEBUG MODE "Bath14.exe debug"
 
-	' Excel Version 15 (see wka.version and Debug 10 and Debug 10b) has switched to SDI vs. MDI and the minimize command does not work.
-	' Also version 15: Wka.EnableEvents = True causes problems??
-
-
-
-	'CRITICAL NOTES:
-	' Late binding required some coding change because
-	'references to a generic OBJECT is a little different than direct refs to specific
+    ' Excel Version 15 (see wka.version and Debug 10 and Debug 10b) has switched to SDI vs. MDI and the minimize command does not work.
+    ' Also version 15: Wka.EnableEvents = True causes problems??
 
 
-	'NOTE THERE ARE ALSO PROBLEMS WITH THE WAY EXCEL DEALS WITH COLLECTIONS
-	'IN LATER VERSIONS - COMMENTED OUT THE .DELETE Action in "FOR EACH" Loop
+
+    'CRITICAL NOTES:
+    ' Late binding required some coding change because
+    'references to a generic OBJECT is a little different than direct refs to specific
 
 
-	' CONFIDENCE INTERVALS:  Walker assumes errors are log-normally distributed
-	' SEE PAGE 1-9 of the Bathtub Manual
-	'==============================================================
-	'THIS IS THE TASTR VERSION.  IT HAS BEEN MODIFIED TO ACCOMODATE
-	'AUTO START (input case specified as .exe parameter
-	'AND AUTOMATIC GENERATION OF METAMODEL OUTPUT
-	'SEE FORM_LOAD, gCase_Name, and gRunMetaModels
-	'IT ALSO INCLUDES ABILITY TO READ FROM AN XLS CASE FILE
+    'NOTE THERE ARE ALSO PROBLEMS WITH THE WAY EXCEL DEALS WITH COLLECTIONS
+    'IN LATER VERSIONS - COMMENTED OUT THE .DELETE Action in "FOR EACH" Loop
 
-	'CONSIDER USE OF DoEvents statement as equivalent of Application.ProcessMessages
-	'While waiting for EXCEL to exit or edit to complete.
-	'====================================================================
 
-	Public frmMenu As frmMenu
-	Public frm_Globals As frmGlobals
-	Public frm_Models As frmModels
-	Public frm_Tributaries As frmTribs
-	Public frm_Segments As frmSegments
-	Public frm_LandUse As frmLandUse
-	Public Const gVersionNumber As String = "6.14f (04/28/2015)" 'program version
-	'Public Const Directory As String = "c:\0jobs\bathtub\"       'program directory'
-	Public Directory As String = "" 'bathtub.exe folder
-	Public WorkingDirectory As String = "" 'user's working directory'
-	Public Const BathtubHelpFile As String = "bathtub.chm" 'help file
-	'Public Const BathBook As String = "bath.xla" 'bathtub workbook
-	Public Const BathBook As String = "bath.xlsx" 'bathtub workbook
-	Public Const BathOutXLS As String = "bathtub_output.xls" 'bathtub output workbook
-	Public Const BackupFile As String = "edit_backup.btx" 'backup file used to undo edits
-	Public ContextId As Integer
-	Public XLSWorkBk As Excel.Workbook
-	'LATE BINDING APPROACH FOLLOWS
-	Public Hdr As Excel.Worksheet        'header sheet
-	Public Wko As Excel.Workbook 'Excel.Workbook         'output workbook used for bath_output.xls
-	Public gSheetout As Worksheet 'Excel.Worksheet        'current output sheet
-	Public XLSApp As Object
-	Public Wka As Excel.Application 'Excel.Application
-	Public Wkb As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla
-	Public CurrentWKChart As Object 'Excel.Chart
-	Public gLSht As Excel.Worksheet 'Excel Worksheet used for Holding results
-	'======================================================
-	Public CaseFile As String = "" 'name of case file
-	Public TestObj As Object
+    ' CONFIDENCE INTERVALS:  Walker assumes errors are log-normally distributed
+    ' SEE PAGE 1-9 of the Bathtub Manual
+    '==============================================================
+    'THIS IS THE TASTR VERSION.  IT HAS BEEN MODIFIED TO ACCOMODATE
+    'AUTO START (input case specified as .exe parameter
+    'AND AUTOMATIC GENERATION OF METAMODEL OUTPUT
+    'SEE FORM_LOAD, gCase_Name, and gRunMetaModels
+    'IT ALSO INCLUDES ABILITY TO READ FROM AN XLS CASE FILE
 
-	Private _hHelp As HTMLHelp = Nothing
-	Public Property hHelp() As HTMLHelp
-		Get
-			If _hHelp Is Nothing Then
-				_hHelp = New HTMLHelp()
-			End If
-			Return _hHelp
-		End Get
-		Set(ByVal Value As HTMLHelp)
-			_hHelp = Value
-		End Set
-	End Property 'html help object
+    'CONSIDER USE OF DoEvents statement as equivalent of Application.ProcessMessages
+    'While waiting for EXCEL to exit or edit to complete.
+    '====================================================================
+
+    Public frmMenu As frmMenu
+    Public frm_Globals As frmGlobals
+    Public frm_Models As frmModels
+    Public frm_Tributaries As frmTribs
+    Public frm_Segments As frmSegments
+    Public frm_LandUse As frmLandUse
+    Public Const gVersionNumber As String = "6.14f (04/28/2015)" 'program version
+    'Public Const Directory As String = "c:\0jobs\bathtub\"       'program directory'
+    Public Directory As String = "" 'bathtub.exe folder
+    Public WorkingDirectory As String = "" 'user's working directory'
+    Public Const BathtubHelpFile As String = "bathtub.chm" 'help file
+    'Public Const BathBook As String = "bath.xla" 'bathtub workbook
+    Public Const BathBook As String = "bath.xlsx" 'bathtub workbook
+    Public Const BathOutXLS As String = "bathtub_output.xls" 'bathtub output workbook
+    Public Const BackupFile As String = "edit_backup.btx" 'backup file used to undo edits
+    Public ContextId As Integer
+    Public XLSWorkBk As Excel.Workbook
+    'LATE BINDING APPROACH FOLLOWS
+    Public Hdr As Excel.Worksheet        'header sheet
+    Public Wko As Excel.Workbook 'Excel.Workbook         'output workbook used for bath_output.xls
+    Public gSheetout As Worksheet 'Excel.Worksheet        'current output sheet
+    Public XLSApp As Object
+    Public Wka As Excel.Application 'Excel.Application
+    Public Wkb As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla
+    Public CurrentWKChart As Object 'Excel.Chart
+    Public gLSht As Excel.Worksheet 'Excel Worksheet used for Holding results
+    '======================================================
+    Public CaseFile As String = "" 'name of case file
+    Public TestObj As Object
+
+	'Private _hHelp As HTMLHelp = Nothing
+	'Public Property hHelp() As HTMLHelp
+	'    Get
+	'        If _hHelp Is Nothing Then
+	'            _hHelp = New HTMLHelp()
+	'        End If
+	'        Return _hHelp
+	'    End Get
+	'    Set(ByVal Value As HTMLHelp)
+	'        _hHelp = Value
+	'    End Set
+	'End Property 'html help object
 	Public ErrTxt As String = "" 'error message string
-	Public NoviceUser As Boolean 'user mode
+    Public NoviceUser As Boolean 'user mode
 
-	'constant dimensions
-	Public gxla_Loaded As Boolean
-	Public gTASTRMode As Boolean
-	Public DebugMode As Boolean 'show debug messages set in frmmenu Sub Form_Load
-	Public DebugMode2 As Boolean 'Type 2 debug messages only
-	Public DebugMode3 As Boolean 'type 3 debug messages only
-	Public DebugCVMode As Boolean 'debugging confidence intervals
-	Public ShowWarnings As Boolean 'show warning messages
-	Public gRunMetaModels As Boolean 'run metamodels from start
-	Public gReturnFromXLS As Boolean 'flag return from edit_xls
-	Public gKeepEdits As Boolean 'xls edits
-	Public gShowEditXLSNote As Boolean 'One time flag
+    'constant dimensions
+    Public gxla_Loaded As Boolean
+    Public gTASTRMode As Boolean
+    Public DebugMode As Boolean 'show debug messages set in frmmenu Sub Form_Load
+    Public DebugMode2 As Boolean 'Type 2 debug messages only
+    Public DebugMode3 As Boolean 'type 3 debug messages only
+    Public DebugCVMode As Boolean 'debugging confidence intervals
+    Public ShowWarnings As Boolean 'show warning messages
+    Public gRunMetaModels As Boolean 'run metamodels from start
+    Public gReturnFromXLS As Boolean 'flag return from edit_xls
+    Public gKeepEdits As Boolean 'xls edits
+    Public gShowEditXLSNote As Boolean 'One time flag
 
-	Public DebugMsgCount As Integer 'Keeps count of debug messages sent
-	Public NGlobals As Integer 'global inputs
-	Public Const NCAT As Integer = 8 'land use types dimension
-	Public Const NSMAX As Integer = 50 'segment dimension
+    Public DebugMsgCount As Integer 'Keeps count of debug messages sent
+    Public NGlobals As Integer 'global inputs
+    Public Const NCAT As Integer = 8 'land use types dimension
+    Public Const NSMAX As Integer = 50 'segment dimension
 
-	Public Const NPMAX As Integer = 10 'pipe dimension
-	Public Const NTMAX As Integer = 100 'tributary dimension
-	Public NXk As Integer
-	Public NDiagnostics As Integer 'diagnostic / output  variables
-	Public NtermS As Integer 'number of mass balance terms
-	Public NVariables As Integer 'concentration variables in input file
-	Public NOptions As Integer 'model options
-	Public Const MAXIT As Integer = 100 'maximum iterations
+    Public Const NPMAX As Integer = 10 'pipe dimension
+    Public Const NTMAX As Integer = 100 'tributary dimension
+    Public NXk As Integer
+    Public NDiagnostics As Integer 'diagnostic / output  variables
+    Public NtermS As Integer 'number of mass balance terms
+    Public NVariables As Integer 'concentration variables in input file
+    Public NOptions As Integer 'model options
+    Public Const MAXIT As Integer = 100 'maximum iterations
 
-	Public Ihelp As Integer
-	Public Ichoice As Integer
-	Public Title As String = ""
-	Public GlobalName(10) As String
-	Public Cfile As String = ""
-	Public Key As String = ""
-	Public Note(10) As String
-	Public Nmsg As Integer
-	Public XkName(20) As String
-	Public Cshort_Renamed(28) As String
-	Public OptionName(12, 12) As String
-	Public gCase_Name As String = "" 'added by DMS 8/04/08
+    Public Ihelp As Integer
+    Public Ichoice As Integer
+    Public Title As String = ""
+    Public GlobalName(10) As String
+    Public Cfile As String = ""
+    Public Key As String = ""
+    Public Note(10) As String
+    Public Nmsg As Integer
+    Public XkName(20) As String
+    Public Cshort_Renamed(28) As String
+    Public OptionName(12, 12) As String
+    Public gCase_Name As String = "" 'added by DMS 8/04/08
 
-	Public VariableName(10) As String
-	Public TribName(NTMAX) As String
-	Public LandUseName(NCAT) As String
-	Public SegName(NSMAX + 1) As String
-	Public DiagName(50) As String
-	Public PipeName(NPMAX) As String
-	Public CalibName(10) As String
-	Public NCalib As Integer
-	Public ResponseCount As Integer
+    Public VariableName(10) As String
+    Public TribName(NTMAX) As String
+    Public LandUseName(NCAT) As String
+    Public SegName(NSMAX + 1) As String
+    Public DiagName(50) As String
+    Public PipeName(NPMAX) As String
+    Public CalibName(10) As String
+    Public NCalib As Integer
+    Public ResponseCount As Integer
 
-	Public Darea(NTMAX) As Single
-	Public Stat(30, 5) As Single
-	Public x(500) As Single
-	Public y(500) As Single
-	Public Fav(8) As Single
-	Public Conc(NSMAX + 1) As Single
-	Public Agreg(NSMAX + 1, 6) As Single
-	Public Wt(NSMAX + 1) As Single
+    Public Darea(NTMAX) As Single
+    Public Stat(30, 5) As Single
+    Public x(500) As Single
+    Public y(500) As Single
+    Public Fav(8) As Single
+    Public Conc(NSMAX + 1) As Single
+    Public Agreg(NSMAX + 1, 6) As Single
+    Public Wt(NSMAX + 1) As Single
 
-	Public N_Type_Codes As Integer
-	Public Type_Code(8) As String
+    Public N_Type_Codes As Integer
+    Public Type_Code(8) As String
 
-	'    Public Pmax(2) As Single
-	'    Public Qmin(2) As Single
-	'    Public Fmax(2) As Single
-	'    Public Ecod(2) As Single
-	'    Public Ipri(NSMAX + 1) As Integer
-	Public Targ(NSMAX + 1) As Single
-	Public Icrit(NSMAX + 1) As Integer
-	Public Jsg(NSMAX + 1) As Integer
-	Public Ecoreg(NTMAX) As Single
-	Public Dareal(NTMAX) As Single
-	Public Concil(NTMAX, 7) As Single
-	Public CvCil(NTMAX, 7) As Single
-	Public FlowL(NTMAX) As Single
-	Public CvFlowL(NTMAX) As Single
-	Public Wi(NSMAX + 1) As Single
-	Public Q(NSMAX + 1, NSMAX + 1) As Single
-	Public E(NSMAX + 1, NSMAX + 1) As Single
-	Public Qt(20) As Single
-	Public Bt(20) As Single
+    '    Public Pmax(2) As Single
+    '    Public Qmin(2) As Single
+    '    Public Fmax(2) As Single
+    '    Public Ecod(2) As Single
+    '    Public Ipri(NSMAX + 1) As Integer
+    Public Targ(NSMAX + 1) As Single
+    Public Icrit(NSMAX + 1) As Integer
+    Public Jsg(NSMAX + 1) As Integer
+    Public Ecoreg(NTMAX) As Single
+    Public Dareal(NTMAX) As Single
+    Public Concil(NTMAX, 7) As Single
+    Public CvCil(NTMAX, 7) As Single
+    Public FlowL(NTMAX) As Single
+    Public CvFlowL(NTMAX) As Single
+    Public Wi(NSMAX + 1) As Single
+    Public Q(NSMAX + 1, NSMAX + 1) As Single
+    Public E(NSMAX + 1, NSMAX + 1) As Single
+    Public Qt(20) As Single
+    Public Bt(20) As Single
 
-	Public A(NSMAX + 1, NSMAX + 1) As Single
-	Public Dx(NSMAX + 1, NSMAX + 1) As Single
-	Public Qnet(NSMAX + 1) As Single
-	Public Xp(500) As Single
-	Public Yp(500) As Single
+    Public A(NSMAX + 1, NSMAX + 1) As Single
+    Public Dx(NSMAX + 1, NSMAX + 1) As Single
+    Public Qnet(NSMAX + 1) As Single
+    Public Xp(500) As Single
+    Public Yp(500) As Single
 
-	Public Warea(NTMAX, NCAT) As Single
-	Public Ur(NCAT) As Single
-	Public Uc(NCAT, 7) As Single
-	Public CvUr(NCAT) As Single
-	Public CvUc(NCAT, 7) As Single
+    Public Warea(NTMAX, NCAT) As Single
+    Public Ur(NCAT) As Single
+    Public Uc(NCAT, 7) As Single
+    Public CvUr(NCAT) As Single
+    Public CvUc(NCAT, 7) As Single
 
-	Public Qadv(NSMAX + 1) As Single
-	Public Exch(NSMAX + 1) As Single
-	Public Area(NSMAX + 1) As Single
-	Public Zmn(NSMAX + 1) As Single
-	Public Slen(NSMAX + 1) As Single
-	Public Iag(NSMAX + 1) As Integer
-	Public Iout(NSMAX + 1) As Integer
-	Public Iseg(NTMAX) As Integer
-	Public NTrib As Integer
-	Public Nseg As Integer
-	Public Npipe As Integer
-	Public Icode(NTMAX) As Integer
-	Public Iop(12) As Integer
-	Public IopDefault(12) As Integer
+    Public Qadv(NSMAX + 1) As Single
+    Public Exch(NSMAX + 1) As Single
+    Public Area(NSMAX + 1) As Single
+    Public Zmn(NSMAX + 1) As Single
+    Public Slen(NSMAX + 1) As Single
+    Public Iag(NSMAX + 1) As Integer
+    Public Iout(NSMAX + 1) As Integer
+    Public Iseg(NTMAX) As Integer
+    Public NTrib As Integer
+    Public Nseg As Integer
+    Public Npipe As Integer
+    Public Icode(NTMAX) As Integer
+    Public Iop(12) As Integer
+    Public IopDefault(12) As Integer
 
-	Public Iord(28) As Integer
-	Public Nord As Integer
+    Public Iord(28) As Integer
+    Public Nord As Integer
 
-	Public Ier As Integer
-	Public Izap(NSMAX + 1) As Integer
-	Public Mop(12) As Integer
-	Public Imap(3) As Integer
+    Public Ier As Integer
+    Public Izap(NSMAX + 1) As Integer
+    Public Mop(12) As Integer
+    Public Imap(3) As Integer
 
-	Public Iwork(100) As Integer
-	Public Ilogd(28) As Integer
-	Public Icalc As Integer
+    Public Iwork(100) As Integer
+    Public Ilogd(28) As Integer
+    Public Icalc As Integer
 
-	Public Ito(NPMAX) As Integer
-	Public Ifr(NPMAX) As Integer
-	Public Icoef(4) As Integer
-	Public Turbi(NSMAX + 1) As Single
-	Public CvTurbi(NSMAX + 1) As Single
-	Public Imsg As Integer
-	Public line_no As Integer
-	Public Tol As Single
-	Public Sigma As Single
+    Public Ito(NPMAX) As Integer
+    Public Ifr(NPMAX) As Integer
+    Public Icoef(4) As Integer
+    Public Turbi(NSMAX + 1) As Single
+    Public CvTurbi(NSMAX + 1) As Single
+    Public Imsg As Integer
+    Public line_no As Integer
+    Public Tol As Single
+    Public Sigma As Single
 
-	Public Xk(20) As Single
-	Public Cal(NSMAX + 1, 9) As Single
-	Public Atm(7) As Single
-	Public P(9) As Single 'P are from Global Vars Screen
-	'P(1) = Avr. Period (years)
-	'P(2) = Precip (meters)
-	'P(3) = Evap (meters)
-	'P(4) = Increase in Storage(m)
-	Public Conci(NTMAX, 9) As Single
-	Public Flow(NTMAX) As Single
-	Public Cobs(NSMAX + 1, 30) As Single 'Observed conc?
-	Public Zmx(NSMAX + 1) As Single 'used in calculations
-	Public Zmxi(NSMAX + 1) As Single 'input
-	Public CvZmxi(NSMAX + 1) As Single
-	Public Zhyp(NSMAX + 1) As Single
+    Public Xk(20) As Single
+    Public Cal(NSMAX + 1, 9) As Single
+    Public Atm(7) As Single
+    Public P(9) As Single 'P are from Global Vars Screen
+    'P(1) = Avr. Period (years)
+    'P(2) = Precip (meters)
+    'P(3) = Evap (meters)
+    'P(4) = Increase in Storage(m)
+    Public Conci(NTMAX, 9) As Single
+    Public Flow(NTMAX) As Single
+    Public Cobs(NSMAX + 1, 30) As Single 'Observed conc?
+    Public Zmx(NSMAX + 1) As Single 'used in calculations
+    Public Zmxi(NSMAX + 1) As Single 'input
+    Public CvZmxi(NSMAX + 1) As Single
+    Public Zhyp(NSMAX + 1) As Single
 
-	Public Turb(NSMAX + 1) As Single
-	Public Qpipe(NPMAX) As Single
-	Public Epipe(NPMAX) As Single
-	Public CvXk(20) As Single
-	Public CvCal(NSMAX + 1, 9) As Single
-	Public CvAtm(7) As Single
-	Public Cp(9) As Single
-	Public CvCi(NTMAX, 7) As Single
-	Public CvFlow(NTMAX) As Single
-	Public CvCobs(NSMAX + 1, 30) As Single
-	Public CvZmx(NSMAX + 1) As Single
-	Public CvZhyp(NSMAX + 1) As Single
-	Public InternalLoad(NSMAX + 1, 7) As Single
-	Public CvInternalLoad(NSMAX + 1, 7) As Single
+    Public Turb(NSMAX + 1) As Single
+    Public Qpipe(NPMAX) As Single
+    Public Epipe(NPMAX) As Single
+    Public CvXk(20) As Single
+    Public CvCal(NSMAX + 1, 9) As Single
+    Public CvAtm(7) As Single
+    Public Cp(9) As Single
+    Public CvCi(NTMAX, 7) As Single
+    Public CvFlow(NTMAX) As Single
+    Public CvCobs(NSMAX + 1, 30) As Single
+    Public CvZmx(NSMAX + 1) As Single
+    Public CvZhyp(NSMAX + 1) As Single
+    Public InternalLoad(NSMAX + 1, 7) As Single
+    Public CvInternalLoad(NSMAX + 1, 7) As Single
 
-	Public CvTurb(NSMAX + 1) As Single
-	Public CvQpipe(NPMAX) As Single
-	Public CvEpipe(NPMAX) As Single
-	Public Term(4, 20) As Single
-	Public Cest(NSMAX + 1, 30) As Single
-	Public CvTerm(4, 20) As Single
-	Public CvCest(NSMAX + 1, 30) As Single
+    Public CvTurb(NSMAX + 1) As Single
+    Public CvQpipe(NPMAX) As Single
+    Public CvEpipe(NPMAX) As Single
+    Public Term(4, 20) As Single
+    Public Cest(NSMAX + 1, 30) As Single
+    Public CvTerm(4, 20) As Single
+    Public CvCest(NSMAX + 1, 30) As Single
 
-	Public XkDefault(20) As Single
-	Public CvXkDefault(20) As Single
+    Public XkDefault(20) As Single
+    Public CvXkDefault(20) As Single
 
-	Public TermName(20) As String
-	Public Nkord As Integer
-	Public Kord(20) As Integer
-	Public Njord As Integer
-	Public Jord(20) As Integer
-	Public MassBalName(2) As String
-	Public Mord As Integer
-	Public Lord(10) As Integer
+    Public TermName(20) As String
+    Public Nkord As Integer
+    Public Kord(20) As Integer
+    Public Njord As Integer
+    Public Jord(20) As Integer
+    Public MassBalName(2) As String
+    Public Mord As Integer
+    Public Lord(10) As Integer
 
-	Public Xe(10000) As Single 'error analysis swap vectors
-	Public Cxe(10000) As Single
-	Public Nxe As Integer
-	Public Nxe_1 As Integer
-	Public Ye(10000) As Single
-	Public Cye(10000) As Single
-	Public Nye As Integer
-	Public Ysave(3000) As Single
+    Public Xe(10000) As Single 'error analysis swap vectors
+    Public Cxe(10000) As Single
+    Public Nxe As Integer
+    Public Nxe_1 As Integer
+    Public Ye(10000) As Single
+    Public Cye(10000) As Single
+    Public Nye As Integer
+    Public Ysave(3000) As Single
 
 
-	Public Sub Main()
-		'Create an instance of frmMenu And run it
-		System.Windows.Forms.Application.EnableVisualStyles()
-		System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(False)
-		StartUp()
-		System.Windows.Forms.Application.Run(New frmMenu())
+	'Public Sub Main()
+	'    'Create an instance of frmMenu And run it
+	'    System.Windows.Forms.Application.EnableVisualStyles()
+	'    System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(False)
+	'    'StartUp()
+	'    System.Windows.Forms.Application.Run(New frmMenu())
 
-	End Sub
+	'End Sub
 
 	'Public Sub Main()
 	'	StartUp()
 	'End Sub
 	Sub StartUp()
-		Dim DebugCount As Integer
-		Dim LoadErr As String = ""
-		Dim XLSInputApp As Excel.Application
-		'start up program
-		frmAbout.DefInstance.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
-		If Not gTASTRMode Then
-			'frmSplash.Show vbModal
-			'the FrmAbout.show event initializes a number of important variables
-			frmAbout.DefInstance.ShowDialog() 'Needed to show this form to get paths assigned in NON-TASTR Mode
+        Dim DebugCount As Integer
+        Dim LoadErr As String = ""
+        Dim XLSInputApp As Excel.Application
+        'start up program
+        frmAbout.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
+        If Not gTASTRMode Then
+            'frmSplash.Show vbModal
+            'the FrmAbout.show event initializes a number of important variables
+            frmAbout.ShowDialog() 'Needed to show this form to get paths assigned in NON-TASTR Mode
+			'Dim Directory2 = My.Application.Info.DirectoryPath
+			Dim location = Assembly.GetCallingAssembly().Location 'Get the assembly name
+			Dim Directory = Path.GetDirectoryName(location) 'Get the directory of the assembly
+
+
 		Else
 			'TASTR MODE ONLY: the following was moved here From FrmAbout
-			Directory = My.Application.Info.DirectoryPath & Excel_Global_definst.Application.PathSeparator
+			'Directory = My.Application.Info.DirectoryPath & Wka.Application.PathSeparator
 			'UPGRADE_ISSUE: (2064) VB method VB.Global was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
 			'UPGRADE_ISSUE: (2070) Constant App was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
 			'UPGRADE_ISSUE: (2064) App property App.HelpFile was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
@@ -347,7 +352,7 @@ Module Module1
 		DebugCVMode = False
 
 		Icalc = 0
-        Ier = 0
+		Ier = 0
 		'KW
 		'Status("Starting Up")
 
@@ -427,7 +432,7 @@ Abhort:
 		End With
 
 		frmMenu.SetUserMode(1)
-		'    FormUpdate()
+		FormUpdate()
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		CaseFile = gCase_Name
 		If gCase_Name = "" Then CaseFile = Directory & "default.btb"
@@ -821,7 +826,7 @@ Abhort:
 			' Parameters & Options
 			FileSystem.Input(1, junk)
 			FileSystem.Input(1, junk)
-			FileSystem.Input(1, junk)
+			'FileSystem.Input(1, junk)
 			For i As Integer = 1 To NGlobals
 				FileSystem.Input(1, j)
 				FileSystem.Input(1, junk)
@@ -1507,65 +1512,87 @@ Quit:
 		Try
 
 
-            'c read key file
-            Ier = 0
-			Dim wksheet = Wkb.Sheets("key")
+			'c read key file
+			Ier = 0
+			Dim wksheet = Wkb.Sheets("Key")
 			Dim namedRange As Excel.Name = Wkb.Names.Item("sigma")
 			Dim range As Excel.Range = namedRange.RefersToRange
-			With Wkb.Sheets("key")
-				Dim val2 = wksheet.Names.Item("sigma")
-				Dim vals3 = .Names.Item("sigma")
-				Sigma = .Names.Item("sigma").Value2
-				'Sigma = .("sigma").Value 'number of standard errors plotted around predicted & observed values
-				'Sigma = .Range("sigma").Value 'number of standard errors plotted around predicted & observed values
-				Tol = .Range("tolerance").Value 'tolerance for convergence of mass balance solution
+			'With Wkb.Sheets("key")
+			Sigma = range.Value2
+
+			namedRange = Wkb.Names.Item("tolerance")
+			range = namedRange.RefersToRange
+			Tol = range.Value2
+
+			'Dim val2 = .Names.Item("sigma")
+			'Dim vals3 = .Names.Item("sigma")
+
+			'Sigma = .Names.Item("sigma").Value2
+			'Sigma = .("sigma").Value 'number of standard errors plotted around predicted & observed values
+			'Sigma = .Range("sigma").Value 'number of standard errors plotted around predicted & observed values
+			'Tol = .Range("tolerance").Value 'tolerance for convergence of mass balance solution
 
 
-				'diagnostic variables
+			'diagnostic variables
+			namedRange = Wkb.Names.Item("Ndiagnostics")
+			range = namedRange.RefersToRange
+			NDiagnostics = range.Value2
 
-				NDiagnostics = .Range("nDiagnostics").Value
-				Nord = NDiagnostics
-				With .Range("ndiagnostics").Offset(1, 0)
-					For i As Integer = 1 To NDiagnostics
-						j = .Offset(i, 0).Value 'variable number
-						Iord(i) = j
-						Ilogd(j) = .Offset(i, 1).Value
-						Cshort_Renamed(j) = .Offset(i, 2).Value
-						DiagName(j) = .Offset(i, 3).Value
-						For k2 As Integer = 1 To 5
-							Stat(j, k2) = .Offset(i, k2 + 3).Value
-						Next k2
-					Next i
-				End With
+			For i As Integer = 1 To NDiagnostics
+				j = range.Offset(i + 1, 0).Value
+				Iord(i) = j
+				Ilogd(j) = range.Offset(i + 1, 1).Value
+				Cshort_Renamed(j) = range.Offset(i + 1, 2).Value
+				DiagName(j) = range.Offset(i + 1, 3).Value
+				For k2 As Integer = 1 To 5
+					Stat(j, k2) = range.Offset(i + 1, k2 + 3).Value
+				Next k2
+			Next i
 
-				NOptions = .Range("Noptions").Value
-				With .Range("noptions").Offset(1, 0)
-					k = 0
-					For i As Integer = 1 To NOptions
-						k = k + 1
-						Mop(i) = .Offset(k, 0).Value 'number of options for
-						OptionName(i, 0) = .Offset(k, 1).Value 'option name
-						IopDefault(i) = 0
-						For j2 As Integer = 1 To Mop(i)
-							k = k + 1
-							OptionName(i, j2) = .Offset(k, 1).Value 'label for selection
-							If .Offset(k, 2).Value > 0 Then IopDefault(i) = j2 - 1
-						Next j2
-						k = k + 1
-					Next i
-				End With
+			Nord = NDiagnostics
+			'range("ndiagnostics").Offset(1, 0)
+			'	For i As Integer = 1 To NDiagnostics
+			'		j = .Offset(i, 0).Value 'variable number
+			'		Iord(i) = j
+			'		Ilogd(j) = .Offset(i, 1).Value
+			'		Cshort_Renamed(j) = .Offset(i, 2).Value
+			'		DiagName(j) = .Offset(i, 3).Value
+			'		For k2 As Integer = 1 To 5
+			'			Stat(j, k2) = .Offset(i, k2 + 3).Value
+			'		Next k2
+			'	Next i
+			'End With
 
-				'coefficient labels
-				NXk = .Range("ncoef").Value
-				With .Range("ncoef").Offset(1, 0)
-					For i As Integer = 1 To NXk
-						XkName(i) = .Offset(i, 1).Value
-						XkDefault(i) = .Offset(i, 2).Value
-						CvXkDefault(i) = .Offset(i, 3).Value
-					Next i
-				End With
+			namedRange = Wkb.Names.Item("noptions")
+			range = namedRange.RefersToRange
+			NOptions = range.Value2
+			k = 1
+			For i As Integer = 1 To NOptions
+				k = k + 1
+				Mop(i) = range.Offset(k, 0).Value 'number of options for
+				OptionName(i, 0) = range.Offset(k, 1).Value 'option name
+				IopDefault(i) = 0
+				For j2 As Integer = 1 To Mop(i)
+					k = k + 1
+					OptionName(i, j2) = range.Offset(k, 1).Value 'label for selection
+					If range.Offset(k, 2).Value > 0 Then IopDefault(i) = j2 - 1
+				Next j2
+				k = k + 1
+			Next i
+			'End With
 
-			End With
+			'coefficient labels
+			namedRange = Wkb.Names.Item("Ncoef")
+			range = namedRange.RefersToRange
+			NXk = range.Value2
+
+			'range("ncoef").Offset(1, 0)
+			For i As Integer = 1 To NXk
+				XkName(i) = range.Offset(i + 1, 1).Value
+				XkDefault(i) = range.Offset(i + 1, 2).Value
+				CvXkDefault(i) = range.Offset(i + 1, 3).Value
+			Next i
+
 			Exit Sub
 		Catch ex As Exception
 			Dim msg As String = ex.Message
@@ -1576,10 +1603,10 @@ Quit:
 
 	End Sub
 	Sub ScreenOff()
-		Excel_Global_definst.Application.ScreenUpdating = False
+		Wka.Application.ScreenUpdating = False
 	End Sub
 	Sub ScreenOn()
-		Excel_Global_definst.Application.ScreenUpdating = True
+		Wka.Application.ScreenUpdating = True
 	End Sub
 	Function ValidFile(ByVal s As String) As Boolean
 
@@ -1609,10 +1636,10 @@ Quit:
 			'.CHMFile = Directory & BathtubHelpFile
 			'.HHWindow = "main"
 			If ctxtiD <= 0 Then
-				hHelp.HHDisplayContents()
+				'hHelp.HHDisplayContents()
 			Else
-				hHelp.HHTopicID = ctxtiD
-				hHelp.HHDisplayTopicID()
+				'hHelp.HHTopicID = ctxtiD
+				'hHelp.HHDisplayTopicID()
 			End If
 
 		Catch
@@ -1625,7 +1652,7 @@ Quit:
 		'Dim sN As String = [sheet_selected]
 		Dim sN As String = "sheet_selected"
 		ViewSheet(sN)
-		Excel_Global_definst.Sheets("menu").Activate()
+		Wka.Sheets("menu").Activate()
 	End Sub
 	Sub Status(ByVal Msg As String)
 		'update status box
@@ -2060,7 +2087,7 @@ Quit:
 		Catch exc As Exception
 			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
 		End Try
-		'    FormUpdate()
+		FormUpdate()
 		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		Dim realversion As Double = CDbl(Wka.Version)
 		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized

@@ -97,7 +97,7 @@ Partial Friend Class frmModels
 
             Case "Help"
                 'UPGRADE_ISSUE: (2064) Form property frmModels.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-                ShowHelp(Me.getHelpContextID())
+                'ShowHelp(Me.getHelpContextID())
 
             Case "Cancel"
                 Me.Close()
@@ -128,17 +128,16 @@ Partial Friend Class frmModels
         InitializeCombo1()
 
         Dim fn As String = ""
-
-        For i As Int32 = 1 To NOptions
+        For i As Integer = 1 To NOptions
             Iwork(i) = Iop(i)
             For j As Integer = 1 To Mop(i)
                 fn = StringsHelper.Format(j - 1, "00") & " " & OptionName(i, j)
                 If j - 1 = IopDefault(i) Then fn = fn & " *"
                 '_Combo1_0
-                Combo1(i).AddItem(fn)
+                Combo1(i - 1).AddItem(fn)
 
             Next j
-            Dim cb = Combo1(i)
+            Dim cb = Combo1(i - 1)
             cb.SelectedIndex = Iwork(i)
             'UPGRADE_ISSUE: (2064) Form property frmModels.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
             'UPGRADE_ISSUE: (2064) ComboBox property Combo1.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
