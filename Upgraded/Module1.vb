@@ -992,7 +992,7 @@ Abhort:
 			Icalc = 0
 			'    If DebugMode Then MsgBox(("N3: clear output from readbtb in Module1")
 			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-			'    ClearOutput()
+			ClearOutput()
 			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 			'    On Error Resume Next 'next statement will fail at startup
 			'frmMenu.cmbOutputDest.ListIndex = Iop(12)
