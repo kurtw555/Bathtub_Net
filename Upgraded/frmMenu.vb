@@ -1,6 +1,6 @@
 Option Strict Off
 Option Explicit On
-Imports BT2Support.UpgradeStubs
+'Imports BT2Support.UpgradeStubs
 Imports Excel = Microsoft.Office.Interop.Excel
 Imports Microsoft.VisualBasic
 Imports System
@@ -111,7 +111,7 @@ Partial Friend Class frmMenu
     Private Sub btnRun_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles btnRun.Click
         mnuRunModel_Click(mnuRunModel, New EventArgs())
     End Sub
-    Private Sub cmbUserMode_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles cmbUserMode.SelectedIndexChanged
+    Public Sub cmbUserMode_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles cmbUserMode.SelectedIndexChanged
         SetUserMode(cmbUserMode.SelectedIndex)
         FormUpdate()
         '    mnuUser_Click (ListIndex)
@@ -236,7 +236,7 @@ Partial Friend Class frmMenu
 
     End Sub 'Check_OutputDest
 
-    Private Sub cmbOutputDest_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles cmbOutputDest.SelectedIndexChanged
+    Public Sub cmbOutputDest_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles cmbOutputDest.SelectedIndexChanged
         Dim j As Integer = Iop(12)
         Iop(12) = cmbOutputDest.SelectedIndex
         Dim realversion As Double = CDbl(Wka.Version)
@@ -267,7 +267,7 @@ Partial Friend Class frmMenu
     End Sub
 
     Private Sub form_terminate()
-        CleanUp()
+        'CleanUp()
     End Sub
 
     Function GetOutputFileName(ByVal default_Renamed As String) As String
@@ -317,21 +317,18 @@ Partial Friend Class frmMenu
     Public Sub mnuCalibration_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuCalibration.Click
         StatList()
         If Icalc > 0 Then
-            'frmCalibration.DefInstance.ShowDialog()
             frmCalibration.ShowDialog()
             '    Icalc = 0
             FormUpdate()
         End If
     End Sub
     Public Sub mnuChannels_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuChannels.Click
-        'frmChannels.DefInstance.ShowDialog()
         frmChannels.ShowDialog()
         Icalc = 0
         FormUpdate()
     End Sub
 
     Public Sub mnuCoefficients_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuCoefficients.Click
-        'frmCoefficients.DefInstance.ShowDialog()
         frmCoefficients.ShowDialog()
         '    Icalc = 0
         FormUpdate()
@@ -340,10 +337,8 @@ Partial Friend Class frmMenu
     Public Sub mnuLoadResponse_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuLoadResponse.Click
         StatList()
         If Icalc > 0 Then
-            'UPGRADE_ISSUE: (2064) Menu property mnuLoadResponse.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
             'KW
-            'ContextId = mnuLoadResponse.HelpContextID
-            'frmResponse.DefInstance.ShowDialog()
+            'ContextId = mnuLoadResponse.HelpContextID            
             frmResponse.ShowDialog()
             FormUpdate()
         End If
@@ -430,10 +425,10 @@ Partial Friend Class frmMenu
         Try
 
             Using openDialog As New OpenFileDialog()
-                openDialog.Filter = "Bathtub XLS Files (*.xls)|*.xls"
+                openDialog.Filter = "Bathtub XLS Files (*.xlsx)|*.xlsx"
                 openDialog.FileName = pFilename
-                openDialog.DefaultExt = "xls"
-                openDialog.Title = "Select Bathtub XLS File"
+                openDialog.DefaultExt = "xlsx"
+                openDialog.Title = "Select Bathtub XLSX File"
 
                 If openDialog.ShowDialog() = DialogResult.OK Then
                     pFilename = openDialog.FileName
@@ -476,8 +471,7 @@ Partial Friend Class frmMenu
             'Set XLSInputApp = Nothing
             'If Ier = 0 Then Exit Sub
             MessageBox.Show("N305: Pointing WKa to XLSInputApp", My.Application.Info.Title)
-            'KW
-            'Wka._Default = XLSInputApp._Default
+            'KW            
             Wka = XLSInputApp
             MessageBox.Show("N306: Jumping to Done and End Sub", My.Application.Info.Title)
 
@@ -487,8 +481,7 @@ Partial Friend Class frmMenu
             Lstring = "E300: Unable to Read Worksheet: ' " & pFilename & Strings.Chr(13).ToString()
             MessageBox.Show(Lstring & "Be Sure Named Fields in Inputs Worksheet Conform to Template Bath.xla.xls", My.Application.Info.Title)
             XLSWorkBk.Close(Not savechanges)
-            'KW
-            'Wka._Default = XLSInputApp._Default
+            'KW            
             Wka = XLSInputApp
             XLSInputApp.Quit()
             XLSInputApp = Nothing
@@ -934,6 +927,21 @@ OUt:
 
     Private Sub frmMenu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Form_Load()
+    End Sub
+
+    Private Sub cmbUserMode_Click(sender As Object, e As EventArgs) Handles cmbUserMode.Click
+        SetUserMode(cmbUserMode.SelectedIndex)
+        FormUpdate()
+        '    mnuUser_Click (ListIndex)
+        Try
+            Me.txtReport.Focus()
+
+        Catch
+        End Try
+    End Sub
+
+    Private Sub frmMenu_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
+        CleanUp()
     End Sub
 
     'Private Sub Wko_BeforeClose(Cancel As Boolean)

@@ -2192,7 +2192,7 @@ s900:
 		Nmsg += 1
 		ErrTxt = ErrTxt & em & Environment.NewLine
 		'       If (ShowWarnings And Nmsg = 1) Or io > 0 Then MsgBox( em
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		
 		If io > 0 Then Ier = 1
 
 	End Sub
@@ -2223,7 +2223,7 @@ s900:
 			f_maX = CSng(.txtScale(1).Text)
 			If f_maX < f_miN Then
 				'                MsgBox( "Illegal Range for Load Scale"
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+				
 				Ier = 1
 				Exit Sub
 			End If

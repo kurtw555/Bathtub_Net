@@ -181,7 +181,6 @@ Partial Class frmMenu
         mnuQuit = New ToolStripMenuItem()
         CommonDialog1Open = New OpenFileDialog()
         CommonDialog1Save = New SaveFileDialog()
-        'CommonDialog1 = New BT2Support.UpgradeStubs.AxMSComDlg_AxCommonDialog()
         ExcelVersionLabel = New Label()
         Label1 = New Label()
         VersionofExcel = New Label()

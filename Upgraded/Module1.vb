@@ -1,15 +1,15 @@
 Option Strict Off
 Option Explicit On
-Imports Excel = Microsoft.Office.Interop.Excel
 Imports System
 Imports System.Diagnostics
 Imports System.Drawing
 Imports System.IO
+Imports System.Reflection
 Imports System.Windows.Forms
+Imports Microsoft.Office.Interop.Excel
 Imports UpgradeHelpers.Gui.Controls
 Imports UpgradeHelpers.Helpers
-Imports Microsoft.Office.Interop.Excel
-Imports System.Reflection
+Imports Excel = Microsoft.Office.Interop.Excel
 Module Module1
 
     ' BathTub Version 6.14e
@@ -66,23 +66,25 @@ Module Module1
     Public frm_Tributaries As frmTribs
     Public frm_Segments As frmSegments
     Public frm_LandUse As frmLandUse
-    Public Const gVersionNumber As String = "6.14f (04/28/2015)" 'program version
-    'Public Const Directory As String = "c:\0jobs\bathtub\"       'program directory'
-    Public Directory As String = "" 'bathtub.exe folder
+	'Public Const gVersionNumber As String = "6.14f (04/28/2015)" 'program version
+	Public Const gVersionNumber As String = "7.0 Alpha (06/20/2025)" 'program version
+	'Public Const Directory As String = "c:\0jobs\bathtub\"       'program directory'
+	Public Directory As String = "" 'bathtub.exe folder
     Public WorkingDirectory As String = "" 'user's working directory'
     Public Const BathtubHelpFile As String = "bathtub.chm" 'help file
     'Public Const BathBook As String = "bath.xla" 'bathtub workbook
     Public Const BathBook As String = "bath.xlsx" 'bathtub workbook
-    Public Const BathOutXLS As String = "bathtub_output.xls" 'bathtub output workbook
-    Public Const BackupFile As String = "edit_backup.btx" 'backup file used to undo edits
+	Public Const BathOutXLS As String = "bathtub_output.xlsx" 'bathtub output workbook
+	Public Const BackupFile As String = "edit_backup.btx" 'backup file used to undo edits
     Public ContextId As Integer
     Public XLSWorkBk As Excel.Workbook
     'LATE BINDING APPROACH FOLLOWS
     Public Hdr As Excel.Worksheet        'header sheet
     Public Wko As Excel.Workbook 'Excel.Workbook         'output workbook used for bath_output.xls
     Public gSheetout As Worksheet 'Excel.Worksheet        'current output sheet
-    Public XLSApp As Object
-    Public Wka As Excel.Application 'Excel.Application
+	'Public XLSApp As Object
+	Dim XLSInputApp As Excel.Application
+	Public Wka As Excel.Application 'Excel.Application
     Public Wkb As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla
     Public CurrentWKChart As Object 'Excel.Chart
     Public gLSht As Excel.Worksheet 'Excel Worksheet used for Holding results
@@ -311,8 +313,10 @@ Module Module1
 	'End Sub
 	Sub StartUp()
         Dim DebugCount As Integer
-        Dim LoadErr As String = ""
-        Dim XLSInputApp As Excel.Application
+		Dim LoadErr As String = ""
+		Dim location = Assembly.GetCallingAssembly().Location 'Get the assembly name
+        Directory = Path.GetDirectoryName(location) 'Get the directory of the assembly
+        Directory = Directory & Path.DirectorySeparatorChar 'Ensure it ends with a separator
         'start up program
         frmAbout.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
         If Not gTASTRMode Then
@@ -320,8 +324,8 @@ Module Module1
             'the FrmAbout.show event initializes a number of important variables
             frmAbout.ShowDialog() 'Needed to show this form to get paths assigned in NON-TASTR Mode
 			'Dim Directory2 = My.Application.Info.DirectoryPath
-			Dim location = Assembly.GetCallingAssembly().Location 'Get the assembly name
-			Dim Directory = Path.GetDirectoryName(location) 'Get the directory of the assembly
+
+
 
 
 		Else
@@ -354,23 +358,22 @@ Module Module1
 		Icalc = 0
 		Ier = 0
 		'KW
-		'Status("Starting Up")
+		Status("Starting Up")
 
-		'XLSInputApp = New Excel.Application() 'excel object for input
+		XLSInputApp = New Excel.Application() 'excel object for input
 		Wka = New Excel.Application()
-		Wko = Wka.ActiveWorkbook
+		'Wko = Wka.ActiveWorkbook
 		Wka.DisplayAlerts = False
 		gxla_Loaded = False
 		'Set Wkb = CreateObject("Excel.Workbooks") we don't create these anymore here but
 		'Set Wko = CreateObject("Excel.Workbooks")
 
-		'    If DebugMode Then MsgBox(("Loading Excel at Startup to Test Availability")
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-		LoadExcel()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		If DebugMode Then MsgBox("Loading Excel at Startup to Test Availability")
+
+		'LoadExcel()
 
 		'    If DebugMode Then MsgBox(("DEBUG 03 Excel Load Attempt Completed " & Str(DebugCount))
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 		DebugCount += 1
 		LoadErr = "Error Loading Excel"
 		If Ier > 0 Then GoTo Abhort
@@ -378,51 +381,52 @@ Module Module1
 		On Error GoTo Abhort
 		Output_Init() 'initialize variables
 
-		'    If DebugMode Then MsgBox(("DEBUG 04 @ Module 1 Read Defaults " & Str(DebugCount))
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		If DebugMode Then MsgBox("DEBUG 04 @ Module 1 Read Defaults " & Str(DebugCount))
 		DebugCount += 1
 		LoadErr = "Unable to Read Defaults"
 		ReadDefaults()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		If Ier > 0 Then GoTo Abhort
 		'KW
-		'Status("Ready")
+		Status("Ready")
 
-		'    If DebugMode Then MsgBox(("DEBUG 05 @ Module1 RUN " & Str(DebugCount))
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		'    If DebugMode Then MsgBox(("DEBUG 05 @ Module1 RUN " & Str(DebugCount))		
 		DebugCount += 1
 		LoadErr = "Unable to Run Model (CALCON)"
-		'    Run()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		Run()
+
 		LoadErr = "Unable to Update Main Form (FormUpdate)"
 		'    FormUpdate()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 		gShowEditXLSNote = True
 		Exit Sub
 
 Abhort:
 		Ier = 1
-		'    MsgBox("Program Could Not Start: " & LoadErr & " Check Installation "
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-		'    CleanUp()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		MsgBox("Program Could Not Start: " & LoadErr & " Check Installation ")
+		CleanUp()
 	End Sub
 
 	Sub ReadDefaults()
 		'read default input file & assign values
 
-		ReadKey()                         'read parameter key
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		If (Wko Is Nothing) Then
+			LoadExcel()
+		End If
+
+		ReadKey()                         'read parameter key		
 		If Ier > 0 Then Exit Sub
 
-		'With frmMenu.DefInstance.cmbUserMode
+
+		RemoveHandler frmMenu.cmbUserMode.SelectedIndexChanged, AddressOf frmMenu.cmbUserMode_SelectedIndexChanged
 		With frmMenu.cmbUserMode
 			.Items.Clear()
-			.AddItem("Standard Mode")
-			.AddItem("Advanced Mode")
+			.Items.Add("Standard Mode")
+			.Items.Add("Advanced Mode")
 			.SelectedIndex = 1
 		End With
+		AddHandler frmMenu.cmbUserMode.SelectedIndexChanged, AddressOf frmMenu.cmbUserMode_SelectedIndexChanged
 
+		RemoveHandler frmMenu.cmbOutputDest.SelectedIndexChanged, AddressOf frmMenu.cmbOutputDest_SelectedIndexChanged
 		With frmMenu.cmbOutputDest
 			.Items.Clear()
 			For i As Integer = 1 To 3
@@ -430,12 +434,13 @@ Abhort:
 			Next i
 			.SelectedIndex = 1
 		End With
+		AddHandler frmMenu.cmbOutputDest.SelectedIndexChanged, AddressOf frmMenu.cmbOutputDest_SelectedIndexChanged
 
 		frmMenu.SetUserMode(1)
 		FormUpdate()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 		CaseFile = gCase_Name
-		If gCase_Name = "" Then CaseFile = Directory & "default.btb"
+		If gCase_Name = "" Then CaseFile = Directory & "\default.btb"
 		Read_btb((CaseFile)) 'read default case
 		If Ier > 0 Then Exit Sub
 
@@ -451,7 +456,7 @@ Abhort:
 	End Sub
 	Sub CleanUp()
 		Dim savechanges As Boolean
-		Dim XLSInputApp As Object
+		'Dim XLSInputApp As Object
 		'clear all instances of excel that have bath.xls or bath_output.xls
 
 		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
@@ -474,7 +479,7 @@ Abhort:
 			'hHelp = Nothing
 
 		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
+			'NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
 		End Try
 
 	End Sub
@@ -499,11 +504,11 @@ Abhort:
 		'but what part?
 		'If DebugMode2 Then MsgBox( ("N456: RefreshMainTextBox: LoadExcel")
 		'LOADEXCEL REQUIRES/ASSUMES WKA and WKB are OK
-		'    LoadExcel()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		'LoadExcel()
+
 		'ClearOutput
 		'End If
-		frmMenu.lblOutputWorkbook.Text = Wko.Name
+		'frmMenu.lblOutputWorkbook.Text = Wko.Name
 		SegName(Nseg + 1) = "Area-Wtd Mean"
 		If NoviceUser Then
 			frmMenu.cmbUserMode.SelectedIndex = 0
@@ -516,18 +521,22 @@ Abhort:
 		'update main form & menu entries
 		'  On Error GoTo quitshow
 		'If DebugMode2 Then MsgBox( "FormUpdate"
-		'    RefreshMainTextBox()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-		'    If Icalc = 0 Then ClearOutputWorkbook()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		RefreshMainTextBox()
 
-		'With frmMenu.DefInstance
+		If Icalc = 0 Then ClearOutputWorkbook()
+
 		With frmMenu
 			.CheckWarnings()
-			.btnErrorMessages.Visible = Nmsg > 0
+			'.btnErrorMessages.Visible = Nmsg > 0
+			If Nmsg > 0 Then
+				.btnErrorMessages.Visible = True
+			Else
+				.btnErrorMessages.Visible = False
+			End If
 			Try
-				'frmMenu.DefInstance.cmbOutputDest.SelectedIndex = Iop(12)
+				RemoveHandler frmMenu.cmbOutputDest.SelectedIndexChanged, AddressOf frmMenu.cmbOutputDest_SelectedIndexChanged
 				frmMenu.cmbOutputDest.SelectedIndex = Iop(12)
+				AddHandler frmMenu.cmbOutputDest.SelectedIndexChanged, AddressOf frmMenu.cmbOutputDest_SelectedIndexChanged
 
 			Catch
 			End Try
@@ -535,10 +544,6 @@ Abhort:
 
 		Exit Sub
 
-		'    MsgBox("Form Update Error"
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-		'UPGRADE_TODO: (1065) Error handling statement (On Error Goto) could not be converted. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1065
-		UpgradeHelpers.Helpers.NotUpgradedHelper.NotifyNotUpgradedElement("On Error Goto Label (0)")
 	End Sub
 
 	Sub Run()
@@ -547,7 +552,7 @@ Abhort:
 		Nmsg = 0 'error message count
 
 		'    If DebugMode Then MsgBox(("DEBUG 06 @ Module1 CalCon " & Str(DebugCount))
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 		DebugCount += 1
 		Calcon()
 		If Ier > 0 Then
@@ -558,8 +563,8 @@ Abhort:
 			Icalc = 1
 		End If
 
-		'    If Nmsg > 0 And ShowWarnings Then List_Errors()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		If Nmsg > 0 And ShowWarnings Then List_Errors()
+
 
 	End Sub
 	Sub List_Errors()
@@ -745,7 +750,7 @@ Abhort:
 					If x(1) = 0 And Flow(CInt(i)) > 0 Then
 						Icode(CInt(i)) = 1
 						'                MsgBox(("Type Code for Trib " & i & " " & TribName(i) & " Changed from 2 to 1")
-						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 					End If
 				End If
 			Next i
@@ -759,7 +764,7 @@ Abhort:
 					Next j
 					TribEdit(i, 0)
 					'            MsgBox("Tributary " & i & " " & TribName(i) & " Handled as Internal Load"
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 				End If
 			Next i
 			For i As Double = 1 To NTrib
@@ -793,7 +798,7 @@ Abhort:
 				FileSystem.FileClose(1)
 				Ier = 1
 				'    MsgBox("Error in Translating File "
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			End If
 		End Try
 
@@ -991,9 +996,9 @@ Abhort:
 			WorkingDirectory = ExtractPath(infilE)
 			Icalc = 0
 			'    If DebugMode Then MsgBox(("N3: clear output from readbtb in Module1")
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			ClearOutput()
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			'    On Error Resume Next 'next statement will fail at startup
 			'frmMenu.cmbOutputDest.ListIndex = Iop(12)
 			'frmMenu.DefInstance.Check_OutputDest()
@@ -1012,7 +1017,7 @@ Abhort:
 				FileSystem.FileClose(1)
 				Ier = 1
 				'    MsgBox("Input File Error", vbCritical
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			End If
 		End Try
 	End Sub
@@ -1121,13 +1126,13 @@ Abhort:
 		Ier = 0
 		'If DebugMode Then
 		'    MsgBox(("Loading Excel from sub Edit_xls")
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-		'    LoadExcel()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
+		LoadExcel()
+
 		If Ier > 0 Then Exit Sub
 		gLSht = Wkb.Worksheets("Inputs")
 		'    Save_xls()              'writes current inputs to "inputs" sheet of WKB
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 		If Ier > 0 Then Exit Sub
 
 		'Copy the filled-in template to the WKO workbook
@@ -1140,8 +1145,8 @@ Abhort:
 		Dim Lstring As String = "Click On the Bathtub <CONTINUE> Button When Done Editing in EXCEL" & Strings.Chr(13).ToString()
 		Lstring = Lstring & "          When Done Editing, No Worksheet Cells Can Be Active."
 		If gShowEditXLSNote Then
-			'        MsgBox(Lstring & Chr$(13) & "                     DO NOT CLOSE EXCEL MANUALLY"
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+			MsgBox("DO NOT CLOSE EXCEL MANUALLY")
+
 		End If
 		gShowEditXLSNote = False
 		'frmMenu.WindowState = vbMinimized
@@ -1323,7 +1328,7 @@ Quit:
 		Catch
 
 			'    MsgBox("Error Writing Input Data to Excel Workbook"
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			Ier = 1
 		End Try
 	End Sub
@@ -1484,7 +1489,7 @@ Quit:
 				End With
 
 				'        MsgBox(("Read_xls: 501: Done Reading Ranges from " & pSheetName)
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 				'Allocation
 				'    Write #1, "Allocation"
 				'    For i = 1 To 2
@@ -1500,7 +1505,7 @@ Quit:
 		Catch
 
 			'    MsgBox("Error Reading Worksheet - Remember Named Ranges Required"
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			Ier = 1
 		End Try
 
@@ -1598,7 +1603,7 @@ Quit:
 			Dim msg As String = ex.Message
 		End Try
 		'    MsgBox("Invalid Key File"
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 		Ier = 1
 
 	End Sub
@@ -1794,7 +1799,7 @@ Quit:
 		'WKB is the basic template called Bath.xla
 		Wkb.Worksheets(SheetName).Activate()
 		If Information.Err().Number > 0 Then
-			'        MsgBox(("PgmErr 22: " & SheetName & " Is not in the Template?")
+			MsgBox("PgmErr 22: " & SheetName & " Is not in the Template?")
 		End If
 		gLSht = Wkb.Worksheets(SheetName)
 
@@ -1818,7 +1823,7 @@ Quit:
 
 		Wka.CutCopyMode = False
 		'    ScreenOn()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 	End Sub
 	'End of SheetCopy
 
@@ -1845,32 +1850,32 @@ Quit:
 	'End Sub
 
 
-	Sub LoadXLSInputApp(ByVal pFilename As String)
-		Ier = 0
-		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
-		Try
-			'
-			'Err.Clear
-			'On Error GoTo Abhort
+	'Sub LoadXLSInputApp(ByVal pFilename As String)
+	'	Ier = 0
+	'	'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
+	'	Try
+	'		'
+	'		'Err.Clear
+	'		'On Error GoTo Abhort
 
-			'    MsgBox(("load xlsinputapp")
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-			Dim XLSInputApp As New Excel.Application()
-			XLSInputApp.Workbooks.Open(pFilename)
-			'Set XLSInputBook = XLSInputApp.Workbooks(pBookName)
-			Dim XLSInputSheet As Object = XLSInputApp.Sheets(0)
+	'		'    MsgBox(("load xlsinputapp")
+	'		
+	'		Dim XLSInputApp As New Excel.Application()
+	'		XLSInputApp.Workbooks.Open(pFilename)
+	'		'Set XLSInputBook = XLSInputApp.Workbooks(pBookName)
+	'		Dim XLSInputSheet As Object = XLSInputApp.Sheets(0)
 
 
-			'Abhort:
-			'MsgBox( "Could not load Excel (can't continue)- try closing Excel then restarting BATHTUB"
-			'Ier = 1
-			'Err.Clear
+	'		'Abhort:
+	'		'MsgBox( "Could not load Excel (can't continue)- try closing Excel then restarting BATHTUB"
+	'		'Ier = 1
+	'		'Err.Clear
 
-		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
-		End Try
+	'	Catch exc As Exception
+	'		NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
+	'	End Try
 
-	End Sub
+	'End Sub
 
 
 	Sub LoadExcel()
@@ -1888,7 +1893,7 @@ Quit:
 			If DebugMode Then
 				i = Wkb.Worksheets.Count
 				'        MsgBox(("Wkb worksheets.count=" & Str(i))
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
 			End If
 
 			Try
@@ -1904,48 +1909,42 @@ Quit:
 					'NO! Set Wka = Nothing
 					'NO! Set Wka = CreateObject("Excel.Application")
 					'But we must CLEAR wka (close it) if it is open.
-					'        If DebugMode Then MsgBox("DEBUG 07 Excel Version: " & Wka.Version & " " & Str(DebugCount)
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 07 Excel Version: " & Wka.Version & " " & Str(DebugCount))
+
 					DebugCount += 1
-					'        If (Wka Is Nothing) Then MsgBox(("N399: Fatal Error, Input Worksheet does not exist")
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If (Wka Is Nothing) Then MsgBox("N399: Fatal Error, Input Worksheet does not exist")
+
 					'KW
-					'frmMenu.VersionofExcel.Text = Wka.Version
+					frmMenu.VersionofExcel.Text = Wka.Version
 					'If Wka.Workbooks.Count > 0 Then
 					'For Each Lwb In Wka.Workbooks
 					'   MsgBox( (Lwb.Name)
 					'  Next Lwb
 					'End If
 
-					Dim bath_book As String = "D:\Bathtub\Data\bath.xlsx"
+					Dim bath_book As String = Directory & BathBook
 					'Dim bath_book As String = "D:\Bathtub\XLA_Reader\XLA_Reader\bin\Debug\net8.0-windows\bath.xlsx"					
-					If Not gxla_Loaded Then ' Start fresh
-						'            If DebugMode2 Then MsgBox(("Opening WKA.Workbooks " & Directory & BathBook)
-						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If gxla_Loaded = False Then ' Start fresh
+						If DebugMode2 Then MsgBox("Opening WKA.Workbooks " & bath_book)
 
-
-						'Wka.Workbooks.Open(Directory & BathBook)
 						Wka.Workbooks.Open(bath_book)
-						'            If DebugMode Then MsgBox(("DEBUG 08 Open Wka workbook " & BathBook & " " & Str(DebugCount))
-						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+						If DebugMode Then MsgBox("DEBUG 08 Open Wka workbook " & BathBook & " " & Str(DebugCount))
 						DebugCount += 1
 					Else
 						'MAJOR CHANGE - CLOSE OUT ANY EXISTING BATHOUTXLS
 						'This is the key to changing content of the output, we must close the
 						'bathtub_output.xls before RELOADING
 						If Wka.Workbooks.Count > 0 Then
-							'                If DebugMode2 Then MsgBox("LoadExcel is closing wko"
-							'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+							If DebugMode2 Then MsgBox("LoadExcel is closing wko")
+
 							Wka.Workbooks(BathOutXLS).Close(Not CBool(savechange))
 						End If
 					End If
 					Wkb = Wka.Workbooks(BathBook)
-					Wko = Wka.ActiveWorkbook
+					'Wko = Wka.ActiveWorkbook
 
-					'           If Wkb Is Nothing Then MsgBox(("N555: FATAL wkb is null")
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-					'           If DebugMode Then MsgBox(("DEBUG 09 set wkB to Workbooks OK" & Str(DebugCount))
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If Wkb Is Nothing Then MsgBox("N555: FATAL wkb is null")
+					If DebugMode Then MsgBox("DEBUG 09 set wkB to Workbooks OK" & Str(DebugCount))
 					DebugCount += 1
 
 					gxla_Loaded = True
@@ -1954,58 +1953,51 @@ Quit:
 					' NO NO If Wkb <> Then Wkb.Close False
 
 					Hdr = Wkb.Sheets("headers") 'table headings sheet
-					'        If DebugMode Then MsgBox(("DEBUG 10 set Excel Sheet Hdr OK" & Str(DebugCount))
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 10 set Excel Sheet Hdr OK" & Str(DebugCount))
+
 					DebugCount += 1
 					If Not DebugMode Then Wka.EnableEvents = True
-					'        If DebugMode Then MsgBox(("DEBUG 10B Excel.EnableEvents Skipped" & Str(DebugCount))
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 10B Excel.EnableEvents Skipped" & Str(DebugCount))
+
 					DebugCount += 1
 					realversion = CDbl(Wka.Version)
 					If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
-					'        If DebugMode Then MsgBox(("DEBUG 11 EXCEL.WindowState xlMinimized OK" & Str(DebugCount))
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 11 EXCEL.WindowState xlMinimized OK" & Str(DebugCount))
+
 					DebugCount += 1
 					Wka.Visible = True
 
-					'        If DebugMode Then MsgBox(("DEBUG 12 Excel Setup Done" & Str(DebugCount))
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 12 Excel Setup Done" & Str(DebugCount))
+
 					DebugCount += 1
 				End If
 
-				'bathtub_output.xls
-				'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
+				'bathtub_output.xls				
 				resume2 = True
 
-				'    If DebugMode Then MsgBox(("DEBUG 13 Talking to Excel OK" & Str(DebugCount))
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+				If DebugMode Then MsgBox("DEBUG 13 Talking to Excel OK" & Str(DebugCount))
 				DebugCount += 1
-				i = Wko.Worksheets.Count
+				'i = Wko.Worksheets.Count
 				If Information.Err().Number = 0 And i > 0 Then 'do nothing
-					'MsgBox( "WKO Worksheet is OK to use"
+					'MessageBox.Show("WKO Worksheet is OK to use")
 				Else
-					'MsgBox( "Creating Output Worksheet- this is NOT a separate workbook!"
+					'MessageBox.Show("Creating Output Worksheet- this is NOT a separate workbook!")
 					Information.Err().Clear()
 					Abend2 = True
 					Abhort = False
 					'Create the new output workbook
 					'Dispose of any old junk first
-					'        If DebugMode Then MsgBox("DEBUG 13a Ready to Add Workbooks to Wka"
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 13a Ready to Add Workbooks to Wka")
 					If FileExists(Directory & BathOutXLS) Then File.Delete(Directory & BathOutXLS)
 					Wka.Workbooks.Add()
-					Wka.ActiveWorkbook.SaveAs(Directory & BathOutXLS, 56)
-					'        If DebugMode2 Then MsgBox("N1: Loadexcel Init of bathtub_output.xls"
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					Wka.ActiveWorkbook.SaveAs(Directory & BathOutXLS, XlFileFormat.xlWorkbookDefault)
+					If DebugMode2 Then MsgBox("N1: Loadexcel Init of bathtub_output.xls")
 					Wko = Wka.ActiveWorkbook 'bathtub_output.xls workbook
-					'        If DebugMode Then MsgBox("DEBUG 14 Output Workbook (WKO) Set @dbg " & Str(DebugCount)
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					If DebugMode Then MsgBox("DEBUG 14 Output Workbook (WKO) Set @dbg " & Str(DebugCount))
 					DebugCount += 1
 					Wka.Application.Calculation = Excel.XlCalculation.xlCalculationManual
 				End If
 
-
-				'UPGRADE_TODO: (1069) Error handling statement (On Error Goto 0) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 				resume2 = False
 				'    Status "end load"
 				Exit Sub
@@ -2017,8 +2009,7 @@ Quit:
 
 				If Abend2 Then
 
-					'    MsgBox("E102: Could not Create an Output Workbook in Excel - Bathtub Must Abort"
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					MsgBox("E102: Could not Create an Output Workbook in Excel - Bathtub Must Abort")
 					Ier = 1
 					Information.Err().Clear()
 					Exit Sub
@@ -2026,9 +2017,7 @@ Quit:
 
 				End If
 				If Abhort Or Abend2 Then
-
-					'    MsgBox("E101: Failure in Sub LoadExcel (Bathtub Can't Continue)- try closing Excel then restarting BATHTUB"
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					MessageBox.Show("E101: Failure in Sub LoadExcel (Bathtub Can't Continue)- try closing Excel then restarting BATHTUB")
 					Ier = 1
 					Information.Err().Clear()
 				End If
@@ -2042,6 +2031,100 @@ Quit:
 		End Try
 	End Sub
 
+	Sub LoadExcel4()
+		'Dim savechange As Object
+		Dim DebugCount, i As Integer
+		Dim realversion As Double
+		Ier = 0
+		Try
+			If DebugMode Then
+				i = Wka.Worksheets.Count
+				MessageBox.Show("Wkb worksheets.count=" & i.ToString())
+			End If
+
+			If Wka.Workbooks.Count = 0 Then
+				If DebugMode Then MessageBox.Show("DEBUG 07 Excel Version: " & Wka.Version & " " & DebugCount.ToString())
+				DebugCount += 1
+
+				If Wka Is Nothing Then
+					MessageBox.Show("N399: Fatal Error, Input Worksheet does not exist")
+					Return
+				End If
+
+				' Assuming frmMenu is a form with a label control named VersionofExcel
+				' frmMenu.VersionofExcel.Text = Wka.Version
+
+				If Not gxla_Loaded Then
+					If DebugMode2 Then MessageBox.Show("Opening WKA.Workbooks " & Directory & BathBook)
+					Wka.Workbooks.Open(Path.Combine(Directory, BathBook))
+					If DebugMode Then MessageBox.Show("DEBUG 08 Open Wka workbook " & BathBook & " " & DebugCount.ToString())
+					DebugCount += 1
+				Else
+					If Wka.Workbooks.Count > 0 Then
+						If DebugMode2 Then MessageBox.Show("LoadExcel is closing wko")
+						Wka.Workbooks(BathOutXLS).Close(SaveChanges:=False)
+					End If
+				End If
+
+				Wkb = Wka.Workbooks(BathBook)
+				Wko = Wka.ActiveWorkbook
+				If Wkb Is Nothing Then
+					MessageBox.Show("N555: FATAL wkb is null")
+					Return
+				End If
+
+				If DebugMode Then MessageBox.Show("DEBUG 09 set wkB to Workbooks OK" & DebugCount.ToString())
+				DebugCount += 1
+
+				gxla_Loaded = True
+
+				Hdr = Wkb.Sheets("headers")
+				If DebugMode Then MessageBox.Show("DEBUG 10 set Excel Sheet Hdr OK" & DebugCount.ToString())
+				DebugCount += 1
+
+				If Not DebugMode Then Wka.EnableEvents = True
+				If DebugMode Then MessageBox.Show("DEBUG 10B Excel.EnableEvents Skipped" & DebugCount.ToString())
+				DebugCount += 1
+
+				realversion = Convert.ToDouble(Wka.Version)
+				If realversion < 15 Then Wka.WindowState = XlWindowState.xlMinimized
+				If DebugMode Then MessageBox.Show("DEBUG 11 EXCEL.WindowState xlMinimized OK" & DebugCount.ToString())
+				DebugCount += 1
+
+				Wka.Visible = True
+
+				If DebugMode Then MessageBox.Show("DEBUG 12 Excel Setup Done" & DebugCount.ToString())
+				DebugCount += 1
+			End If
+
+			If DebugMode Then MessageBox.Show("DEBUG 13 Talking to Excel OK" & DebugCount.ToString())
+			DebugCount += 1
+			i = Wko.Worksheets.Count
+			If i > 0 Then
+				Exit Sub
+			End If
+
+
+			'If Wka.Workbooks.Count = 0 Then
+			If DebugMode Then MessageBox.Show("DEBUG 13a Ready to Add Workbooks to Wka")
+			If File.Exists(Path.Combine(Directory, BathOutXLS)) Then File.Delete(Path.Combine(Directory, BathOutXLS))
+			Wka.Workbooks.Add()
+			Wka.ActiveWorkbook.SaveAs(Filename:=Path.Combine(Directory, BathOutXLS), FileFormat:=XlFileFormat.xlWorkbookDefault)
+			If DebugMode2 Then MessageBox.Show("N1: Loadexcel Init of bathtub_output.xls")
+			Wko = Wka.ActiveWorkbook
+			If DebugMode Then MessageBox.Show("DEBUG 14 Output Workbook (WKO) Set @dbg " & DebugCount.ToString())
+			DebugCount += 1
+			Wka.Application.Calculation = XlCalculation.xlCalculationManual
+
+
+		Catch ex As Exception
+			MessageBox.Show("E101: Failure in Sub LoadExcel")
+			Ier = 1
+		Finally
+
+		End Try
+	End Sub
+
 	Sub SetPrintArea()
 		' set print area to all used cells in the current worksheet
 		gLSht.UsedRange.Name = "print_area"
@@ -2050,6 +2133,10 @@ Quit:
 		Dim i As Integer
 		'clears output workbook without changing name
 		'this runs after existing case is edited
+		If (Wko Is Nothing) Then
+			'If DebugMode Then MessageBox.Show("Module1 N32: WKO is Nothing")
+			Exit Sub
+		End If
 		With Wko
 			i = .Sheets.Count
 			If i <= 0 Then Exit Sub
@@ -2065,30 +2152,27 @@ Quit:
 
 	Sub ClearOutput()
 		'start a new output workbook
-		'this runs whenenever output destination is changed or new case is read
-		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
+		'this runs whenenever output destination is changed or new case is read		
 		Try
-			'UPGRADE_WARNING: (1049) Use of Null/IsNull() detected. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-1049
-			If Convert.IsDBNull(Wka._Default) Then
-				'        If DebugMode Then MsgBox("Module1 N33: Loading Excel"
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-				'    If DebugMode2 Then MsgBox("ClearOutput is Loading Excel again"
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-				'    LoadExcel()
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+
+			If Wka Is Nothing Then
+				If DebugMode Then MessageBox.Show("Module1 N33: Loading Excel")
+				If DebugMode2 Then MsgBox("ClearOutput is Loading Excel again")
+				LoadExcel()
 				If Ier > 0 Then Exit Sub
 			End If
 
-			Wko.Close(False)
-			'If DebugMode Then MsgBox("Module1 N30: WKO Closed: " & Wko.Name
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
-			Wko = Nothing
+			If Wko IsNot Nothing Then
+				Wko.Close(False)
+				Wko = Nothing
+			End If
+
+			If DebugMode Then MsgBox("Module1 N30: WKO Closed: " & Wko.Name)
 
 		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
+
 		End Try
 		FormUpdate()
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
 		Dim realversion As Double = CDbl(Wka.Version)
 		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
 	End Sub
@@ -2115,35 +2199,36 @@ Quit:
 			End If
 
 		Catch
-
-			'    MsgBox("Error Creating or Restoring Edit Backup File"
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+			MessageBox.Show("Error Creating or Restoring Edit Backup File")
 		End Try
 	End Sub
 
 	Public Function GetFileName(ByVal flname As String) As String
 
-		'Get the filename without the path or extension.
-		'Input Values:
-		'   flname - path and filename of file.
-		'Return Value:
-		'   GetFileName - name of file without the extension.
+		Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(flname)
+		Return fileNameWithoutExtension
+
+		''Get the filename without the path or extension.
+		''Input Values:
+		''   flname - path and filename of file.
+		''Return Value:
+		''   GetFileName - name of file without the extension.
 
 
-		Dim posn As Integer = 0
-		'find the position of the last "\" character in filename
-		For i As Integer = 1 To Strings.Len(flname)
-			If (flname.Substring(Math.Min(i - 1, flname.Length), Math.Min(1, Math.Max(0, flname.Length - (i - 1)))) = "\") Then posn = i
-		Next i
+		'Dim posn As Integer = 0
+		''find the position of the last "\" character in filename
+		'For i As Integer = 1 To Strings.Len(flname)
+		'	If (flname.Substring(Math.Min(i - 1, flname.Length), Math.Min(1, Math.Max(0, flname.Length - (i - 1)))) = "\") Then posn = i
+		'Next i
 
-		'get filename without path
-		Dim Fname As String = flname.Substring(Math.Max(flname.Length - (Strings.Len(flname) - posn), 0))
+		''get filename without path
+		'Dim Fname As String = flname.Substring(Math.Max(flname.Length - (Strings.Len(flname) - posn), 0))
 
-		'get filename without extension
-		posn = (Fname.IndexOf("."c) + 1)
-		If posn <> 0 Then
-			Fname = Fname.Substring(0, Math.Min(posn - 1, Fname.Length))
-		End If
-		Return Fname
+		''get filename without extension
+		'posn = (Fname.IndexOf("."c) + 1)
+		'If posn <> 0 Then
+		'	Fname = Fname.Substring(0, Math.Min(posn - 1, Fname.Length))
+		'End If
+		'Return Fname
 	End Function
 End Module

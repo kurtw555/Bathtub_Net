@@ -196,16 +196,16 @@ Partial Friend Class frmSegments
         With Combo1
             .Items.Clear()
             For i As Double = 1 To Nseg
-                .AddItem(StringsHelper.Format(i, "00") & " " & SegName(CInt(i)))
+                .Items.Add(StringsHelper.Format(i, "00") & " " & SegName(CInt(i)))
             Next i
             .SelectedIndex = jseG - 1
         End With
 
         With Combo2
             .Items.Clear()
-            .AddItem("Out of Reservoir")
+            .Items.Add("Out of Reservoir")
             For i As Double = 1 To Nseg
-                .AddItem(StringsHelper.Format(i, "00") & " " & SegName(CInt(i)))
+                .Items.Add(StringsHelper.Format(i, "00") & " " & SegName(CInt(i)))
             Next i
             .SelectedIndex = Iout(jseG)
         End With

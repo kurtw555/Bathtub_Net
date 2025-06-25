@@ -33,7 +33,7 @@ Module Module7
 				For i As Double = 1 To NTrib
 					If Iseg(CInt(i)) = jseG Then
 						'                    MsgBox( "Tributary " & i & " " & TribName(i) & " Assigned to Segment 0"
-						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+						
 						Iseg(CInt(i)) = 0
 					ElseIf (Iseg(CInt(i)) > jseG) Then 
 						Iseg(CInt(i)) -= 1
@@ -44,7 +44,7 @@ Module Module7
 				For i As Double = 1 To Npipe
 					If Ifr(CInt(i)) = jseG Or Ito(CInt(i)) = jseG Then
 						'                    MsgBox( "Channel " & i & " " & PipeName(i) & " Assigned to Segment 0"
-						'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+						
 						Ifr(CInt(i)) = 0
 						Ito(CInt(i)) = 0
 					End If

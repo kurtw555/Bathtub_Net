@@ -163,7 +163,7 @@ Module Module3
 	Sub StartSheet(ByVal sN As String) 'sN is Sheet Name
 		'start new output sheet
 		'    If DebugMode Then MsgBox( ("Loading Excel from Module3, StartSheet " & sN)
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		
 		'LoadExcel
 		'MsgBox( "N22: StartSheet (module3) is Calling ClearOutput"
 		'ClearOutput
@@ -173,7 +173,7 @@ Module Module3
 		gLSht = Wkb.Sheets(sN)
 		With gLSht
 			'     If DebugMode Then MsgBox( "StartSheet Clearing: " & Wkb.Name & "." & gLSht.Name & "  " & Title
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+			
 			'.Cells.Clear
 			gLSht.Range("A1").Value = Title
 			gLSht.Range("A1", "B2").Font.Bold = True

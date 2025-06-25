@@ -322,7 +322,7 @@ Module Module5
 						LeastSquaresGlobal()
 						If Ier > 0 Then
 							'                    MsgBox( "Fatal error occured during calibration"
-							'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+							
 							Icalc = 0
 							Exit Sub
 						End If
@@ -575,7 +575,7 @@ Module Module5
 				LeastSquaresLocal(j, io)
 				If Ier > 0 Then
 					'                    MsgBox( "Calibration Failed"
-					'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+					
 					Icalc = 0
 					Exit Sub
 				End If
@@ -663,7 +663,7 @@ s35:
 
 		If nU = 0 Then
 			'            MsgBox( "There are no observed water quality data for the selected segments"
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+			
 			Icalc = 0
 		Else
 
@@ -841,7 +841,7 @@ S56:
 
 			If Ier > 0 Then
 				'     MsgBox( "solution failed - resetting coefficients"
-				'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+				
 				'       write(nout,*) 'solution failed - resetting coefficients'
 				Exit Sub
 			End If
@@ -928,7 +928,7 @@ S56:
 
 			'c successful
 			'      MsgBox( "calibration successful"
-			'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+			
 			Model()
 			'    If Ier <= 0 Then Icalc = 1
 		End With
@@ -1220,7 +1220,7 @@ S122:
 			'24    CONTINUE
 		Next itS
 		'      MsgBox( "too many iterations in DFPMIN"
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		
 
 	End Sub
 
@@ -1412,7 +1412,7 @@ S2:
 		Next iteR2
 
 		'      MsgBox( "Brent optimization routine exceed maximum iterations"
-		'UPGRADE_ERROR: (1010) The preceding line couldn't be parsed. More Information: https://docs.mobilize.net/vbuc/ewis#id-#1010
+		
 S3:
 		XMIN = x1
 		Return fX
