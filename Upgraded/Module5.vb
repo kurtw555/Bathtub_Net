@@ -687,13 +687,13 @@ s35:
 		If Icalc = 0 Then Exit Sub
 
 		line_no = 0
-		Wka.Sheets("CalibFactors").Activate()
-		With Wka.Range("A1")
+		ExcelApp.Sheets("CalibFactors").Activate()
+		With ExcelApp.Range("A1")
 			.Range("A1:z5000").Clear()
-			Wka.Range("header_listcal").Copy()
+			ExcelApp.Range("header_listcal").Copy()
 			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
 			'ReflectionHelper.Invoke(Wka.ActiveSheet, "Paste", New Object() {.Offset(0, 0)}, New String() {"Destination"})
-			Wka.ActiveSheet.Paste(.Offset(0, 0))
+			ExcelApp.ActiveSheet.Paste(.Offset(0, 0))
 
 			'       write(nout,13)
 			' 13     format(' Calibration Factors:'/
@@ -781,8 +781,8 @@ s35:
 		Icalc = 0
 		line_no = 0
 
-		Wka.Sheets("work").Activate()
-		With Wka.Sheets("work").Range("A1")
+		ExcelApp.Sheets("work").Activate()
+		With ExcelApp.Sheets("work").Range("A1")
 
 			'c left-hand side = external inputs + advective inputs - advective outputs
 S56:
@@ -881,9 +881,9 @@ S56:
 			'            Exit Sub
 			'            End If
 
-			Wka.Range("header_exchange").Copy()
+			ExcelApp.Range("header_exchange").Copy()
 			'UPGRADE_WARNING: (7006) The Named argument Destination was not resolved and corresponds to the following expression Sheets().Range().Offset() More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-7006
-			Wka.ActiveSheet.Paste(Wka.ActiveSheet.Range("A1").Offset(line_no, 0))
+			ExcelApp.ActiveSheet.Paste(ExcelApp.ActiveSheet.Range("A1").Offset(line_no, 0))
 			'c Results
 			'       write(nout,1)
 			For i As Double = 1 To Nseg
@@ -986,7 +986,7 @@ S56:
 	'        End Sub
 
 	Function Runi1() As Object
-		Return Wka.Application.WorksheetFunction.Rand()
+		Return ExcelApp.Application.WorksheetFunction.Rand()
 	End Function
 
 	Sub MinCon()

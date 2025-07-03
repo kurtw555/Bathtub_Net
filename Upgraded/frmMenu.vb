@@ -58,14 +58,14 @@ Partial Friend Class frmMenu
 
         Try
 
-            realversion = CDbl(Wka.Version)
-            If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
-            outfilE = Wko.Name
+            realversion = CDbl(ExcelApp.Version)
+            If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
+            outfilE = Wkb_Output.Name
             'UPGRADE_ISSUE: (6012) CommonDialog variable was not upgraded More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-6012
             'Dim outfilE As String = ""
 
             Using saveDialog As New SaveFileDialog()
-                saveDialog.Filter = "Excel Files (*.xls)|*.xls"
+                saveDialog.Filter = "Excel Files (*.xlsx)|*.xlsx"
                 saveDialog.FileName = outfilE
                 saveDialog.DefaultExt = "xls"
                 saveDialog.OverwritePrompt = True
@@ -73,11 +73,11 @@ Partial Friend Class frmMenu
                 If saveDialog.ShowDialog() = DialogResult.OK Then
                     outfilE = saveDialog.FileName
                     ' Proceed with saving logic, e.g.:
-                    Wka.WindowState = Excel.XlWindowState.xlNormal
-                    Wko.Sheets(1).Activate()
-                    Wko.SaveAs(outfilE)
-                    realversion = CDbl(Wka.Version)
-                    If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+                    ExcelApp.WindowState = Excel.XlWindowState.xlNormal
+                    Wkb_Output.Sheets(1).Activate()
+                    Wkb_Output.SaveAs(outfilE)
+                    realversion = CDbl(ExcelApp.Version)
+                    If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
                 Else
                     ' User cancelled, handle as needed
                     outfilE = ""
@@ -86,11 +86,11 @@ Partial Friend Class frmMenu
 
             If outfilE = "" Then Throw New Exception()
 
-            Wka.WindowState = Excel.XlWindowState.xlNormal
-            Wko.Sheets(1).Activate()
-            Wko.SaveAs(outfilE)
-            realversion = CDbl(Wka.Version)
-            If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+            ExcelApp.WindowState = Excel.XlWindowState.xlNormal
+            Wkb_Output.Sheets(1).Activate()
+            Wkb_Output.SaveAs(outfilE)
+            realversion = CDbl(ExcelApp.Version)
+            If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
 
         Catch
         End Try
@@ -217,14 +217,14 @@ Partial Friend Class frmMenu
                 .btnSaveOutput.Visible = True
                 .btnClearOutput.Visible = True
                 .lblOutputWorkbook.Visible = True
-                If Wka IsNot Nothing Then Wka.Visible = True
+                If ExcelApp IsNot Nothing Then ExcelApp.Visible = True
             Else
                 .Label1.Visible = False
                 .btnSaveOutput.Visible = False
                 .btnClearOutput.Visible = False
                 .lblOutputWorkbook.Visible = False
-                realversion = CDbl(Wka.Version)
-                If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+                realversion = CDbl(ExcelApp.Version)
+                If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
                 '         Wka.Visible = False
             End If
             Try
@@ -239,11 +239,11 @@ Partial Friend Class frmMenu
     Public Sub cmbOutputDest_SelectedIndexChanged(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles cmbOutputDest.SelectedIndexChanged
         Dim j As Integer = Iop(12)
         Iop(12) = cmbOutputDest.SelectedIndex
-        Dim realversion As Double = CDbl(Wka.Version)
+        Dim realversion As Double = CDbl(ExcelApp.Version)
         If j <> Iop(12) Then
             If j = 2 Then
-                If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
-                If MessageBox.Show("Save Previous Output Workbook " & Wko.Name & " ?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then btnSaveOutput_Click(btnSaveOutput, New EventArgs())
+                If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
+                If MessageBox.Show("Save Previous Output Workbook " & Wkb_Output.Name & " ?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then btnSaveOutput_Click(btnSaveOutput, New EventArgs())
                 ClearOutput()
             End If
             If Iop(12) = 2 Then ClearOutput()
@@ -449,7 +449,7 @@ Partial Friend Class frmMenu
             'Load EXCEL and Setup XLSInputbook;
 
             XLSInputApp = Nothing
-            Wka = Nothing
+            ExcelApp = Nothing
             'Set Wka = New Excel.Application
 
             'DEFINE EXCEL OBJECTS
@@ -472,7 +472,7 @@ Partial Friend Class frmMenu
             'If Ier = 0 Then Exit Sub
             MessageBox.Show("N305: Pointing WKa to XLSInputApp", My.Application.Info.Title)
             'KW            
-            Wka = XLSInputApp
+            ExcelApp = XLSInputApp
             MessageBox.Show("N306: Jumping to Done and End Sub", My.Application.Info.Title)
 
         Catch
@@ -482,7 +482,7 @@ Partial Friend Class frmMenu
             MessageBox.Show(Lstring & "Be Sure Named Fields in Inputs Worksheet Conform to Template Bath.xla.xls", My.Application.Info.Title)
             XLSWorkBk.Close(Not savechanges)
             'KW            
-            Wka = XLSInputApp
+            ExcelApp = XLSInputApp
             XLSInputApp.Quit()
             XLSInputApp = Nothing
 
@@ -490,7 +490,7 @@ Partial Friend Class frmMenu
             MessageBox.Show("Now Starting DONE", My.Application.Info.Title)
             Status("Ready")
             Icalc = 0
-            If Wka Is Nothing Then MessageBox.Show("N403: ERROR! Cannot leave here with a null WKA", My.Application.Info.Title)
+            If ExcelApp Is Nothing Then MessageBox.Show("N403: ERROR! Cannot leave here with a null WKA", My.Application.Info.Title)
             FormUpdate()
         End Try
     End Sub
@@ -788,9 +788,6 @@ OUt:
     Public Sub mnuRunSensitivity_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuRunSensitivity.Click
         StatList()
         If Icalc > 0 Then
-            'UPGRADE_ISSUE: (2064) Menu property mnuRunSensitivity.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
-            'KW
-            'ContextId = mnuRunSensitivity.HelpContextID
             Run_Sensitivity()
             If Ier > 0 Then Exit Sub
             If Icalc > 0 Then ViewSheet("Sensitivity")

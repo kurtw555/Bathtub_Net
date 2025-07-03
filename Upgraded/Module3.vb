@@ -123,8 +123,8 @@ Module Module3
 	Sub List_All()
 		Dim sN As String = ""
 		'MsgBox( "minimizing Excel Template"
-		Dim realversion As Double = CDbl(Wka.Version)
-		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+		Dim realversion As Double = CDbl(ExcelApp.Version)
+		If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
 		For i As Integer = 0 To 9
 			Select Case i
 				Case 9 'reversed the order to accomodate excel .ADD behavior
@@ -156,24 +156,24 @@ Module Module3
 			SheetCopy((sN))
 		Next i
 		Status("Ready")
-		Wka.WindowState = Excel.XlWindowState.xlNormal
+		ExcelApp.WindowState = Excel.XlWindowState.xlNormal
 
 	End Sub 'List_All
 
 	Sub StartSheet(ByVal sN As String) 'sN is Sheet Name
 		'start new output sheet
 		'    If DebugMode Then MsgBox( ("Loading Excel from Module3, StartSheet " & sN)
-		
+
 		'LoadExcel
 		'MsgBox( "N22: StartSheet (module3) is Calling ClearOutput"
 		'ClearOutput
 		Status((sN))
-		Wkb.Sheets(sN).Cells.Clear()
+		Wkb_Bath.Sheets(sN).Cells.Clear()
 		'MsgBox( "Cleared Cells in " & Wkb.Name & " " & sN
-		gLSht = Wkb.Sheets(sN)
+		gLSht = Wkb_Bath.Sheets(sN)
 		With gLSht
 			'     If DebugMode Then MsgBox( "StartSheet Clearing: " & Wkb.Name & "." & gLSht.Name & "  " & Title
-			
+
 			'.Cells.Clear
 			gLSht.Range("A1").Value = Title
 			gLSht.Range("A1", "B2").Font.Bold = True
@@ -466,10 +466,10 @@ Module Module3
 								If cU > 0 Then .Offset(line_no, 9).Value = cU
 								.Offset(line_no, 9).NumberFormat = "0.0"
 								If Export > 0 Then .Offset(line_no, 10).Value = Export
-                                .Offset(line_no, 10).NumberFormat = "0.0"
-                            End With
+								.Offset(line_no, 10).NumberFormat = "0.0"
+							End With
 
-                        End If
+						End If
 					Next j
 
 					'C MASS BALANCE STATISTICS
@@ -542,7 +542,7 @@ Module Module3
 
 		'save mass balance solution matrix - debugging
 
-		With Wkb.Sheets("matrix").Range("A1")
+		With Wkb_Bath.Sheets("matrix").Range("A1")
 			If io = 0 Then
 				ioff = 0
 				.Cells.Clear()
@@ -1009,7 +1009,7 @@ Module Module3
 		perc = 0
 		If z2 * z1 <= 0 Or x1 <= 0 Then Exit Sub
 		t = Math.Log(x1 / z1) / z2
-		perc = Wka.Application.WorksheetFunction.NormSDist(t)
+		perc = ExcelApp.Application.WorksheetFunction.NormSDist(t)
 	End Sub
 
 	Sub List_Profiles()
@@ -1270,7 +1270,7 @@ Module Module3
 			txt.Append(Environment.NewLine)
 		Next i
 
-		With frmBox.DefInstance
+		With frmBox
 			.txtBox.Text = txt.ToString()
 			.txtBox.SelectionStart = 0
 			.ShowDialog()
@@ -1279,7 +1279,7 @@ Module Module3
 	End Sub
 	Sub List_inss()
 		Status("Inputs")
-		gLSht = Wkb.Sheets("Inputs")
+		gLSht = Wkb_Bath.Sheets("Inputs")
 		Save_xls() 'save inputs to wkb
 		If Ier > 0 Then Exit Sub
 		'    Set gLSht = Wkb.Worksheets("inputs")

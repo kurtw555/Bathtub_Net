@@ -5,20 +5,20 @@ Imports Microsoft.VisualBasic
 Imports System
 Imports UpgradeHelpers.Helpers
 Module Module4
-	Function SheetExists(ByVal ShtName As String) As Boolean
-		'returns true if sheet exists in the active workbook
-		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
-		Dim result As Boolean = False
-		Try
-			Dim X99 As Object = Wka.ActiveWorkbook.Sheets(ShtName)
-			If Information.Err().Number = 0 Then result = True Else result = False
-			Information.Err().Clear()
+	'Function SheetExists(ByVal ShtName As String) As Boolean
+	'	'returns true if sheet exists in the active workbook
+	'	'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
+	'	Dim result As Boolean = False
+	'	Try
+	'		Dim X99 As Object = ExcelApp.ActiveWorkbook.Sheets(ShtName)
+	'		If Information.Err().Number = 0 Then result = True Else result = False
+	'		Information.Err().Clear()
 
-		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
-		End Try
-		Return result
-	End Function
+	'	Catch exc As Exception
+	'		NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
+	'	End Try
+	'	Return result
+	'End Function
 
 	Function FileExists(ByVal Fname As String) As Boolean
 		'returns true if the file exists
@@ -33,7 +33,7 @@ Module Module4
 		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 		Dim result As Boolean = False
 		Try
-			Dim X99 As Excel.Workbook = Wka.Workbooks(wbname)
+			Dim X99 As Excel.Workbook = ExcelApp.Workbooks(wbname)
 			If Information.Err().Number = 0 Then result = True Else result = False
 			Information.Err().Clear()
 

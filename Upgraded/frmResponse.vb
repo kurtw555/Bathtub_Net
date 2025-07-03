@@ -50,8 +50,8 @@ Partial Friend Class frmResponse
 	Dim Fname As String = ""
 
 	Sub ClearIt()
-		Dim realversion As Double = CDbl(Wka.Version)
-		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+		Dim realversion As Double = CDbl(ExcelApp.Version)
+		If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
 		Image1.Image = Image.FromFile("")
 		reD = False
 	End Sub
@@ -84,11 +84,11 @@ Partial Friend Class frmResponse
 				Run_Response()
 				If Ier = 0 Then
 					'Restored 7/3/2009 DMS
-					If DebugMode Then MessageBox.Show("frmresponse N25: chart Object Count=" & Conversion.Str(Wkb.Sheets("plot response").ChartObjects().Count), My.Application.Info.Title)
-					CurrentWKChart = CType(Wkb.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
+					If DebugMode Then MessageBox.Show("frmresponse N25: chart Object Count=" & Conversion.Str(Wkb_Bath.Sheets("plot response").ChartObjects().Count), My.Application.Info.Title)
+					CurrentWKChart = CType(Wkb_Bath.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
 					Fname = Directory & "temp.gif"
 					CurrentWKChart.Export(Fname, "GIF")
-					CurrentWKChart = CType(Wkb.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
+					CurrentWKChart = CType(Wkb_Bath.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
 					Image1.Image = Image.FromFile(Fname)
 					If DebugMode Then MessageBox.Show("frmresponse N26: About to Delete " & Directory & "temp.gif", My.Application.Info.Title)
 					File.Delete(Fname)
@@ -100,16 +100,16 @@ Partial Friend Class frmResponse
 				If reD Then
 					ViewSheet("load response")
 					'Copy to MetaModels
-					With Wko
+					With Wkb_Output
 						If .Sheets.Count > 2 Then
 							gSheetout = .Worksheets("MetaModels")
 							ResponseCount += 10
 						Else
 							ResponseCount = 2
-							Wkb.Sheets("MetaModels").Copy(After:= .Worksheets("load response"))
+							Wkb_Bath.Sheets("MetaModels").Copy(After:= .Worksheets("load response"))
 							.ActiveSheet.Name = "MetaModels"
 							gSheetout = .ActiveSheet
-							Wka.ActiveWindow.DisplayGridlines = False
+							ExcelApp.ActiveWindow.DisplayGridlines = False
 						End If
 					End With
 					' Copy rows 11:20 from gLSht to gSheetout at A & ResponseCount
@@ -131,8 +131,8 @@ Partial Friend Class frmResponse
 			Next Model_type
 		Next RespVarCode
 
-		Wko.Sheets("load response").Delete()
-		Wko.Sheets("MetaModels").Activate()
+		Wkb_Output.Sheets("load response").Delete()
+		Wkb_Output.Sheets("MetaModels").Activate()
 
 	End Sub 'Run_Models
 	'UPGRADE_WARNING: (2080) Form_Load event was upgraded to Form_Load method and has a new behavior. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-2080
@@ -196,14 +196,14 @@ Partial Friend Class frmResponse
 				ClearIt()
 				Run_Response()
 				If Ier = 0 Then
-					i = Wkb.Sheets("plot response").ChartObjects(Type.Missing).Count
+					i = Wkb_Bath.Sheets("plot response").ChartObjects(Type.Missing).Count
 					If DebugMode Then MessageBox.Show("frmresponse: N15: Creating CurrentWkChart of " & Conversion.Str(i), My.Application.Info.Title)
 					DebugCount += 1
 					'Need to Destroy the old sheet before you do this
 					'CurrentWKChart is an Excel Chart Object
 					'Point the object at Chart1
 					' Get the Chart object directly from the ChartObjects collection
-					CurrentWKChart = CType(Wkb.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
+					CurrentWKChart = CType(Wkb_Bath.Sheets("plot response").ChartObjects(1).Chart, Excel.Chart)
 					Fname = Directory & "temp.gif"
 					' Export the chart as a GIF file
 					CurrentWKChart.Export(Fname, "GIF")

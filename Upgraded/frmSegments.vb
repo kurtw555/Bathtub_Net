@@ -11,28 +11,12 @@ Partial Friend Class frmSegments
     Public Sub New()
         MyBase.New()
         Dim mustCallFormLoad As Boolean = False
-        'If m_vb6FormDefInstance Is Nothing Then
-        '	If m_InitializingDefInstance Then
-        '		m_vb6FormDefInstance = Me
-        '	Else
-        '		Try
-        '			'For the start-up form, the first instance created is the default instance.
-        '			If Not (System.Reflection.Assembly.GetExecutingAssembly().EntryPoint Is Nothing) AndAlso System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType Is Me.GetType() Then
-        '				m_vb6FormDefInstance = Me
-        '			End If
-        '		Finally 
-        '			mustCallFormLoad = True
-        '		End Try
-        '	End If
-        'End If
         'This call is required by the Windows Form Designer.
         isInitializingComponent = True
         InitializeComponent()
         isInitializingComponent = False
         ReLoadForm(False)
-        'If mustCallFormLoad And Not (m_vb6FormDefInstance Is Nothing) Then
-        '    m_vb6FormDefInstance.Form_Load()
-        'End If
+
     End Sub
 
     Private Sub frmSegments_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -40,7 +24,7 @@ Partial Friend Class frmSegments
         UpdateCombos()
         SetToolTips()
         'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-        UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+        UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
     End Sub
 
     Private Sub frmSegments_Activated(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Activated
@@ -60,7 +44,7 @@ Partial Friend Class frmSegments
         Select Case Button.Text
             Case "List"
                 'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
+                UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
                 'UPGRADE_ISSUE: (2064) Menu property mnuListNetwork.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
                 'KW
                 'ContextId = frmMenu.DefInstance.mnuListNetwork.HelpContextID
@@ -72,14 +56,13 @@ Partial Friend Class frmSegments
                     MessageBox.Show("Too many segments", My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Else
                     If MessageBox.Show("Add New Segment ?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then
-                        'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                        UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
+                        UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
                         If CheckValues() Then
                             SegmentEdit(Nseg, 1)
                             jseG = Nseg
                             UpdateCombos()
                             'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                            UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+                            UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
                         End If
                     End If
                 End If
@@ -89,14 +72,13 @@ Partial Friend Class frmSegments
                     MessageBox.Show("Too many segments", My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Else
                     If MessageBox.Show("Insert New Segment ?", My.Application.Info.Title, MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then
-                        'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                        UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
+                        UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
                         If CheckValues() Then
                             SegmentEdit(jseG, 1)
                             jseG += 1
                             UpdateCombos()
                             'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                            UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+                            UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
                         End If
                     End If
                 End If
@@ -109,8 +91,7 @@ Partial Friend Class frmSegments
                         SegmentEdit(jseG, 0)
                         jseG = 1
                         UpdateCombos()
-                        'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                        UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+                        UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
                     End If
                 End If
 
@@ -123,16 +104,14 @@ Partial Friend Class frmSegments
                     Iout(jseG) = j
                     SegName(jseG) = s
                     UpdateCombos()
-                    'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                    UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+                    UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
                 End If
 
             Case "Undo"
                 jseG = 1
                 Backup(1)
                 UpdateCombos()
-                'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+                UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
 
             Case "Help"
                 'UPGRADE_ISSUE: (2064) Form property frmSegments.HelpContextID was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2064
@@ -144,7 +123,7 @@ Partial Friend Class frmSegments
 
             Case "OK"
                 'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-                UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
+                UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
                 If CheckValues() Then
                     Icalc = 0
                     Me.Close()
@@ -157,11 +136,11 @@ Partial Friend Class frmSegments
         'select outflow segment
         'store outflow segment number in hidden text box behind combo box
 
-        'If Combo2.ListIndex = jseG Then
-        '    MsgBox "The outflow segment cannot equal the selected segment", vbExclamation
-        '    Else
-        '      txtSegment(2) = Combo2.ListIndex
-        '    End If
+        'If Combo2.SelectedIndex = jseG Then
+        '    MessageBox.Show("The outflow segment cannot equal the selected segment")
+        'Else
+        '    txtSegment(2) = Combo2.SelectedValue
+        'End If
 
     End Sub
 
@@ -178,12 +157,12 @@ Partial Friend Class frmSegments
         'load new segment
         Dim j As Double = Combo1.SelectedIndex + 1
         If j <> jseG Then
-            'UPGRADE_ISSUE: (2070) Constant VgaColor was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-            UpdateSegmentValues(CopyIO.COPY_DEFAULTS)
+
+            UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
             If CheckValues() Then jseG = j
             Combo1.SelectedIndex = jseG - 1
-            'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-            UpdateSegmentValues(CopyIO.FROM_TEMP_ARRAY)
+
+            UpdateSegmentValues(CopyIO.TO_TEMP_ARRAY)
         End If
         '    UpdateCombos
 
@@ -212,16 +191,14 @@ Partial Friend Class frmSegments
 
     End Sub
 
-    'UPGRADE_ISSUE: (2068) stdole.LoadPictureConstants object was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2068
+
     Sub UpdateSegmentValues(ByVal io As CopyIO)
         Dim k As Integer
         'io=1 copy source values to temporary array
         'io=2 copy from temporary array to original
         'io=3 copy from text boxes to temporary array
         'io=4 copy from temporary array to text boxes
-        'io=5 clear temporary array to default values
-
-        'UPGRADE_ISSUE: (2070) Constant Default was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
+        'io=5 clear temporary array to default values        
 
         Select Case io
             Case 1 'fill temporary array
@@ -322,7 +299,7 @@ Partial Friend Class frmSegments
                 '    txtSegment(39) = 1
                 '    txtSegment(41) = 1
 
-                'Case BT2Support.UpgradeStubs.stdole_LoadPictureConstants.getdefault()
+            Case Else
 
         End Select
 

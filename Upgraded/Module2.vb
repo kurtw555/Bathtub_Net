@@ -2078,7 +2078,7 @@ s120:
 				If Iop(kvaR) > 0 Then
 					' Copy header_sensit from Hdr to the current worksheet
 					CType(Hdr, Excel.Worksheet).Range("header_sensit").Copy()
-					Wko.ActiveSheet.Paste(gLSht.Range("A4").Offset(line_no, 0))
+					Wkb_Output.ActiveSheet.Paste(gLSht.Range("A4").Offset(line_no, 0))
 
 					.Offset(line_no, 4).Value = VariableName(kvaR)
 					.Offset(line_no + 1, 2).Value = " Segment ->"
@@ -2192,7 +2192,7 @@ s900:
 		Nmsg += 1
 		ErrTxt = ErrTxt & em & Environment.NewLine
 		'       If (ShowWarnings And Nmsg = 1) Or io > 0 Then MsgBox( em
-		
+
 		If io > 0 Then Ier = 1
 
 	End Sub
@@ -2223,7 +2223,7 @@ s900:
 			f_maX = CSng(.txtScale(1).Text)
 			If f_maX < f_miN Then
 				'                MsgBox( "Illegal Range for Load Scale"
-				
+
 				Ier = 1
 				Exit Sub
 			End If
@@ -2251,7 +2251,7 @@ s900:
 		With gLSht.Range("A3")
 			' Copy header from Hdr to the current worksheet
 			CType(Hdr, Excel.Worksheet).Range("Header_response").Copy()
-			Wko.ActiveSheet.Paste(gLSht.Range("A3").Offset(line_no, 0))
+			Wkb_Output.ActiveSheet.Paste(gLSht.Range("A3").Offset(line_no, 0))
 
 			.Offset(line_no + 1, 1).Value = frmResponse.DefInstance.cmbTrib.Text
 			.Offset(line_no + 2, 1).Value = frmResponse.DefInstance.cmbSegment.Text
@@ -2342,7 +2342,7 @@ s900:
 				End If
 			End If
 		Next i
-		Wka.Calculate()
+		ExcelApp.Calculate()
 		Calcon()
 		Icalc = 1
 
@@ -2354,7 +2354,7 @@ s900:
 		Next i
 
 		If Not gRunMetaModels Then
-			With Wkb
+			With Wkb_Bath
 				.Sheets("plot response").ChartObjects(Type.Missing)(1).CopyPicture()
 				'.Sheets("load response").Activate
 

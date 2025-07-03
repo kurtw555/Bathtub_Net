@@ -396,7 +396,6 @@ Partial Class frmSegments
         _SSTab1_TabPage0.Controls.Add(_lblSegments_20)
         _SSTab1_TabPage0.Controls.Add(_lblSegments_22)
         _SSTab1_TabPage0.Controls.Add(_lblSegments_33)
-        _SSTab1_TabPage0.Controls.Add(_txtSegment_2)
         _SSTab1_TabPage0.Controls.Add(_txtSegment_10)
         _SSTab1_TabPage0.Controls.Add(_txtSegment_9)
         _SSTab1_TabPage0.Controls.Add(_txtSegment_8)
@@ -407,6 +406,7 @@ Partial Class frmSegments
         _SSTab1_TabPage0.Controls.Add(_txtSegment_3)
         _SSTab1_TabPage0.Controls.Add(_txtSegment_1)
         _SSTab1_TabPage0.Controls.Add(Combo2)
+        _SSTab1_TabPage0.Controls.Add(_txtSegment_2)
         _SSTab1_TabPage0.Font = New Font("Microsoft Sans Serif", 8.25F)
         _SSTab1_TabPage0.Location = New Point(4, 22)
         _SSTab1_TabPage0.Name = "_SSTab1_TabPage0"
@@ -606,7 +606,7 @@ Partial Class frmSegments
         _txtSegment_2.MaxLength = 0
         _txtSegment_2.Name = "_txtSegment_2"
         _txtSegment_2.RightToLeft = RightToLeft.No
-        _txtSegment_2.Size = New Size(193, 20)
+        _txtSegment_2.Size = New Size(173, 20)
         _txtSegment_2.TabIndex = 75
         _txtSegment_2.Text = "0"
         _txtSegment_2.TextAlign = HorizontalAlignment.Center

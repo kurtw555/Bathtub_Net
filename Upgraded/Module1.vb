@@ -72,25 +72,25 @@ Module Module1
 	Public Directory As String = "" 'bathtub.exe folder
     Public WorkingDirectory As String = "" 'user's working directory'
     Public Const BathtubHelpFile As String = "bathtub.chm" 'help file
-    'Public Const BathBook As String = "bath.xla" 'bathtub workbook
-    Public Const BathBook As String = "bath.xlsx" 'bathtub workbook
+	'Public Const BathBook As String = "bath.xla" 'bathtub workbook
+	Public Const BathBook As String = "bath.xlsx" 'bathtub workbook
 	Public Const BathOutXLS As String = "bathtub_output.xlsx" 'bathtub output workbook
 	Public Const BackupFile As String = "edit_backup.btx" 'backup file used to undo edits
-    Public ContextId As Integer
-    Public XLSWorkBk As Excel.Workbook
-    'LATE BINDING APPROACH FOLLOWS
-    Public Hdr As Excel.Worksheet        'header sheet
-    Public Wko As Excel.Workbook 'Excel.Workbook         'output workbook used for bath_output.xls
-    Public gSheetout As Worksheet 'Excel.Worksheet        'current output sheet
+	Public ContextId As Integer
+	Public XLSWorkBk As Excel.Workbook
+	'LATE BINDING APPROACH FOLLOWS
+	Public Hdr As Excel.Worksheet        'header sheet
+	Public Wkb_Output As Excel.Workbook 'Excel.Workbook         'output workbook used for bath_output.xls
+	Public gSheetout As Worksheet 'Excel.Worksheet        'current output sheet
 	'Public XLSApp As Object
-	Dim XLSInputApp As Excel.Application
-	Public Wka As Excel.Application 'Excel.Application
-    Public Wkb As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla
-    Public CurrentWKChart As Object 'Excel.Chart
+	'Dim XLSInputApp As Excel.Application
+	Public ExcelApp As Excel.Application 'Excel.Application
+    Public Wkb_Bath As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla	
+    Public CurrentWKChart As Excel.Chart 'Excel Chart
     Public gLSht As Excel.Worksheet 'Excel Worksheet used for Holding results
-    '======================================================
-    Public CaseFile As String = "" 'name of case file
-    Public TestObj As Object
+	'======================================================
+	Public CaseFile As String = "" 'name of case file
+	Public TestObj As Object
 
 	'Private _hHelp As HTMLHelp = Nothing
 	'Public Property hHelp() As HTMLHelp
@@ -105,198 +105,199 @@ Module Module1
 	'    End Set
 	'End Property 'html help object
 	Public ErrTxt As String = "" 'error message string
-    Public NoviceUser As Boolean 'user mode
+	Public NoviceUser As Boolean 'user mode
 
-    'constant dimensions
-    Public gxla_Loaded As Boolean
-    Public gTASTRMode As Boolean
-    Public DebugMode As Boolean 'show debug messages set in frmmenu Sub Form_Load
-    Public DebugMode2 As Boolean 'Type 2 debug messages only
-    Public DebugMode3 As Boolean 'type 3 debug messages only
-    Public DebugCVMode As Boolean 'debugging confidence intervals
-    Public ShowWarnings As Boolean 'show warning messages
-    Public gRunMetaModels As Boolean 'run metamodels from start
-    Public gReturnFromXLS As Boolean 'flag return from edit_xls
-    Public gKeepEdits As Boolean 'xls edits
-    Public gShowEditXLSNote As Boolean 'One time flag
+	'constant dimensions
+	Public gxla_Loaded As Boolean
+	Public gTASTRMode As Boolean
+	Public DebugMode As Boolean 'show debug messages set in frmmenu Sub Form_Load
+	Public DebugMode2 As Boolean 'Type 2 debug messages only
+	Public DebugMode3 As Boolean 'type 3 debug messages only
+	Public DebugCVMode As Boolean 'debugging confidence intervals
+	Public ShowWarnings As Boolean 'show warning messages
+	Public gRunMetaModels As Boolean 'run metamodels from start
+	Public gReturnFromXLS As Boolean 'flag return from edit_xls
+	Public gKeepEdits As Boolean 'xls edits
+	Public gShowEditXLSNote As Boolean 'One time flag
 
-    Public DebugMsgCount As Integer 'Keeps count of debug messages sent
-    Public NGlobals As Integer 'global inputs
-    Public Const NCAT As Integer = 8 'land use types dimension
-    Public Const NSMAX As Integer = 50 'segment dimension
+	Public DebugMsgCount As Integer 'Keeps count of debug messages sent
+	Public NGlobals As Integer 'global inputs
+	'Public Const NCAT As Integer = 8 'land use types dimension
+	Public NCAT As Integer = 8 'land use types dimension
+	Public Const NSMAX As Integer = 50 'segment dimension
 
-    Public Const NPMAX As Integer = 10 'pipe dimension
-    Public Const NTMAX As Integer = 100 'tributary dimension
-    Public NXk As Integer
-    Public NDiagnostics As Integer 'diagnostic / output  variables
-    Public NtermS As Integer 'number of mass balance terms
-    Public NVariables As Integer 'concentration variables in input file
-    Public NOptions As Integer 'model options
-    Public Const MAXIT As Integer = 100 'maximum iterations
+	Public Const NPMAX As Integer = 10 'pipe dimension
+	Public Const NTMAX As Integer = 100 'tributary dimension
+	Public NXk As Integer
+	Public NDiagnostics As Integer 'diagnostic / output  variables
+	Public NtermS As Integer 'number of mass balance terms
+	Public NVariables As Integer 'concentration variables in input file
+	Public NOptions As Integer 'model options
+	Public Const MAXIT As Integer = 100 'maximum iterations
 
-    Public Ihelp As Integer
-    Public Ichoice As Integer
-    Public Title As String = ""
-    Public GlobalName(10) As String
-    Public Cfile As String = ""
-    Public Key As String = ""
-    Public Note(10) As String
-    Public Nmsg As Integer
-    Public XkName(20) As String
-    Public Cshort_Renamed(28) As String
-    Public OptionName(12, 12) As String
-    Public gCase_Name As String = "" 'added by DMS 8/04/08
+	Public Ihelp As Integer
+	Public Ichoice As Integer
+	Public Title As String = ""
+	Public GlobalName(10) As String
+	Public Cfile As String = ""
+	Public Key As String = ""
+	Public Note(10) As String
+	Public Nmsg As Integer
+	Public XkName(20) As String
+	Public Cshort_Renamed(28) As String
+	Public OptionName(12, 12) As String
+	Public gCase_Name As String = "" 'added by DMS 8/04/08
 
-    Public VariableName(10) As String
-    Public TribName(NTMAX) As String
-    Public LandUseName(NCAT) As String
-    Public SegName(NSMAX + 1) As String
-    Public DiagName(50) As String
-    Public PipeName(NPMAX) As String
-    Public CalibName(10) As String
-    Public NCalib As Integer
-    Public ResponseCount As Integer
+	Public VariableName(10) As String
+	Public TribName(NTMAX) As String
+	Public LandUseName(NCAT) As String
+	Public SegName(NSMAX + 1) As String
+	Public DiagName(50) As String
+	Public PipeName(NPMAX) As String
+	Public CalibName(10) As String
+	Public NCalib As Integer
+	Public ResponseCount As Integer
 
-    Public Darea(NTMAX) As Single
-    Public Stat(30, 5) As Single
-    Public x(500) As Single
-    Public y(500) As Single
-    Public Fav(8) As Single
-    Public Conc(NSMAX + 1) As Single
-    Public Agreg(NSMAX + 1, 6) As Single
-    Public Wt(NSMAX + 1) As Single
+	Public Darea(NTMAX) As Single
+	Public Stat(30, 5) As Single
+	Public x(500) As Single
+	Public y(500) As Single
+	Public Fav(8) As Single
+	Public Conc(NSMAX + 1) As Single
+	Public Agreg(NSMAX + 1, 6) As Single
+	Public Wt(NSMAX + 1) As Single
 
-    Public N_Type_Codes As Integer
-    Public Type_Code(8) As String
+	Public N_Type_Codes As Integer
+	Public Type_Code(8) As String
 
-    '    Public Pmax(2) As Single
-    '    Public Qmin(2) As Single
-    '    Public Fmax(2) As Single
-    '    Public Ecod(2) As Single
-    '    Public Ipri(NSMAX + 1) As Integer
-    Public Targ(NSMAX + 1) As Single
-    Public Icrit(NSMAX + 1) As Integer
-    Public Jsg(NSMAX + 1) As Integer
-    Public Ecoreg(NTMAX) As Single
-    Public Dareal(NTMAX) As Single
-    Public Concil(NTMAX, 7) As Single
-    Public CvCil(NTMAX, 7) As Single
-    Public FlowL(NTMAX) As Single
-    Public CvFlowL(NTMAX) As Single
-    Public Wi(NSMAX + 1) As Single
-    Public Q(NSMAX + 1, NSMAX + 1) As Single
-    Public E(NSMAX + 1, NSMAX + 1) As Single
-    Public Qt(20) As Single
-    Public Bt(20) As Single
+	'    Public Pmax(2) As Single
+	'    Public Qmin(2) As Single
+	'    Public Fmax(2) As Single
+	'    Public Ecod(2) As Single
+	'    Public Ipri(NSMAX + 1) As Integer
+	Public Targ(NSMAX + 1) As Single
+	Public Icrit(NSMAX + 1) As Integer
+	Public Jsg(NSMAX + 1) As Integer
+	Public Ecoreg(NTMAX) As Single
+	Public Dareal(NTMAX) As Single
+	Public Concil(NTMAX, 7) As Single
+	Public CvCil(NTMAX, 7) As Single
+	Public FlowL(NTMAX) As Single
+	Public CvFlowL(NTMAX) As Single
+	Public Wi(NSMAX + 1) As Single
+	Public Q(NSMAX + 1, NSMAX + 1) As Single
+	Public E(NSMAX + 1, NSMAX + 1) As Single
+	Public Qt(20) As Single
+	Public Bt(20) As Single
 
-    Public A(NSMAX + 1, NSMAX + 1) As Single
-    Public Dx(NSMAX + 1, NSMAX + 1) As Single
-    Public Qnet(NSMAX + 1) As Single
-    Public Xp(500) As Single
-    Public Yp(500) As Single
+	Public A(NSMAX + 1, NSMAX + 1) As Single
+	Public Dx(NSMAX + 1, NSMAX + 1) As Single
+	Public Qnet(NSMAX + 1) As Single
+	Public Xp(500) As Single
+	Public Yp(500) As Single
 
-    Public Warea(NTMAX, NCAT) As Single
-    Public Ur(NCAT) As Single
-    Public Uc(NCAT, 7) As Single
-    Public CvUr(NCAT) As Single
-    Public CvUc(NCAT, 7) As Single
+	Public Warea(NTMAX, NCAT) As Single
+	Public Ur(NCAT) As Single
+	Public Uc(NCAT, 7) As Single
+	Public CvUr(NCAT) As Single
+	Public CvUc(NCAT, 7) As Single
 
-    Public Qadv(NSMAX + 1) As Single
-    Public Exch(NSMAX + 1) As Single
-    Public Area(NSMAX + 1) As Single
-    Public Zmn(NSMAX + 1) As Single
-    Public Slen(NSMAX + 1) As Single
-    Public Iag(NSMAX + 1) As Integer
-    Public Iout(NSMAX + 1) As Integer
-    Public Iseg(NTMAX) As Integer
-    Public NTrib As Integer
-    Public Nseg As Integer
-    Public Npipe As Integer
-    Public Icode(NTMAX) As Integer
-    Public Iop(12) As Integer
-    Public IopDefault(12) As Integer
+	Public Qadv(NSMAX + 1) As Single
+	Public Exch(NSMAX + 1) As Single
+	Public Area(NSMAX + 1) As Single
+	Public Zmn(NSMAX + 1) As Single
+	Public Slen(NSMAX + 1) As Single
+	Public Iag(NSMAX + 1) As Integer
+	Public Iout(NSMAX + 1) As Integer
+	Public Iseg(NTMAX) As Integer
+	Public NTrib As Integer
+	Public Nseg As Integer
+	Public Npipe As Integer
+	Public Icode(NTMAX) As Integer
+	Public Iop(12) As Integer
+	Public IopDefault(12) As Integer
 
-    Public Iord(28) As Integer
-    Public Nord As Integer
+	Public Iord(28) As Integer
+	Public Nord As Integer
 
-    Public Ier As Integer
-    Public Izap(NSMAX + 1) As Integer
-    Public Mop(12) As Integer
-    Public Imap(3) As Integer
+	Public Ier As Integer
+	Public Izap(NSMAX + 1) As Integer
+	Public Mop(12) As Integer
+	Public Imap(3) As Integer
 
-    Public Iwork(100) As Integer
-    Public Ilogd(28) As Integer
-    Public Icalc As Integer
+	Public Iwork(100) As Integer
+	Public Ilogd(28) As Integer
+	Public Icalc As Integer
 
-    Public Ito(NPMAX) As Integer
-    Public Ifr(NPMAX) As Integer
-    Public Icoef(4) As Integer
-    Public Turbi(NSMAX + 1) As Single
-    Public CvTurbi(NSMAX + 1) As Single
-    Public Imsg As Integer
-    Public line_no As Integer
-    Public Tol As Single
-    Public Sigma As Single
+	Public Ito(NPMAX) As Integer
+	Public Ifr(NPMAX) As Integer
+	Public Icoef(4) As Integer
+	Public Turbi(NSMAX + 1) As Single
+	Public CvTurbi(NSMAX + 1) As Single
+	Public Imsg As Integer
+	Public line_no As Integer
+	Public Tol As Single
+	Public Sigma As Single
 
-    Public Xk(20) As Single
-    Public Cal(NSMAX + 1, 9) As Single
-    Public Atm(7) As Single
-    Public P(9) As Single 'P are from Global Vars Screen
-    'P(1) = Avr. Period (years)
-    'P(2) = Precip (meters)
-    'P(3) = Evap (meters)
-    'P(4) = Increase in Storage(m)
-    Public Conci(NTMAX, 9) As Single
-    Public Flow(NTMAX) As Single
-    Public Cobs(NSMAX + 1, 30) As Single 'Observed conc?
-    Public Zmx(NSMAX + 1) As Single 'used in calculations
-    Public Zmxi(NSMAX + 1) As Single 'input
-    Public CvZmxi(NSMAX + 1) As Single
-    Public Zhyp(NSMAX + 1) As Single
+	Public Xk(20) As Single
+	Public Cal(NSMAX + 1, 9) As Single
+	Public Atm(7) As Single
+	Public P(9) As Single 'P are from Global Vars Screen
+	'P(1) = Avr. Period (years)
+	'P(2) = Precip (meters)
+	'P(3) = Evap (meters)
+	'P(4) = Increase in Storage(m)
+	Public Conci(NTMAX, 9) As Single
+	Public Flow(NTMAX) As Single
+	Public Cobs(NSMAX + 1, 30) As Single 'Observed conc?
+	Public Zmx(NSMAX + 1) As Single 'used in calculations
+	Public Zmxi(NSMAX + 1) As Single 'input
+	Public CvZmxi(NSMAX + 1) As Single
+	Public Zhyp(NSMAX + 1) As Single
 
-    Public Turb(NSMAX + 1) As Single
-    Public Qpipe(NPMAX) As Single
-    Public Epipe(NPMAX) As Single
-    Public CvXk(20) As Single
-    Public CvCal(NSMAX + 1, 9) As Single
-    Public CvAtm(7) As Single
-    Public Cp(9) As Single
-    Public CvCi(NTMAX, 7) As Single
-    Public CvFlow(NTMAX) As Single
-    Public CvCobs(NSMAX + 1, 30) As Single
-    Public CvZmx(NSMAX + 1) As Single
-    Public CvZhyp(NSMAX + 1) As Single
-    Public InternalLoad(NSMAX + 1, 7) As Single
-    Public CvInternalLoad(NSMAX + 1, 7) As Single
+	Public Turb(NSMAX + 1) As Single
+	Public Qpipe(NPMAX) As Single
+	Public Epipe(NPMAX) As Single
+	Public CvXk(20) As Single
+	Public CvCal(NSMAX + 1, 9) As Single
+	Public CvAtm(7) As Single
+	Public Cp(9) As Single
+	Public CvCi(NTMAX, 7) As Single
+	Public CvFlow(NTMAX) As Single
+	Public CvCobs(NSMAX + 1, 30) As Single
+	Public CvZmx(NSMAX + 1) As Single
+	Public CvZhyp(NSMAX + 1) As Single
+	Public InternalLoad(NSMAX + 1, 7) As Single
+	Public CvInternalLoad(NSMAX + 1, 7) As Single
 
-    Public CvTurb(NSMAX + 1) As Single
-    Public CvQpipe(NPMAX) As Single
-    Public CvEpipe(NPMAX) As Single
-    Public Term(4, 20) As Single
-    Public Cest(NSMAX + 1, 30) As Single
-    Public CvTerm(4, 20) As Single
-    Public CvCest(NSMAX + 1, 30) As Single
+	Public CvTurb(NSMAX + 1) As Single
+	Public CvQpipe(NPMAX) As Single
+	Public CvEpipe(NPMAX) As Single
+	Public Term(4, 20) As Single
+	Public Cest(NSMAX + 1, 30) As Single
+	Public CvTerm(4, 20) As Single
+	Public CvCest(NSMAX + 1, 30) As Single
 
-    Public XkDefault(20) As Single
-    Public CvXkDefault(20) As Single
+	Public XkDefault(20) As Single
+	Public CvXkDefault(20) As Single
 
-    Public TermName(20) As String
-    Public Nkord As Integer
-    Public Kord(20) As Integer
-    Public Njord As Integer
-    Public Jord(20) As Integer
-    Public MassBalName(2) As String
-    Public Mord As Integer
-    Public Lord(10) As Integer
+	Public TermName(20) As String
+	Public Nkord As Integer
+	Public Kord(20) As Integer
+	Public Njord As Integer
+	Public Jord(20) As Integer
+	Public MassBalName(2) As String
+	Public Mord As Integer
+	Public Lord(10) As Integer
 
-    Public Xe(10000) As Single 'error analysis swap vectors
-    Public Cxe(10000) As Single
-    Public Nxe As Integer
-    Public Nxe_1 As Integer
-    Public Ye(10000) As Single
-    Public Cye(10000) As Single
-    Public Nye As Integer
-    Public Ysave(3000) As Single
+	Public Xe(10000) As Single 'error analysis swap vectors
+	Public Cxe(10000) As Single
+	Public Nxe As Integer
+	Public Nxe_1 As Integer
+	Public Ye(10000) As Single
+	Public Cye(10000) As Single
+	Public Nye As Integer
+	Public Ysave(3000) As Single
 
 
 	'Public Sub Main()
@@ -312,17 +313,17 @@ Module Module1
 	'	StartUp()
 	'End Sub
 	Sub StartUp()
-        Dim DebugCount As Integer
+		Dim DebugCount As Integer
 		Dim LoadErr As String = ""
 		Dim location = Assembly.GetCallingAssembly().Location 'Get the assembly name
-        Directory = Path.GetDirectoryName(location) 'Get the directory of the assembly
-        Directory = Directory & Path.DirectorySeparatorChar 'Ensure it ends with a separator
-        'start up program
-        frmAbout.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
-        If Not gTASTRMode Then
-            'frmSplash.Show vbModal
-            'the FrmAbout.show event initializes a number of important variables
-            frmAbout.ShowDialog() 'Needed to show this form to get paths assigned in NON-TASTR Mode
+		Directory = Path.GetDirectoryName(location) 'Get the directory of the assembly
+		Directory = Directory & Path.DirectorySeparatorChar 'Ensure it ends with a separator
+		'start up program
+		frmAbout.lblTitle(0).Text = "Bathtub for Windows Version " & gVersionNumber
+		If Not gTASTRMode Then
+			'frmSplash.Show vbModal
+			'the FrmAbout.show event initializes a number of important variables
+			frmAbout.ShowDialog() 'Needed to show this form to get paths assigned in NON-TASTR Mode
 			'Dim Directory2 = My.Application.Info.DirectoryPath
 
 
@@ -360,10 +361,10 @@ Module Module1
 		'KW
 		Status("Starting Up")
 
-		XLSInputApp = New Excel.Application() 'excel object for input
-		Wka = New Excel.Application()
+		'XLSInputApp = New Excel.Application() 'excel object for input
+		ExcelApp = New Excel.Application()
 		'Wko = Wka.ActiveWorkbook
-		Wka.DisplayAlerts = False
+		ExcelApp.DisplayAlerts = False
 		gxla_Loaded = False
 		'Set Wkb = CreateObject("Excel.Workbooks") we don't create these anymore here but
 		'Set Wko = CreateObject("Excel.Workbooks")
@@ -409,7 +410,7 @@ Abhort:
 	Sub ReadDefaults()
 		'read default input file & assign values
 
-		If (Wko Is Nothing) Then
+		If (Wkb_Output Is Nothing) Then
 			LoadExcel()
 		End If
 
@@ -440,7 +441,7 @@ Abhort:
 		FormUpdate()
 
 		CaseFile = gCase_Name
-		If gCase_Name = "" Then CaseFile = Directory & "\default.btb"
+		If gCase_Name = "" Then CaseFile = Directory & "default.btb"
 		Read_btb((CaseFile)) 'read default case
 		If Ier > 0 Then Exit Sub
 
@@ -462,18 +463,27 @@ Abhort:
 		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 		Try
 			'MsgBox( ("clearing excel")
-			Wko.Saved = True
-			Wko.Close(Not savechanges)
-			Wko = Nothing
-			XLSWorkBk.Close(Not savechanges)
-			If XLSInputApp IsNot Nothing Then
-				XLSInputApp.Quit()
-				XLSInputApp = Nothing
+			If Wkb_Output IsNot Nothing Then
+				Wkb_Output.Saved = True
+				Wkb_Output.Close(Not savechanges)
+				Wkb_Output = Nothing
 			End If
-			Wka.EnableEvents = False
-			Wka.Quit()
-			Wka = Nothing
-			Wkb = Nothing
+
+			If XLSWorkBk IsNot Nothing Then
+				XLSWorkBk.Close(Not savechanges)
+			End If
+
+			'If XLSInputApp IsNot Nothing Then
+			'	XLSInputApp.Quit()
+			'	XLSInputApp = Nothing
+			'End If
+			If (ExcelApp IsNot Nothing) Then
+				ExcelApp.EnableEvents = False
+				ExcelApp.Quit()
+			End If
+
+			ExcelApp = Nothing
+			Wkb_Bath = Nothing
 			XLSWorkBk = Nothing
 			'hHelp.HHClose()
 			'hHelp = Nothing
@@ -497,19 +507,19 @@ Abhort:
 			If Iop(5) > 0 Then txt = txt & "---Secchi(m)    = " & StringsHelper.Format(Cest(Nseg + 1, 5), "#0.0")
 		End If
 		frmMenu.txtReport.Text = txt
-		'frmMenu.txtReport.SetFocus
+        'frmMenu.txtReport.SetFocus
 
-		'If Wka is nothing Then
-		'what does this REALLY want from Excel?? this LOADEXCEL is REQUIRED downstream,
-		'but what part?
-		'If DebugMode2 Then MsgBox( ("N456: RefreshMainTextBox: LoadExcel")
-		'LOADEXCEL REQUIRES/ASSUMES WKA and WKB are OK
-		'LoadExcel()
+        'If Wka is nothing Then
+        'what does this REALLY want from Excel?? this LOADEXCEL is REQUIRED downstream,
+        'but what part?
+        'If DebugMode2 Then MsgBox( ("N456: RefreshMainTextBox: LoadExcel")
+        'LOADEXCEL REQUIRES/ASSUMES WKA and WKB are OK
+        'LoadExcel()
 
-		'ClearOutput
-		'End If
-		'frmMenu.lblOutputWorkbook.Text = Wko.Name
-		SegName(Nseg + 1) = "Area-Wtd Mean"
+        'ClearOutput
+        'End If
+        frmMenu.lblOutputWorkbook.Text = Wkb_Output.Name
+        SegName(Nseg + 1) = "Area-Wtd Mean"
 		If NoviceUser Then
 			frmMenu.cmbUserMode.SelectedIndex = 0
 		Else
@@ -569,7 +579,7 @@ Abhort:
 	End Sub
 	Sub List_Errors()
 		ContextId = 196
-		With frmBox.DefInstance
+		With frmBox
 			.Text = "Error Messages"
 			.txtBox.Text = ErrTxt
 			.ShowDialog()
@@ -803,7 +813,238 @@ Abhort:
 		End Try
 
 	End Sub
+
 	Sub Read_btb(ByVal infilE As String)
+		Dim Abhort As Boolean = False
+		Dim j, k As Integer
+		Dim vers1 As String = ""
+		Dim name As String = ""
+		Ier = 0
+
+		Try
+			Abhort = True
+
+			If Not File.Exists(infilE) Then
+				Ier = 1
+				Throw New FileNotFoundException("Input file not found: " & infilE)
+			End If
+
+			Dim lines As String() = File.ReadAllLines(infilE)
+			For i As Integer = 0 To lines.Length - 1
+				lines(i) = lines(i).Replace("""", "")
+			Next
+			Dim lineIdx As Integer = 0
+
+			' header
+			vers1 = lines(lineIdx).Trim()
+			lineIdx += 1
+			Title = lines(lineIdx).Trim()
+			lineIdx += 1
+
+			Dim parts As String()
+			' Global Parameters
+			'Should be - 4,"Global Parmameters"
+			Dim paramHeader As String = lines(lineIdx).Trim()
+			lineIdx += 1 ' skip two lines (junk)
+			For i As Integer = 1 To NGlobals
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0).Trim())
+				P(i) = Single.Parse(parts(2).Trim())
+				Cp(i) = Single.Parse(parts(3).Trim())
+				lineIdx += 1
+			Next
+
+			' Model Options
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			NOptions = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To NOptions
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				Iop(i) = Integer.Parse(parts(2))
+				lineIdx += 1
+			Next
+
+			' Model Coefficients
+			' e.g. 17,"Model Coefficients"
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			NXk = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To NXk
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				Xk(i) = Single.Parse(parts(2))
+				CvXk(i) = Single.Parse(parts(3))
+				lineIdx += 1
+			Next
+
+			' Atmospherics
+
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			NVariables = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To NVariables
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				Atm(i) = Single.Parse(parts(2))
+				CvAtm(i) = Single.Parse(parts(3))
+				lineIdx += 1
+			Next
+
+			' Segments			
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			Nseg = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To Nseg
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				SegName(i) = parts(1)
+				Iout(i) = Integer.Parse(parts(2))
+				Iag(i) = Integer.Parse(parts(3))
+				Area(i) = Single.Parse(parts(4))
+				Zmn(i) = Single.Parse(parts(5))
+				Slen(i) = Single.Parse(parts(6))
+				Zmxi(i) = Single.Parse(parts(7))
+				CvZmxi(i) = Single.Parse(parts(8))
+				Zhyp(i) = Single.Parse(parts(9))
+				CvZhyp(i) = Single.Parse(parts(10))
+				Turbi(i) = Single.Parse(parts(11))
+				CvTurbi(i) = Single.Parse(parts(12))
+				Icrit(i) = Integer.Parse(parts(13))
+				Targ(i) = Single.Parse(parts(14))
+				lineIdx += 1
+
+				For jj = 1 To 3
+					parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+					k = Integer.Parse(parts(0))
+					InternalLoad(i, jj) = Single.Parse(parts(2))
+					CvInternalLoad(i, jj) = Single.Parse(parts(3))
+					lineIdx += 1
+				Next
+				For jj = 1 To 9
+					parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+					k = Integer.Parse(parts(0))
+					Cobs(i, jj) = Single.Parse(parts(2))
+					CvCobs(i, jj) = Single.Parse(parts(3))
+					Cal(i, jj) = Single.Parse(parts(4))
+					CvCal(i, jj) = Single.Parse(parts(5))
+					lineIdx += 1
+				Next
+			Next
+
+			'Tributaries
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			NTrib = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To NTrib
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				TribName(i) = parts(1)
+				Iseg(i) = Integer.Parse(parts(2))
+				Icode(i) = Integer.Parse(parts(3))
+				Darea(i) = Single.Parse(parts(4))
+				Flow(i) = Single.Parse(parts(5))
+				CvFlow(i) = Single.Parse(parts(6))
+				Ecoreg(i) = Single.Parse(parts(7))
+				lineIdx += 1
+
+				For jj = 1 To NVariables
+					parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+					k = Integer.Parse(parts(0))
+					Conci(i, jj) = Single.Parse(parts(2))
+					CvCi(i, jj) = Single.Parse(parts(3))
+					lineIdx += 1
+				Next
+
+				'e.g. 1,"LandUses",0,0,0,0,0,0,0,0
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				For jj = 2 To 9
+					Warea(i, jj - 1) = Single.Parse(parts(jj))
+				Next
+				lineIdx += 1
+			Next
+
+			' Channels			
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			Npipe = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To Npipe
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				PipeName(i) = parts(1)
+				Ifr(i) = Integer.Parse(parts(2))
+				Ito(i) = Integer.Parse(parts(3))
+				Qpipe(i) = Single.Parse(parts(4))
+				CvQpipe(i) = Single.Parse(parts(5))
+				Epipe(i) = Single.Parse(parts(6))
+				CvEpipe(i) = Single.Parse(parts(7))
+				lineIdx += 1
+			Next
+
+			' export categories			
+			paramHeader = lines(lineIdx).Trim()
+			parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+			NCAT = Integer.Parse(parts(0))
+			lineIdx += 1
+			For i As Integer = 1 To NCAT
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				'e.g. 1,"landuse1"
+				If parts.Length < 2 Then
+					LandUseName(i) = ""
+				Else
+					LandUseName(i) = parts(1)
+				End If
+
+				lineIdx += 1
+				parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+				j = Integer.Parse(parts(0))
+				Ur(i) = Single.Parse(parts(2))
+				CvUr(i) = Single.Parse(parts(3))
+				lineIdx += 1
+				For k = 1 To NVariables
+					parts = lines(lineIdx).Split(",", StringSplitOptions.RemoveEmptyEntries)
+					j = Integer.Parse(parts(0))
+					Uc(i, k) = Single.Parse(parts(2))
+					CvUc(i, k) = Single.Parse(parts(3))
+					lineIdx += 1
+				Next
+			Next
+
+			' notes
+			paramHeader = lines(lineIdx).Trim()
+			lineIdx += 1 ' skip junk
+			For i As Integer = 1 To 10
+				Note(i) = lines(lineIdx).Trim()
+				lineIdx += 1
+			Next
+
+			' Allocation section is skipped (as in original)
+
+			' Post-processing (unchanged)
+			CaseFile = infilE
+			WorkingDirectory = ExtractPath(infilE)
+			Icalc = 0
+			ClearOutput()
+			frmMenu.Check_OutputDest()
+			Status("Ready")
+			Abhort = False
+
+		Catch ex As Exception
+			If Not Abhort Then
+				Throw
+			End If
+			Ier = 1
+		End Try
+	End Sub
+
+	Sub Read_btb2(ByVal infilE As String)
 		Dim Abhort As Boolean = False
 		'KW
 		'Dim j, k As Double
@@ -1130,14 +1371,14 @@ Abhort:
 		LoadExcel()
 
 		If Ier > 0 Then Exit Sub
-		gLSht = Wkb.Worksheets("Inputs")
-		'    Save_xls()              'writes current inputs to "inputs" sheet of WKB
+		gLSht = Wkb_Bath.Worksheets("Inputs")
+		Save_xls()              'writes current inputs to "inputs" sheet of WKB
 
 		If Ier > 0 Then Exit Sub
 
 		'Copy the filled-in template to the WKO workbook
-		Wkb.Worksheets("Inputs").Copy(Wko.Sheets(1))
-		gSheetout = Wko.Worksheets("Inputs")
+		Wkb_Bath.Worksheets("Inputs").Copy(Wkb_Output.Sheets(1))
+		gSheetout = Wkb_Output.Worksheets("Inputs")
 
 		If Ier > 0 Then Exit Sub
 		Status("Edit Worksheet")
@@ -1150,7 +1391,7 @@ Abhort:
 		End If
 		gShowEditXLSNote = False
 		'frmMenu.WindowState = vbMinimized
-		Wka.WindowState = Excel.XlWindowState.xlNormal
+		ExcelApp.WindowState = Excel.XlWindowState.xlNormal
 		gSheetout.Range("C3").Select()
 		gReturnFromXLS = True
 		Do While gReturnFromXLS
@@ -1162,14 +1403,14 @@ Abhort:
 		If gKeepEdits Then
 			On Error GoTo Quit 'in case user closes window
 			gSheetout.UsedRange.Copy(gLSht.Range("A1"))
-			XLSWorkBk = Wko
+			XLSWorkBk = Wkb_Output
 			Read_xls("Inputs")
 		End If
-		Wka.DisplayAlerts = False
+		ExcelApp.DisplayAlerts = False
 		gSheetout.Delete()
-		realversion = CDbl(Wka.Version)
-		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
-		Wka.DisplayAlerts = True
+		realversion = CDbl(ExcelApp.Version)
+		If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
+		ExcelApp.DisplayAlerts = True
 Quit:
 		XLSWorkBk = Nothing
 		Status("Ready")
@@ -1519,13 +1760,13 @@ Quit:
 
 			'c read key file
 			Ier = 0
-			Dim wksheet = Wkb.Sheets("Key")
-			Dim namedRange As Excel.Name = Wkb.Names.Item("sigma")
+			Dim wksheet = Wkb_Bath.Sheets("Key")
+			Dim namedRange As Excel.Name = Wkb_Bath.Names.Item("sigma")
 			Dim range As Excel.Range = namedRange.RefersToRange
 			'With Wkb.Sheets("key")
 			Sigma = range.Value2
 
-			namedRange = Wkb.Names.Item("tolerance")
+			namedRange = Wkb_Bath.Names.Item("tolerance")
 			range = namedRange.RefersToRange
 			Tol = range.Value2
 
@@ -1539,7 +1780,7 @@ Quit:
 
 
 			'diagnostic variables
-			namedRange = Wkb.Names.Item("Ndiagnostics")
+			namedRange = Wkb_Bath.Names.Item("Ndiagnostics")
 			range = namedRange.RefersToRange
 			NDiagnostics = range.Value2
 
@@ -1568,7 +1809,7 @@ Quit:
 			'	Next i
 			'End With
 
-			namedRange = Wkb.Names.Item("noptions")
+			namedRange = Wkb_Bath.Names.Item("noptions")
 			range = namedRange.RefersToRange
 			NOptions = range.Value2
 			k = 1
@@ -1587,7 +1828,7 @@ Quit:
 			'End With
 
 			'coefficient labels
-			namedRange = Wkb.Names.Item("Ncoef")
+			namedRange = Wkb_Bath.Names.Item("Ncoef")
 			range = namedRange.RefersToRange
 			NXk = range.Value2
 
@@ -1608,10 +1849,10 @@ Quit:
 
 	End Sub
 	Sub ScreenOff()
-		Wka.Application.ScreenUpdating = False
+		ExcelApp.Application.ScreenUpdating = False
 	End Sub
 	Sub ScreenOn()
-		Wka.Application.ScreenUpdating = True
+		ExcelApp.Application.ScreenUpdating = True
 	End Sub
 	Function ValidFile(ByVal s As String) As Boolean
 
@@ -1657,7 +1898,7 @@ Quit:
 		'Dim sN As String = [sheet_selected]
 		Dim sN As String = "sheet_selected"
 		ViewSheet(sN)
-		Wka.Sheets("menu").Activate()
+		ExcelApp.Sheets("menu").Activate()
 	End Sub
 	Sub Status(ByVal Msg As String)
 		'update status box
@@ -1686,7 +1927,7 @@ Quit:
 			'     Loop
 			FileSystem.FileClose(1)
 
-			With frmBox.DefInstance
+			With frmBox
 				.Text = gLSht.Name
 				.txtBox.Text = txt
 				.txtBox.SelectionStart = 0
@@ -1742,23 +1983,23 @@ Quit:
 		Dim savechanges As Object
 		'Copy gLSHT (aka wkb.sheet (activesheet?)) to WKO.Sheetname
 		'WKO has been set to wka.activeWorkbook
-		SheetCopy((SheetName))
+		SheetCopy(SheetName)
 
 		Dim fworK As String = ""
 		If Iop(12) = 2 Then
 			If Not gRunMetaModels Then
-				Wka.Visible = True
-				Wka.WindowState = Excel.XlWindowState.xlNormal
+				ExcelApp.Visible = True
+				ExcelApp.WindowState = Excel.XlWindowState.xlNormal
 			End If
 		Else
 			fworK = Directory & SheetName & ".prn"
 			If FileExists(fworK) Then File.Delete(fworK)
-			Wko.Save()
-			Wko.SaveAs(fworK, Excel.XlFileFormat.xlTextPrinter, Type.Missing, Type.Missing, Type.Missing, False)
-			Wko.Saved = True
-			Wko.Close(Not savechanges)
-			Wka.Workbooks.Open(Directory & BathOutXLS)
-			Wko = Wka.ActiveWorkbook
+			Wkb_Output.Save()
+			Wkb_Output.SaveAs(fworK, Excel.XlFileFormat.xlTextPrinter, Type.Missing, Type.Missing, Type.Missing, False)
+			Wkb_Output.Saved = True
+			Wkb_Output.Close(Not savechanges)
+			ExcelApp.Workbooks.Open(Directory & BathOutXLS)
+			Wkb_Output = ExcelApp.ActiveWorkbook
 
 			If Iop(12) = 1 Then
 				ViewFileNotepad(fworK)
@@ -1776,7 +2017,7 @@ Quit:
 		'this is supposed to copy Sheetname from X to WKo (gSheetOut)
 		Try 'restart after error stmt
 			'WKO is the Bathtub_output.xls workbook
-			With Wko
+			With Wkb_Output
 				.Worksheets("Sheet1").Delete()
 				.Worksheets("Sheet2").Delete()
 				gSheetout = .Worksheets(SheetName)
@@ -1787,7 +2028,7 @@ Quit:
 					.Sheets(1).Name = SheetName 'was .activesheet.name Give it the desired name
 					gSheetout = .Sheets(1) '.ActiveSheet       'Use it
 					.Worksheets("sheet3").Delete() 'now this can be dumped
-					Wka.ActiveWindow.DisplayGridlines = False
+					ExcelApp.ActiveWindow.DisplayGridlines = False
 				End If
 			End With
 
@@ -1797,11 +2038,11 @@ Quit:
 		gSheetout.Cells.Clear() 'Start with a Clean Output Sheet
 
 		'WKB is the basic template called Bath.xla
-		Wkb.Worksheets(SheetName).Activate()
+		Wkb_Bath.Worksheets(SheetName).Activate()
 		If Information.Err().Number > 0 Then
 			MsgBox("PgmErr 22: " & SheetName & " Is not in the Template?")
 		End If
-		gLSht = Wkb.Worksheets(SheetName)
+		gLSht = Wkb_Bath.Worksheets(SheetName)
 
 		With CType(gLSht, Excel.Worksheet)
 			' Get the number of columns in the used range
@@ -1821,7 +2062,7 @@ Quit:
 		Next i
 		gSheetout.Range("A1").Select()
 
-		Wka.CutCopyMode = False
+		ExcelApp.CutCopyMode = False
 		'    ScreenOn()
 
 	End Sub
@@ -1891,7 +2132,7 @@ Quit:
 			Dim Abhort As Boolean = False
 
 			If DebugMode Then
-				i = Wkb.Worksheets.Count
+				i = Wkb_Bath.Worksheets.Count
 				'        MsgBox(("Wkb worksheets.count=" & Str(i))
 
 			End If
@@ -1909,13 +2150,16 @@ Quit:
 					'NO! Set Wka = Nothing
 					'NO! Set Wka = CreateObject("Excel.Application")
 					'But we must CLEAR wka (close it) if it is open.
-					If DebugMode Then MsgBox("DEBUG 07 Excel Version: " & Wka.Version & " " & Str(DebugCount))
+					If DebugMode Then MessageBox.Show("DEBUG 07 Excel Version: " & ExcelApp.Version & " " & Str(DebugCount))
 
 					DebugCount += 1
-					If (Wka Is Nothing) Then MsgBox("N399: Fatal Error, Input Worksheet does not exist")
+					If (ExcelApp Is Nothing) Then
+						MessageBox.Show("N399: Fatal Error, Input Worksheet does not exist")
+						Return
+					End If
 
 					'KW
-					frmMenu.VersionofExcel.Text = Wka.Version
+					frmMenu.VersionofExcel.Text = ExcelApp.Version
 					'If Wka.Workbooks.Count > 0 Then
 					'For Each Lwb In Wka.Workbooks
 					'   MsgBox( (Lwb.Name)
@@ -1927,24 +2171,27 @@ Quit:
 					If gxla_Loaded = False Then ' Start fresh
 						If DebugMode2 Then MsgBox("Opening WKA.Workbooks " & bath_book)
 
-						Wka.Workbooks.Open(bath_book)
+						ExcelApp.Workbooks.Open(bath_book)
 						If DebugMode Then MsgBox("DEBUG 08 Open Wka workbook " & BathBook & " " & Str(DebugCount))
 						DebugCount += 1
 					Else
 						'MAJOR CHANGE - CLOSE OUT ANY EXISTING BATHOUTXLS
 						'This is the key to changing content of the output, we must close the
 						'bathtub_output.xls before RELOADING
-						If Wka.Workbooks.Count > 0 Then
+						If ExcelApp.Workbooks.Count > 0 Then
 							If DebugMode2 Then MsgBox("LoadExcel is closing wko")
 
-							Wka.Workbooks(BathOutXLS).Close(Not CBool(savechange))
+							ExcelApp.Workbooks(BathOutXLS).Close(Not CBool(savechange))
 						End If
 					End If
-					Wkb = Wka.Workbooks(BathBook)
-					'Wko = Wka.ActiveWorkbook
+					Wkb_Bath = ExcelApp.Workbooks(BathBook)
+					'Wkb_Output = ExcelApp.ActiveWorkbook
 
-					If Wkb Is Nothing Then MsgBox("N555: FATAL wkb is null")
-					If DebugMode Then MsgBox("DEBUG 09 set wkB to Workbooks OK" & Str(DebugCount))
+					If Wkb_Bath Is Nothing Then
+						MessageBox.Show("N555: FATAL wkb is null")
+						Return
+					End If
+					If DebugMode Then MessageBox.Show("DEBUG 09 set wkB to Workbooks OK" & Str(DebugCount))
 					DebugCount += 1
 
 					gxla_Loaded = True
@@ -1952,20 +2199,20 @@ Quit:
 					'Wka.Calculation = xlCalculationManual
 					' NO NO If Wkb <> Then Wkb.Close False
 
-					Hdr = Wkb.Sheets("headers") 'table headings sheet
+					Hdr = Wkb_Bath.Sheets("headers") 'table headings sheet
 					If DebugMode Then MsgBox("DEBUG 10 set Excel Sheet Hdr OK" & Str(DebugCount))
 
 					DebugCount += 1
-					If Not DebugMode Then Wka.EnableEvents = True
+					If Not DebugMode Then ExcelApp.EnableEvents = True
 					If DebugMode Then MsgBox("DEBUG 10B Excel.EnableEvents Skipped" & Str(DebugCount))
 
 					DebugCount += 1
-					realversion = CDbl(Wka.Version)
-					If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+					realversion = CDbl(ExcelApp.Version)
+					If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
 					If DebugMode Then MsgBox("DEBUG 11 EXCEL.WindowState xlMinimized OK" & Str(DebugCount))
 
 					DebugCount += 1
-					Wka.Visible = True
+					ExcelApp.Visible = True
 
 					If DebugMode Then MsgBox("DEBUG 12 Excel Setup Done" & Str(DebugCount))
 
@@ -1977,26 +2224,30 @@ Quit:
 
 				If DebugMode Then MsgBox("DEBUG 13 Talking to Excel OK" & Str(DebugCount))
 				DebugCount += 1
-				'i = Wko.Worksheets.Count
-				If Information.Err().Number = 0 And i > 0 Then 'do nothing
-					'MessageBox.Show("WKO Worksheet is OK to use")
-				Else
-					'MessageBox.Show("Creating Output Worksheet- this is NOT a separate workbook!")
-					Information.Err().Clear()
-					Abend2 = True
-					Abhort = False
-					'Create the new output workbook
-					'Dispose of any old junk first
-					If DebugMode Then MsgBox("DEBUG 13a Ready to Add Workbooks to Wka")
-					If FileExists(Directory & BathOutXLS) Then File.Delete(Directory & BathOutXLS)
-					Wka.Workbooks.Add()
-					Wka.ActiveWorkbook.SaveAs(Directory & BathOutXLS, XlFileFormat.xlWorkbookDefault)
-					If DebugMode2 Then MsgBox("N1: Loadexcel Init of bathtub_output.xls")
-					Wko = Wka.ActiveWorkbook 'bathtub_output.xls workbook
-					If DebugMode Then MsgBox("DEBUG 14 Output Workbook (WKO) Set @dbg " & Str(DebugCount))
-					DebugCount += 1
-					Wka.Application.Calculation = Excel.XlCalculation.xlCalculationManual
-				End If
+				'i = Wkb_Output.Worksheets.Count
+				'If Information.Err().Number = 0 And i > 0 Then 'do nothing
+				'If i > 0 Then
+				'Exit Sub
+				'End If
+
+				'MessageBox.Show("WKO Worksheet is OK to use")
+				'Else
+				'MessageBox.Show("Creating Output Worksheet- this is NOT a separate workbook!")
+				Information.Err().Clear()
+				Abend2 = True
+				Abhort = False
+				'Create the new output workbook
+				'Dispose of any old junk first
+				If DebugMode Then MsgBox("DEBUG 13a Ready to Add Workbooks to Wka")
+				If FileExists(Directory & BathOutXLS) Then File.Delete(Directory & BathOutXLS)
+				ExcelApp.Workbooks.Add()
+				ExcelApp.ActiveWorkbook.SaveAs(Directory & BathOutXLS, XlFileFormat.xlWorkbookDefault)
+				If DebugMode2 Then MsgBox("N1: Loadexcel Init of bathtub_output.xls")
+				Wkb_Output = ExcelApp.ActiveWorkbook 'bathtub_output.xls workbook
+				If DebugMode Then MsgBox("DEBUG 14 Output Workbook (WKO) Set @dbg " & Str(DebugCount))
+				DebugCount += 1
+				ExcelApp.Application.Calculation = Excel.XlCalculation.xlCalculationManual
+				'End If
 
 				resume2 = False
 				'    Status "end load"
@@ -2038,15 +2289,15 @@ Quit:
 		Ier = 0
 		Try
 			If DebugMode Then
-				i = Wka.Worksheets.Count
+				i = ExcelApp.Worksheets.Count
 				MessageBox.Show("Wkb worksheets.count=" & i.ToString())
 			End If
 
-			If Wka.Workbooks.Count = 0 Then
-				If DebugMode Then MessageBox.Show("DEBUG 07 Excel Version: " & Wka.Version & " " & DebugCount.ToString())
+			If ExcelApp.Workbooks.Count = 0 Then
+				If DebugMode Then MessageBox.Show("DEBUG 07 Excel Version: " & ExcelApp.Version & " " & DebugCount.ToString())
 				DebugCount += 1
 
-				If Wka Is Nothing Then
+				If ExcelApp Is Nothing Then
 					MessageBox.Show("N399: Fatal Error, Input Worksheet does not exist")
 					Return
 				End If
@@ -2056,19 +2307,19 @@ Quit:
 
 				If Not gxla_Loaded Then
 					If DebugMode2 Then MessageBox.Show("Opening WKA.Workbooks " & Directory & BathBook)
-					Wka.Workbooks.Open(Path.Combine(Directory, BathBook))
+					ExcelApp.Workbooks.Open(Path.Combine(Directory, BathBook))
 					If DebugMode Then MessageBox.Show("DEBUG 08 Open Wka workbook " & BathBook & " " & DebugCount.ToString())
 					DebugCount += 1
 				Else
-					If Wka.Workbooks.Count > 0 Then
+					If ExcelApp.Workbooks.Count > 0 Then
 						If DebugMode2 Then MessageBox.Show("LoadExcel is closing wko")
-						Wka.Workbooks(BathOutXLS).Close(SaveChanges:=False)
+						ExcelApp.Workbooks(BathOutXLS).Close(SaveChanges:=False)
 					End If
 				End If
 
-				Wkb = Wka.Workbooks(BathBook)
-				Wko = Wka.ActiveWorkbook
-				If Wkb Is Nothing Then
+				Wkb_Bath = ExcelApp.Workbooks(BathBook)
+				Wkb_Output = ExcelApp.ActiveWorkbook
+				If Wkb_Bath Is Nothing Then
 					MessageBox.Show("N555: FATAL wkb is null")
 					Return
 				End If
@@ -2078,20 +2329,20 @@ Quit:
 
 				gxla_Loaded = True
 
-				Hdr = Wkb.Sheets("headers")
+				Hdr = Wkb_Bath.Sheets("headers")
 				If DebugMode Then MessageBox.Show("DEBUG 10 set Excel Sheet Hdr OK" & DebugCount.ToString())
 				DebugCount += 1
 
-				If Not DebugMode Then Wka.EnableEvents = True
+				If Not DebugMode Then ExcelApp.EnableEvents = True
 				If DebugMode Then MessageBox.Show("DEBUG 10B Excel.EnableEvents Skipped" & DebugCount.ToString())
 				DebugCount += 1
 
-				realversion = Convert.ToDouble(Wka.Version)
-				If realversion < 15 Then Wka.WindowState = XlWindowState.xlMinimized
+				realversion = Convert.ToDouble(ExcelApp.Version)
+				If realversion < 15 Then ExcelApp.WindowState = XlWindowState.xlMinimized
 				If DebugMode Then MessageBox.Show("DEBUG 11 EXCEL.WindowState xlMinimized OK" & DebugCount.ToString())
 				DebugCount += 1
 
-				Wka.Visible = True
+				ExcelApp.Visible = True
 
 				If DebugMode Then MessageBox.Show("DEBUG 12 Excel Setup Done" & DebugCount.ToString())
 				DebugCount += 1
@@ -2099,7 +2350,7 @@ Quit:
 
 			If DebugMode Then MessageBox.Show("DEBUG 13 Talking to Excel OK" & DebugCount.ToString())
 			DebugCount += 1
-			i = Wko.Worksheets.Count
+			i = Wkb_Output.Worksheets.Count
 			If i > 0 Then
 				Exit Sub
 			End If
@@ -2108,13 +2359,13 @@ Quit:
 			'If Wka.Workbooks.Count = 0 Then
 			If DebugMode Then MessageBox.Show("DEBUG 13a Ready to Add Workbooks to Wka")
 			If File.Exists(Path.Combine(Directory, BathOutXLS)) Then File.Delete(Path.Combine(Directory, BathOutXLS))
-			Wka.Workbooks.Add()
-			Wka.ActiveWorkbook.SaveAs(Filename:=Path.Combine(Directory, BathOutXLS), FileFormat:=XlFileFormat.xlWorkbookDefault)
+			ExcelApp.Workbooks.Add()
+			ExcelApp.ActiveWorkbook.SaveAs(Filename:=Path.Combine(Directory, BathOutXLS), FileFormat:=XlFileFormat.xlWorkbookDefault)
 			If DebugMode2 Then MessageBox.Show("N1: Loadexcel Init of bathtub_output.xls")
-			Wko = Wka.ActiveWorkbook
+			Wkb_Output = ExcelApp.ActiveWorkbook
 			If DebugMode Then MessageBox.Show("DEBUG 14 Output Workbook (WKO) Set @dbg " & DebugCount.ToString())
 			DebugCount += 1
-			Wka.Application.Calculation = XlCalculation.xlCalculationManual
+			ExcelApp.Application.Calculation = XlCalculation.xlCalculationManual
 
 
 		Catch ex As Exception
@@ -2133,21 +2384,21 @@ Quit:
 		Dim i As Integer
 		'clears output workbook without changing name
 		'this runs after existing case is edited
-		If (Wko Is Nothing) Then
+		If (Wkb_Output Is Nothing) Then
 			'If DebugMode Then MessageBox.Show("Module1 N32: WKO is Nothing")
 			Exit Sub
 		End If
-		With Wko
+		With Wkb_Output
 			i = .Sheets.Count
 			If i <= 0 Then Exit Sub
-			Wka.DisplayAlerts = False
+			ExcelApp.DisplayAlerts = False
 			For j As Integer = 1 To i - 1
 				.Sheets(1).Delete()
 			Next j
 			.Sheets(1).Cells.Clear()
 			.Sheets(1).Name = "Sheet1"
 		End With
-		Wka.DisplayAlerts = True
+		ExcelApp.DisplayAlerts = True
 	End Sub
 
 	Sub ClearOutput()
@@ -2155,26 +2406,28 @@ Quit:
 		'this runs whenenever output destination is changed or new case is read		
 		Try
 
-			If Wka Is Nothing Then
+			If ExcelApp Is Nothing Then
 				If DebugMode Then MessageBox.Show("Module1 N33: Loading Excel")
 				If DebugMode2 Then MsgBox("ClearOutput is Loading Excel again")
 				LoadExcel()
 				If Ier > 0 Then Exit Sub
 			End If
 
-			If Wko IsNot Nothing Then
-				Wko.Close(False)
-				Wko = Nothing
+			If Wkb_Output IsNot Nothing Then
+				ClearOutputWorkbook()
+
+				'Wkb_Output.Close(False)
+				'Wkb_Output = Nothing
 			End If
 
-			If DebugMode Then MsgBox("Module1 N30: WKO Closed: " & Wko.Name)
+			If DebugMode Then MsgBox("Module1 N30: WKO Closed: " & Wkb_Output.Name)
 
 		Catch exc As Exception
 
 		End Try
 		FormUpdate()
-		Dim realversion As Double = CDbl(Wka.Version)
-		If (realversion < 15) Then Wka.WindowState = Excel.XlWindowState.xlMinimized
+		Dim realversion As Double = CDbl(ExcelApp.Version)
+		If (realversion < 15) Then ExcelApp.WindowState = Excel.XlWindowState.xlMinimized
 	End Sub
 
 	Sub Backup(ByVal io As Integer)

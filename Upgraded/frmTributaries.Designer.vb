@@ -352,7 +352,6 @@ Partial Class frmTribs
         _SSTab1_TabPage0.Controls.Add(_lblLabel_9)
         _SSTab1_TabPage0.Controls.Add(_lblLabel_10)
         _SSTab1_TabPage0.Controls.Add(_lblLabel_11)
-        _SSTab1_TabPage0.Controls.Add(_txtText_22)
         _SSTab1_TabPage0.Controls.Add(cmbTribSeg)
         _SSTab1_TabPage0.Controls.Add(_txtText_0)
         _SSTab1_TabPage0.Controls.Add(_txtText_1)
@@ -368,8 +367,9 @@ Partial Class frmTribs
         _SSTab1_TabPage0.Controls.Add(_txtText_11)
         _SSTab1_TabPage0.Controls.Add(_txtText_12)
         _SSTab1_TabPage0.Controls.Add(_txtText_13)
-        _SSTab1_TabPage0.Controls.Add(_txtText_23)
         _SSTab1_TabPage0.Controls.Add(cmbTribType)
+        _SSTab1_TabPage0.Controls.Add(_txtText_22)
+        _SSTab1_TabPage0.Controls.Add(_txtText_23)
         _SSTab1_TabPage0.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         _SSTab1_TabPage0.Location = New Point(4, 22)
         _SSTab1_TabPage0.Name = "_SSTab1_TabPage0"

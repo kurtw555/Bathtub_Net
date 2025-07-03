@@ -66,7 +66,7 @@ Partial Class frmAbout
         commandButtonHelper1.SetCorrectEventsBehavior(Command2, True)
         commandButtonHelper1.SetDisabledPicture(Command2, Nothing)
         commandButtonHelper1.SetDownPicture(Command2, Nothing)
-        Command2.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        Command2.Font = New Font("Microsoft Sans Serif", 9F)
         Command2.ForeColor = SystemColors.ControlText
         Command2.Location = New Point(176, 152)
         commandButtonHelper1.SetMaskColor(Command2, Color.Silver)
@@ -88,7 +88,7 @@ Partial Class frmAbout
         commandButtonHelper1.SetDisabledPicture(Command1, Nothing)
         commandButtonHelper1.SetDownPicture(Command1, Nothing)
         Command1.Enabled = False
-        Command1.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        Command1.Font = New Font("Microsoft Sans Serif", 9F)
         Command1.ForeColor = SystemColors.ControlText
         Command1.Location = New Point(56, 152)
         commandButtonHelper1.SetMaskColor(Command1, Color.Silver)
@@ -109,9 +109,9 @@ Partial Class frmAbout
         commandButtonHelper1.SetCorrectEventsBehavior(cmdOK, True)
         commandButtonHelper1.SetDisabledPicture(cmdOK, Nothing)
         commandButtonHelper1.SetDownPicture(cmdOK, Nothing)
-        cmdOK.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        cmdOK.Font = New Font("Microsoft Sans Serif", 9F)
         cmdOK.ForeColor = SystemColors.ControlText
-        cmdOK.Location = New Point(272, 152)
+        cmdOK.Location = New Point(263, 153)
         commandButtonHelper1.SetMaskColor(cmdOK, Color.Silver)
         cmdOK.Name = "cmdOK"
         cmdOK.RightToLeft = RightToLeft.No
@@ -128,19 +128,20 @@ Partial Class frmAbout
         picIcon.AllowDrop = True
         picIcon.BackColor = SystemColors.Control
         picIcon.BorderStyle = BorderStyle.Fixed3D
-        picIcon.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point)
+        picIcon.Font = New Font("Microsoft Sans Serif", 8.25F)
         picIcon.Image = CType(resources.GetObject("picIcon.Image"), Image)
         picIcon.Location = New Point(8, 8)
         picIcon.Name = "picIcon"
         picIcon.Size = New Size(36, 36)
         picIcon.SizeMode = PictureBoxSizeMode.AutoSize
         picIcon.TabIndex = 0
+        picIcon.TabStop = False
         ' 
         ' _lblTitle_2
         ' 
         _lblTitle_2.AllowDrop = True
         _lblTitle_2.BackColor = SystemColors.Control
-        _lblTitle_2.Font = New Font("Microsoft Sans Serif", 8.4F, FontStyle.Regular, GraphicsUnit.Point)
+        _lblTitle_2.Font = New Font("Microsoft Sans Serif", 8.4F)
         _lblTitle_2.ForeColor = Color.Black
         _lblTitle_2.Location = New Point(96, 104)
         _lblTitle_2.MinimumSize = New Size(187, 32)
@@ -155,7 +156,7 @@ Partial Class frmAbout
         ' 
         _lblTitle_1.AllowDrop = True
         _lblTitle_1.BackColor = SystemColors.Control
-        _lblTitle_1.Font = New Font("Microsoft Sans Serif", 9.6F, FontStyle.Regular, GraphicsUnit.Point)
+        _lblTitle_1.Font = New Font("Microsoft Sans Serif", 9.6F)
         _lblTitle_1.ForeColor = Color.Black
         _lblTitle_1.Location = New Point(56, 64)
         _lblTitle_1.MinimumSize = New Size(259, 40)
@@ -170,7 +171,7 @@ Partial Class frmAbout
         ' 
         _lblTitle_0.AllowDrop = True
         _lblTitle_0.BackColor = SystemColors.Control
-        _lblTitle_0.Font = New Font("Microsoft Sans Serif", 9.6F, FontStyle.Bold, GraphicsUnit.Point)
+        _lblTitle_0.Font = New Font("Microsoft Sans Serif", 9.6F, FontStyle.Bold)
         _lblTitle_0.ForeColor = Color.Black
         _lblTitle_0.Location = New Point(64, 16)
         _lblTitle_0.MinimumSize = New Size(259, 40)
@@ -186,11 +187,12 @@ Partial Class frmAbout
         _Line1_0.AllowDrop = True
         _Line1_0.BackColor = Color.White
         _Line1_0.Enabled = False
-        _Line1_0.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point)
-        _Line1_0.Location = New Point(0, 160)
+        _Line1_0.Font = New Font("Microsoft Sans Serif", 8.25F)
+        _Line1_0.Location = New Point(0, 151)
         _Line1_0.Name = "_Line1_0"
-        _Line1_0.Size = New Size(308, 1)
+        _Line1_0.Size = New Size(377, 10)
         _Line1_0.TabIndex = 7
+        _Line1_0.Visible = False
         ' 
         ' frmAbout
         ' 
@@ -209,7 +211,7 @@ Partial Class frmAbout
         Controls.Add(_lblTitle_1)
         Controls.Add(_lblTitle_0)
         Controls.Add(_Line1_0)
-        Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point)
+        Font = New Font("Microsoft Sans Serif", 8.25F)
         FormBorderStyle = FormBorderStyle.FixedDialog
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Location = New Point(156, 129)
