@@ -1421,10 +1421,11 @@ Quit:
 
 		'writes input data to excel sheet without saving to disk
 		'first update main screen
-
 		Try
-
-			With CType(gLSht, Excel.Worksheet)
+            If gLSht Is Nothing Then
+                gLSht = Wkb_Bath.Worksheets("Inputs")
+            End If
+            With gLSht
 
 				.Range("C3:HA1000").ClearContents()
 
@@ -2044,7 +2045,7 @@ Quit:
 		End If
 		gLSht = Wkb_Bath.Worksheets(SheetName)
 
-		With CType(gLSht, Excel.Worksheet)
+		With gLSht
 			' Get the number of columns in the used range
 			j = .UsedRange.Columns.Count
 			' Save the Column Widths from the Template A column for use below
