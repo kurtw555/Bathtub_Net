@@ -85,8 +85,8 @@ Module Module1
 	'Public XLSApp As Object
 	'Dim XLSInputApp As Excel.Application
 	Public ExcelApp As Excel.Application 'Excel.Application
-    Public Wkb_Bath As Excel.Workbook 'Excel Workbook pointing at Template Bath.xla	
-    Public CurrentWKChart As Excel.Chart 'Excel Chart
+	Public Wkb_Bath As Excel.Workbook 'Excel Workbook pointing at Template Bath.xlxs
+	Public CurrentWKChart As Excel.Chart 'Excel Chart
     Public gLSht As Excel.Worksheet 'Excel Worksheet used for Holding results
 	'======================================================
 	Public CaseFile As String = "" 'name of case file

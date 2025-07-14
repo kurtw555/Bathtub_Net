@@ -905,14 +905,14 @@ OUt:
     Public Sub mnuHelpContents_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuHelpContents.Click
         ShowHelp(0)
     End Sub
-    Public Sub mnureadWorksheet_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuReadWorksheet.Click
-        'Wka.Visible = True
-        ' THIS IS NEVER CALLED
-        Status("Reading Worksheet")
-        Read_xls("Inputs")
-        If Ier = 0 Then MessageBox.Show("Input Data Read from Worksheet", My.Application.Info.Title)
-        Status("Ready")
-    End Sub
+    'Public Sub mnureadWorksheet_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuReadWorksheet.Click
+    '    'Wka.Visible = True
+    '    ' THIS IS NEVER CALLED
+    '    Status("Reading Worksheet")
+    '    Read_xls("Inputs")
+    '    If Ier = 0 Then MessageBox.Show("Input Data Read from Worksheet", My.Application.Info.Title)
+    '    Status("Ready")
+    'End Sub
 
     Public Sub mnuSaveWorksheet_Click(ByVal eventSender As Object, ByVal eventArgs As EventArgs) Handles mnuSaveWorksheet.Click
         'Wka.Visible = True
