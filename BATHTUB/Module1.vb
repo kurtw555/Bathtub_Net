@@ -495,7 +495,7 @@ Abhort:
 	End Sub
 	Sub RefreshMainTextBox()
 		'fill text box on main menu screen
-		Dim txt As String = "File: " & ExtractFile(CaseFile) & Environment.NewLine
+		Dim txt As String = "File: " & Module4.ExtractFile(CaseFile) & Environment.NewLine
 		txt = txt & "Title: " & Title & Environment.NewLine
 		txt = txt & "Segments: " & CStr(Nseg) & "  Tributaries: " & CStr(NTrib) & Environment.NewLine
 		If Nmsg > 0 Then txt = txt & "Error Messages: " & CStr(Nmsg) & Environment.NewLine
@@ -1956,7 +1956,7 @@ Quit:
 		Dim j As Double
 		'view a text file in notepad (outputdest=1)
 		If FileExists(fna) Then
-			cline = "Notepad " & fna
+			cline = "Notepad.exe " & fna
 			'UPGRADE_TODO: (7005) parameters (if any) must be set using the Arguments property of ProcessStartInfo More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-7005
 			Dim startInfo As ProcessStartInfo = New ProcessStartInfo(cline)
 			startInfo.WindowStyle = ProcessWindowStyle.Normal
@@ -2014,12 +2014,14 @@ Quit:
 	End Sub 'ViewSheet
 
 	Sub SheetCopy(ByVal SheetName As String)
-		Dim j As Integer
+        Dim j As Integer
+		Dim wkSheet As Excel.Worksheet
 		'this is supposed to copy Sheetname from X to WKo (gSheetOut)
 		Try 'restart after error stmt
 			'WKO is the Bathtub_output.xls workbook
 			With Wkb_Output
-				.Worksheets("Sheet1").Delete()
+				'.Worksheets("Sheet1").Delete()
+				wkSheet = .Worksheets("Sheet1")
 				.Worksheets("Sheet2").Delete()
 				gSheetout = .Worksheets(SheetName)
 				.Worksheets(SheetName).Activate()
@@ -2243,7 +2245,7 @@ Quit:
 				If FileExists(Directory & BathOutXLS) Then File.Delete(Directory & BathOutXLS)
 				ExcelApp.Workbooks.Add()
 				ExcelApp.ActiveWorkbook.SaveAs(Directory & BathOutXLS, XlFileFormat.xlWorkbookDefault)
-				If DebugMode2 Then MsgBox("N1: Loadexcel Init of bathtub_output.xls")
+				If DebugMode2 Then MsgBox("N1: Loadexcel Init of bathtub_output.xlsx")
 				Wkb_Output = ExcelApp.ActiveWorkbook 'bathtub_output.xls workbook
 				If DebugMode Then MsgBox("DEBUG 14 Output Workbook (WKO) Set @dbg " & Str(DebugCount))
 				DebugCount += 1

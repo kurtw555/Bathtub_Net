@@ -2214,7 +2214,7 @@ s900:
 
 
 		'case parameters
-		With frmResponse.DefInstance
+		With frmResponse
 			jtriB = .cmbTrib.SelectedIndex
 			jseG = .cmbSegment.SelectedIndex + 1
 			jvaR = .cmbVariable.SelectedIndex + 1
@@ -2253,8 +2253,8 @@ s900:
 			CType(Hdr, Excel.Worksheet).Range("Header_response").Copy()
 			Wkb_Output.ActiveSheet.Paste(gLSht.Range("A3").Offset(line_no, 0))
 
-			.Offset(line_no + 1, 1).Value = frmResponse.DefInstance.cmbTrib.Text
-			.Offset(line_no + 2, 1).Value = frmResponse.DefInstance.cmbSegment.Text
+			.Offset(line_no + 1, 1).Value = frmResponse.cmbTrib.Text
+			.Offset(line_no + 2, 1).Value = frmResponse.cmbSegment.Text
 			.Offset(line_no + 3, 1).Value = DiagName(jvaR)
 			.Offset(line_no + 5, 4).Value = " " & DiagName(jvaR)
 			.Offset(line_no + 5, 4).HorizontalAlignment = Excel.Constants.xlLeft
@@ -2348,15 +2348,17 @@ s900:
 
 
 		Lpics = gLSht.Shapes.Count
-		For i As Integer = 1 To Lpics
-			'If gDebugCVmode Then MsgBox("Shapes in glSht: " & gLSht.Shapes.Count)
-			gLSht.Shapes.Item(i).Delete()
-		Next i
+        For i As Integer = 1 To Lpics
+            'If gDebugCVmode Then MsgBox("Shapes in glSht: " & gLSht.Shapes.Count)
+            gLSht.Shapes.Item(i).Delete()
+        Next i
 
+		Dim wkSheet As Excel.Worksheet
 		If Not gRunMetaModels Then
 			With Wkb_Bath
 				.Sheets("plot response").ChartObjects(Type.Missing)(1).CopyPicture()
-				'.Sheets("load response").Activate
+				wkSheet = .Sheets("load response")
+				wkSheet.Activate()
 
 
 				'NO: .Sheets("load response").Range("A22:A99").Select
@@ -2365,7 +2367,8 @@ s900:
 				'==================================================================
 				'HAD A HELL OF A TIME TRANSLATING THE PASTE Method TO OBJECT MODE (see above)
 				'BUT IT TURNS OUT, I JUST NEEDED TO SPECIFY THE DESTINATION RANGE _FULLY_:
-				.Sheets("load response").Paste(.Sheets("load response").Range("A22").Value)
+				'.Sheets("load response").Paste(.Sheets("load response").Range("A22").Value)
+				.Sheets("load response").Paste(Destination:= .Sheets("load response").Range("A22"))
 				If Iop(12) = 2 Then .Sheets("load response").Range("i43").Value = " "
 			End With
 		End If

@@ -1,16 +1,41 @@
 Option Strict Off
 Option Explicit On
 Imports Excel = Microsoft.Office.Interop.Excel
-Imports Microsoft.VisualBasic
-Imports System
-Imports UpgradeHelpers.Helpers
+Imports System.IO
+
 Module Module4
-	'Function SheetExists(ByVal ShtName As String) As Boolean
-	'	'returns true if sheet exists in the active workbook
+	Function SheetExists(WkBook As Excel.Workbook, ByVal SheetName As String) As Boolean
+		'returns true if sheet exists in the active workbook
+		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
+		If WkBook Is Nothing Or SheetName = "" Then
+			Return False
+		End If
+		Dim result As Boolean = False
+		Dim sheet_Exists As Boolean = False
+		For Each ws As Excel.Worksheet In Wkb_Output.Worksheets
+			If ws.Name = SheetName Then
+				sheet_Exists = True
+				Exit For
+			End If
+		Next
+		Return result
+	End Function
+
+	Function FileExists(ByVal Fname As String) As Boolean
+		'returns true if the file exists
+		'UPGRADE_WARNING: (2099) Return value for Dir has a new behavior. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-2099
+		Return File.Exists(Fname)
+		'Dim X99 As String = FileSystem.Dir(Fname)
+		''MsgBox( "fileexists: " & Fname & " " & ss
+		'Return X99 <> ""
+	End Function
+
+	'Function WorkbookIsOpen(ByVal wbname As String) As Boolean
+	'	'returns true if workbook is open
 	'	'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
 	'	Dim result As Boolean = False
 	'	Try
-	'		Dim X99 As Object = ExcelApp.ActiveWorkbook.Sheets(ShtName)
+	'		Dim X99 As Excel.Workbook = ExcelApp.Workbooks(wbname)
 	'		If Information.Err().Number = 0 Then result = True Else result = False
 	'		Information.Err().Clear()
 
@@ -20,52 +45,30 @@ Module Module4
 	'	Return result
 	'End Function
 
-	Function FileExists(ByVal Fname As String) As Boolean
-		'returns true if the file exists
-		'UPGRADE_WARNING: (2099) Return value for Dir has a new behavior. More Information: https://docs.mobilize.net/vbuc/ewis/warnings#id-2099
-		Dim X99 As String = FileSystem.Dir(Fname)
-		'MsgBox( "fileexists: " & Fname & " " & ss
-		Return X99 <> ""
-	End Function
+	'Function PathExists(ByVal Pname As String) As Boolean
+	'	'returns true if path exists
+	'	'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
+	'	Dim result As Boolean = False
+	'	Try
+	'		Dim X99 As String = CStr(FileSystem.GetAttr(Pname) <> FileAttribute.Normal And 0)
+	'		If StringsHelper.ToDoubleSafe(Conversion.ErrorToString()) = 0 Then result = True Else result = False
 
-	Function WorkbookIsOpen(ByVal wbname As String) As Boolean
-		'returns true if workbook is open
-		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
-		Dim result As Boolean = False
-		Try
-			Dim X99 As Excel.Workbook = ExcelApp.Workbooks(wbname)
-			If Information.Err().Number = 0 Then result = True Else result = False
-			Information.Err().Clear()
-
-		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
-		End Try
-		Return result
-	End Function
-
-	Function PathExists(ByVal Pname As String) As Boolean
-		'returns true if path exists
-		'UPGRADE_TODO: (1069) Error handling statement (On Error Resume Next) was converted to a pattern that might have a different behavior. More Information: https://docs.mobilize.net/vbuc/ewis/todos#id-1069
-		Dim result As Boolean = False
-		Try
-			Dim X99 As String = CStr(FileSystem.GetAttr(Pname) <> FileAttribute.Normal And 0)
-			If StringsHelper.ToDoubleSafe(Conversion.ErrorToString()) = 0 Then result = True Else result = False
-
-		Catch exc As Exception
-			NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
-		End Try
-		Return result
-	End Function
+	'	Catch exc As Exception
+	'		NotUpgradedHelper.NotifyNotUpgradedElement("Resume in On-Error-Resume-Next Block")
+	'	End Try
+	'	Return result
+	'End Function
 
 	Function ExtractPath(ByVal Spec As String) As String
 		'extract pathname from filename
-		Dim SpecLen As Integer = Strings.Len(Spec)
-		For i As Integer = SpecLen To 1 Step -1
-			If Spec.Substring(Math.Min(i - 1, Spec.Length), Math.Min(1, Math.Max(0, Spec.Length - (i - 1)))) = "\" Then
-				Return Spec.Substring(0, Math.Min(i - 1, Spec.Length))
-			End If
-		Next i
-		Return ""
+		Return Path.GetDirectoryName(Spec)
+		'Dim SpecLen As Integer = Strings.Len(Spec)
+		'For i As Integer = SpecLen To 1 Step -1
+		'	If Spec.Substring(Math.Min(i - 1, Spec.Length), Math.Min(1, Math.Max(0, Spec.Length - (i - 1)))) = "\" Then
+		'		Return Spec.Substring(0, Math.Min(i - 1, Spec.Length))
+		'	End If
+		'Next i
+		'Return ""
 	End Function
 
 	Function ExtractFile(ByVal Spec As String) As String
@@ -82,10 +85,18 @@ Module Module4
 
 	Function FormatF(ByVal xx As Double, ByVal fs As String) As String
 		'fixed length format
-		Dim i As Integer = Strings.Len(fs)
-		Dim s As String = StringsHelper.Format(xx, fs)
-		Dim k As Integer = Strings.Len(s)
-		Return New String(" "c, i - k) & s
+		Dim formatted As String = xx.ToString(fs)
+		Dim width As Integer = fs.Length
+		If formatted.Length < width Then
+			Return formatted.PadLeft(width)
+		Else
+			Return formatted
+		End If
+
+		'Dim i As Integer = Strings.Len(fs)
+		'Dim s As String = StringsHelper.Format(xx, fs)
+		'Dim k As Integer = Strings.Len(s)
+		'Return New String(" "c, i - k) & s
 	End Function
 
 	Public Enum CopyIO

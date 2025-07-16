@@ -37,7 +37,8 @@ Partial Friend Class frmLandUse
 
     Private Sub frmLandUse_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ReLoadForm(False)
-        UpdateCombo1()
+        Form_Load()
+        'UpdateCombo1()
     End Sub
 
     Private Sub frmLandUse_Activated(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Activated
@@ -117,7 +118,7 @@ Partial Friend Class frmLandUse
             jusE = j
             Combo1.SelectedIndex = jusE - 1
             'UPGRADE_ISSUE: (2070) Constant Monochrome was not upgraded. More Information: https://docs.mobilize.net/vbuc/ewis/issues#id-2070
-            UpdateLandUseValues(CopyIO.FROM_TEMP_ARRAY)
+            UpdateLandUseValues(CopyIO.TO_TEMP_ARRAY)
         End If
     End Sub
 

@@ -67,7 +67,7 @@ Partial Friend Class frmMenu
             Using saveDialog As New SaveFileDialog()
                 saveDialog.Filter = "Excel Files (*.xlsx)|*.xlsx"
                 saveDialog.FileName = outfilE
-                saveDialog.DefaultExt = "xls"
+                saveDialog.DefaultExt = "xlsx"
                 saveDialog.OverwritePrompt = True
 
                 If saveDialog.ShowDialog() = DialogResult.OK Then
@@ -568,10 +568,14 @@ Partial Friend Class frmMenu
                 infilE = ""
             End If
         End Using
-        If infilE = "" Or infilE.IndexOf("*"c) >= 0 Or Not FileExists(infilE) Then _OUtFlag = True
-        GoTo OUtTryBlock
-        InfileDir = ExtractPath(infilE)
-        InfileName = ExtractFile(infilE)
+        'If infilE = "" Or infilE.IndexOf("*"c) >= 0 Or Not FileExists(infilE) Then _OUtFlag = True
+        If String.IsNullOrEmpty(infilE) Or infilE.IndexOf("*"c) >= 0 Or Not FileExists(infilE) Then
+            _OUtFlag = True
+            GoTo OUtTryBlock3
+        End If
+        'GoTo OUtTryBlock
+        InfileDir = Module4.ExtractPath(infilE)
+        InfileName = Module4.ExtractFile(infilE)
 
         sN = infilE
         Mid(sN, Strings.Len(sN) - 2) = "btb"
@@ -581,7 +585,7 @@ Partial Friend Class frmMenu
         GoTo OUtTryBlock2
         If FileExists(outfilE) Then
             If MessageBox.Show("File: " & outfilE & " already exists, overwrite?", My.Application.Info.Title, MessageBoxButtons.YesNo) <> System.Windows.Forms.DialogResult.Yes Then _OUtFlag3 = True
-            GoTo OUtTryBlock3
+
         End If
 
         'first create temporary translation file
