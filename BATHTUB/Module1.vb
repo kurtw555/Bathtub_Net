@@ -2021,17 +2021,30 @@ Quit:
 			'WKO is the Bathtub_output.xls workbook
 			With Wkb_Output
 				'.Worksheets("Sheet1").Delete()
-				wkSheet = .Worksheets("Sheet1")
-				.Worksheets("Sheet2").Delete()
-				gSheetout = .Worksheets(SheetName)
-				.Worksheets(SheetName).Activate()
-				If Information.Err().Number > 0 Then
+				If Module4.SheetExists(Wkb_Output, "Sheet1") Then
+					wkSheet = .Worksheets("Sheet1")
+				End If
+
+				If Module4.SheetExists(Wkb_Output, "Sheet2") Then
+					.Worksheets("Sheet2").Delete()
+				End If
+
+				'gSheetout = .Worksheets(SheetName)
+				'.Worksheets(SheetName).Activate()
+				'If Information.Err().Number > 0 Then
+				If Not Module4.SheetExists(Wkb_Output, SheetName) Then
 					'MsgBox( ("There is no Sheet in WKo called " & SheetName)
 					.Worksheets.Add() 'Create a New Sheet. The (AFTER) option kills the action entirely?
 					.Sheets(1).Name = SheetName 'was .activesheet.name Give it the desired name
 					gSheetout = .Sheets(1) '.ActiveSheet       'Use it
-					.Worksheets("sheet3").Delete() 'now this can be dumped
+					If Module4.SheetExists(Wkb_Output, "Sheet3") Then
+						.Worksheets("Sheet3").Delete() 'now this can be dumped
+					End If
+
 					ExcelApp.ActiveWindow.DisplayGridlines = False
+				Else
+					gSheetout = .Worksheets(SheetName)
+					.Worksheets(SheetName).Activate()
 				End If
 			End With
 

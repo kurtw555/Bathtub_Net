@@ -2154,7 +2154,8 @@ s900:
 				End If
 			Next kvaR
 		End With
-
+		gLSht.Calculate()
+		gLSht.Activate()
 	End Sub
 	Function MAx(ByVal x1 As Double, ByVal x2 As Double) As Double
 		If x2 > x1 Then

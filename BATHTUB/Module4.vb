@@ -10,15 +10,15 @@ Module Module4
 		If WkBook Is Nothing Or SheetName = "" Then
 			Return False
 		End If
-		Dim result As Boolean = False
+		'Dim result As Boolean = False
 		Dim sheet_Exists As Boolean = False
 		For Each ws As Excel.Worksheet In Wkb_Output.Worksheets
-			If ws.Name = SheetName Then
+			If String.Compare(ws.Name, SheetName, False) = 0 Then
 				sheet_Exists = True
 				Exit For
 			End If
 		Next
-		Return result
+		Return sheet_Exists
 	End Function
 
 	Function FileExists(ByVal Fname As String) As Boolean
